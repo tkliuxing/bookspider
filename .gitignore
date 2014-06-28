@@ -1,2 +1,5 @@
 booksite/booksite.egg-info
 *.sublime-workspace
+booksite/booksite/book/migrations
+local_settings.py
+bookspider/crawls
