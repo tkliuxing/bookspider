@@ -49,6 +49,11 @@ class DouluoSpider(Spider):
             #书目
             for href in hrefs:
                 yield Request(urlparse.urljoin(url,href), callback=self.parse)
+        # 书目
+        elif BOOK_INDEX_URL_RE.match(url):
+            hrefs = sel.xpath("//dl/dd/a/@href").extract()
+            for href in hrefs:
+                yield Request(urlparse.urljoin(url,href), callback=self.parse)
         #章节
         elif BOOK_PAGE_URL_RE.match(url):
             page = BookpageItem()
@@ -70,14 +75,9 @@ class DouluoSpider(Spider):
                 page['next_number'] = None
             yield page
             # 爬下一页
-            yield Request(urlparse.urljoin(url,next_href), callback=self.parse)
+            #yield Request(urlparse.urljoin(url,next_href), callback=self.parse)
             # 爬上一页
-            yield Request(urlparse.urljoin(url,prev_href), callback=self.parse)
-        # 书目
-        elif BOOK_INDEX_URL_RE.match(url):
-            href = sel.xpath("//dl/dd[1]/a/@href").extract()[0]
-            #第一页
-            yield Request(urlparse.urljoin(url,href), callback=self.parse)
+            #yield Request(urlparse.urljoin(url,prev_href), callback=self.parse)
         # 继续爬行
         else:
             urls = []
