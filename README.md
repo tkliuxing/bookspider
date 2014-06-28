@@ -26,7 +26,7 @@
 1. clone本项目
 1. `cd booksite && python setup.py develop`
 1. 配置Django项目的 `local_settings.py` 文件,位于:`PROJECT_DIR/booksite/booksite`,配置数据库, 如:
-1. 
+
 ```
 	DATABASES = {
 		'default': {
