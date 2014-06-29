@@ -46,7 +46,6 @@ class DouluoSpider(Spider):
             book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
             yield book
             hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
-            #书目
             for href in hrefs:
                 yield Request(urlparse.urljoin(url,href), callback=self.parse)
         # 书目
