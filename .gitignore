@@ -3,3 +3,4 @@ booksite/booksite.egg-info
 booksite/booksite/book/migrations
 local_settings.py
 bookspider/crawls
+dump.rdb
