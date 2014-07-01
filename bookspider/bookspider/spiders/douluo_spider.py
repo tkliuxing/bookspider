@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import re
 import urlparse
+import redis
 
 from pyquery import PyQuery as PQ
 
@@ -9,13 +10,14 @@ from scrapy.spider import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
 
-from bookspider.items import BookinfoItem, BookpageItem
+from bookspider.items import BookinfoItem, BookpageItem, Book, BookPage
 
 BASE_URL = "http://www.86696.cc"
 BOOK_INFO_URL_RE = re.compile(r"http:\/\/www\.86696\.cc\/book/(?P<book_id>\d+)\.html")
 BOOK_INDEX_URL_RE = re.compile(r"http:\/\/www\.86696\.cc\/html\/\d+\/(?P<book_id>\d+)\/$")
 BOOK_PAGE_URL_RE = re.compile(r"http:\/\/www\.86696\.cc\/html\/\d+\/(?P<book_id>\d+)\/(?P<page_id>\d+)\.html")
 PASS_URL = ['login.php', 'newmessage.php', 'charset=', 'index.php']
+RC = redis.Redis()
 
 class DouluoSpider(Spider):
     name = "douluo"
@@ -52,6 +54,8 @@ class DouluoSpider(Spider):
         elif BOOK_INDEX_URL_RE.match(url):
             hrefs = sel.xpath("//dl/dd/a/@href").extract()
             for href in hrefs:
+                if RC.get(urlparse.urljoin(url, href)):
+                    continue
                 yield Request(urlparse.urljoin(url,href), callback=self.parse)
         #章节
         elif BOOK_PAGE_URL_RE.match(url):
@@ -61,8 +65,8 @@ class DouluoSpider(Spider):
             page['content'] = jQ('#BookText').text().replace(" ","\n")
             page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
             page['page_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['page_id']
-            next_href = sel.css('div.fanye').xpath('a[3]/@href').extract()[0]
-            prev_href = sel.css('div.fanye').xpath('a[1]/@href').extract()[0]
+            next_href = sel.xpath('//div[@class="fanye"]/a[3]/@href').extract()[0]
+            prev_href = sel.xpath('//div[@class="fanye"]/a[1]/@href').extract()[0]
             page_number_re = re.compile(r'(?P<number>\d+).+')
             if page_number_re.match(prev_href):
                 page['prev_number'] = page_number_re.match(prev_href).groupdict()['number']
@@ -87,5 +91,7 @@ class DouluoSpider(Spider):
                     # print href
                     href = urlparse.urljoin(url,href)
                     if BOOK_PAGE_URL_RE.match(href):
+                        continue
+                    if RC.get(href):
                         continue
                     yield Request(href, callback=self.parse)

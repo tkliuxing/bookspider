@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
+import redis
 
 from scrapy.exceptions import DropItem
 
 from bookspider.items import BookinfoItem, BookpageItem, Book, BookPage
+
+RC = redis.Redis()
 
 class BookinfoPipeline(object):
     def __init__(self):
@@ -35,6 +38,7 @@ class BookpagePipeline(object):
             self.ids_seen.add(item['page_number'])
             try:
                 item.save()
+                RC.set(item['origin_url'], 'True')
                 print str(item['book_number']).ljust(10),"-"*10,
                 print str(item['page_number']).ljust(10),"-"*10,
                 print ' '.join(item['title'].split()[1:])
