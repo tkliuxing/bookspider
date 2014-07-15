@@ -1,0 +1,48 @@
+{% extends "book/base.html" %}
+{% block pagetitle %}
+{{book.title}}--{{bookpage.title_html}}
+{% endblock pagetitle %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<ol class="breadcrumb">
+			<li><a href="/">书籍列表</a></li>
+			<li><a href="{% url 'bookindex' book.pk %}">{{book.title}}书目</a></li>
+			<li class="active">{{bookpage.title_html}}</li>
+		</ol>
+	</div>
+	<div class="col-md-1">&nbsp;</div>
+	<div class="col-md-10 pagecontent">
+		<h2 class="text-center">{{bookpage.title_html}}</h2>
+		{{bookpage.content_html|linebreaks}}
+	</div>
+	<div class="col-md-1">&nbsp;</div>
+	<div class="col-md-12 text-center pagebutton">
+		<div class="btn-group">
+			{% if bookpage.prev_number %}
+			<a href="{% url 'bookpage' bookpage.prev_number %}" class="btn btn-success">
+				<span class="fui-arrow-left"></span>
+				<span>上一页</span>
+			</a>
+			{% else %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">
+				<span class="fui-arrow-left"></span>
+				<span>上一页</span>
+			</a>
+			{% endif %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">回目录</a>
+			{% if bookpage.next_number %}
+			<a href="{% url 'bookpage' bookpage.next_number %}" class="btn btn-success">
+				<span>下一页</span>
+				<span class="fui-arrow-right"></span>
+			</a>
+			{% else %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">
+				<span>下一页</span>
+				<span class="fui-arrow-right"></span>
+			</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock content %}

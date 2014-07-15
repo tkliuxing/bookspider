@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{% block pagetitle %}{% endblock pagetitle %}</title>
+	<link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	{% block headercss %}
+	{% endblock headercss %}
+</head>
+<body>
+	<div class="container">
+	{% block content %}
+	{% endblock content %}
+	</div>
+	<footer class="bs-docs-footer">
+		<div class="container text-center">
+			<p>Designed and built with all the love in the world by <a href="http://twitter.com/mdo" target="_blank">@mdo</a> and <a href="http://twitter.com/fat" target="_blank">@fat</a>.</p>
+			<p>Maintained by the <a href="https://github.com/twbs?tab=members">core team</a> with the help of <a href="https://github.com/twbs/bootstrap/graphs/contributors">our contributors</a>.</p>
+			<p>本项目源码受 <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE" target="_blank">MIT</a> 开源协议保护，文档受 <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> 开源协议保护。</p>
+			<ul class="bs-docs-footer-links muted">
+				<li>当前版本： v3.2.0</li>
+				<li>·</li>
+				<li><a href="https://github.com/twbs/bootstrap">GitHub 仓库</a></li>
+				<li>·</li>
+				<li><a href="http://v2.bootcss.com/">v2.3.2 中文文档</a></li>
+				<li>·</li>
+				<li><a href="http://expo.bootcss.com">优站精选</a></li>
+				<li>·</li>
+				<li><a href="http://blog.getbootstrap.com">官方博客</a></li>
+				<li>·</li>
+				<li><a href="https://github.com/twbs/bootstrap/issues?state=open">Issues</a></li>
+				<li>·</li>
+				<li><a href="https://github.com/twbs/bootstrap/releases">历史版本</a></li>
+			</ul>
+		</div>
+	</footer>
+	<script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
+	<script src="{% static 'flatui/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/pagination.js' %}"></script>
+	{% block footerjs %}
+	{% endblock footerjs %}
+</body>
+</html>

@@ -65,8 +65,8 @@ class DouluoSpider(Spider):
             page['content'] = jQ('#BookText').text().replace(" ","\n")
             page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
             page['page_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['page_id']
-            next_href = sel.xpath('//div[@class="fanye"]/a[3]/@href').extract()[0]
-            prev_href = sel.xpath('//div[@class="fanye"]/a[1]/@href').extract()[0]
+            next_href = self.get_next_page_url(response)
+            prev_href = self.get_prev_page_url(response)
             page_number_re = re.compile(r'(?P<number>\d+).+')
             if page_number_re.match(prev_href):
                 page['prev_number'] = page_number_re.match(prev_href).groupdict()['number']
@@ -95,3 +95,24 @@ class DouluoSpider(Spider):
                     if RC.get(href):
                         continue
                     yield Request(href, callback=self.parse)
+
+    def get_npage_url(self, response, page_a=2):
+        sel = Selector(response)
+        next_href = sel.xpath('//div[@class="fanye"]/a[%d]/@href' % (page_a+1)).extract()
+        if not next_href:
+            rrr = re.compile(r'.*返回目录.*')
+            fanye_line = rrr.findall(response.body_as_unicode())
+            if not fanye_line:
+                return 'index.html'
+            else:
+                jQ = PQ(fanye_line[0])
+                return jQ('a').eq(page_a).attr('href')
+        else:
+            return next_href[0]
+
+    def get_next_page_url(self, response):
+        return self.get_npage_url(response, page_a=2)
+
+    def get_prev_page_url(self, response):
+        return self.get_npage_url(response, page_a=0)
+

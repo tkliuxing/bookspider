@@ -1,0 +1,74 @@
+body{
+	padding-top: 20px;
+}
+
+.panel-body.bookinfo{
+	height: 300px;
+	overflow: scroll;
+	text-indent:2em;
+}
+
+.pagelist .col-md-4{
+	padding-right: 0px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+}
+#Pages{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+.page-title{
+	white-space:nowrap;
+}
+.page-title:hover{
+	text-decoration:underline;
+}
+
+.page-title>a{
+	color: #fff;
+}
+
+.page-title>a:visited{
+	color: #CFCFCF;
+}
+
+.pagecontent{
+	text-indent: 2em;
+	border-bottom: 1px solid #cfcfcf;
+}
+.pagecontent>h2{
+	padding-bottom: 30px;
+}
+.pagecontent>p{
+	font-size: 20px;
+	line-height: 40px;
+}
+
+.pagebutton{
+	padding-top: 20px;
+}
+
+.bs-docs-footer {
+	padding-top: 40px;
+	padding-bottom: 40px;
+	margin-top: 100px;
+	color: #777;
+	text-align: center;
+	border-top: 1px solid #e5e5e5;
+}
+.bs-docs-footer-links {
+	padding-left: 0;
+	margin-top: 20px;
+	color: #999;
+}
+.bs-docs-footer-links li {
+	display: inline;
+	padding: 0 2px;
+}
+.bs-docs-footer-links li>a{
+	color: #1abc9c;
+}
+
+
+
+

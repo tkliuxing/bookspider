@@ -1,0 +1,40 @@
+{% extends "book/base.html" %}
+{% block pagetitle %}{{book.title}}--目录{% endblock pagetitle %}
+{% block content %}
+<div class="row pagelist">
+	<div class="col-md-12">
+		<ol class="breadcrumb">
+			<li><a href="/">书籍列表</a></li>
+			<li class="active">{{book.title}}</li>
+		</ol>
+	</div>
+	<div class="col-md-12">
+		<h2 class="text-center">{{book.title}}</h2>
+	</div>
+</div>
+<div id="Pages" class="row pagelist">
+	<div id="Alert" class="alert alert-warning alert-dismissible hide" role="alert">
+	<button type="button" class="close" data-dismiss="alert">
+		<span aria-hidden="true">&times;</span>
+		<span class="sr-only">Close</span></button>
+		<strong>书籍不存在!</strong>
+	</div>
+	<div class="alert alert-info alert-dismissible text-center" role="alert">
+	<button type="button" class="close" data-dismiss="alert">
+		<span aria-hidden="true">&times;</span>
+		<span class="sr-only">Close</span></button>
+		<strong>书籍目录加载中, 请耐心等待......</strong>
+	</div>
+</div>
+{% endblock content %}
+{% block footerjs %}
+<script>
+$(function(){
+	$("#Pages").load('{% url "bookindexajax" book.pk %}', function(resp,status,xhr){
+		if ( status == "error" ) {
+			$("#Alert").show();
+		}
+	})
+});
+</script>
+{% endblock footerjs %}

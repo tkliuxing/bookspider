@@ -1,0 +1,62 @@
+{% extends "book/base.html" %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<ol class="breadcrumb">
+			<li class="active">书籍列表</li>
+		</ol>
+	</div>
+	{% for book in books %}
+	<div class="col-sm-6 col-md-4">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<h3 class="panel-title">{{book.title}}</h3>
+				<span>&#8211;&#8211;&#8211;&#8211;{{book.author}}</span>
+			</div>
+			<div class="bookinfo panel-body">
+				<div class="caption">
+					{{ book.info_html|linebreaks }}
+				</div>
+			</div>
+			<div class="panel-footer">
+				<a class="btn btn-primary" href="{{book.get_absolute_url}}">进入阅读</a>
+				{% if user.is_superuser %}
+				<a target="_blank" class="btn btn-danger" href="/admin/book/book/{{book.pk}}/">编辑信息</a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	{% empty %}
+	<div class="jumbotron">
+		<h1>Hello, world!</h1>
+		<p>...</p>
+	</div>
+	{% endfor %}
+</div>
+{% if pagination.has_other_pages %}
+<div class="pagination">
+	<ul>
+		{% if pagination.has_previous %}
+		<li class="btn btn-sm">
+			<a href="#" data-num="1" class="fui-arrow-left"><span class="fui-arrow-left"></span></a>
+		</li>
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.previous_page_number}}" class="fui-arrow-left"></a>
+		</li>
+		{% endif %}
+		<li class="active">
+			<a href="javascript:;">{{pagination.number}}</a>
+		</li>
+		{% if pagination.has_next %}
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.next_page_number}}" class="fui-arrow-right"></a>
+		</li>
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.paginator.num_pages}}" class="fui-arrow-right"><span class="fui-arrow-right"></span></a>
+		</li>
+		{% endif %}
+	</ul>
+</div>
+{% endif %}
+{% endblock content %}
