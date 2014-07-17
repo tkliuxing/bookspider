@@ -10,7 +10,7 @@ from scrapy.spider import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
 
-from bookspider.items import BookinfoItem, BookpageItem, Book, BookPage
+from bookspider.items import BookinfoItem, BookpageItem
 
 BASE_URL = "http://www.86696.cc"
 BOOK_INFO_URL_RE = re.compile(r"http:\/\/www\.86696\.cc\/book/(?P<book_id>\d+)\.html")
@@ -83,7 +83,6 @@ class DouluoSpider(Spider):
             #yield Request(urlparse.urljoin(url,prev_href), callback=self.parse)
         # 继续爬行
         else:
-            urls = []
             for href in sel.xpath("//a/@href").extract():
                 if self.is_pass_url(href):
                     continue

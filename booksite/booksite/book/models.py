@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 class Book(models.Model):
     origin_url = models.TextField()
@@ -17,9 +18,9 @@ class Book(models.Model):
         s = u"\n\n".join(self.info.split("\n"))
         return s
 
+    @models.permalink
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
-        return reverse('bookindex', kwargs={'book_id':str(self.id)})
+        return ('bookindex', [str(self.id)])
 
 
 class BookPage(models.Model):
@@ -45,13 +46,38 @@ class BookPage(models.Model):
 
     @property
     def content_html(self):
-        if u"大6" in self.content:
-            converts = self.content.replace(u"大6",u"大陆")
-            self.content = converts
+        replace_list = [
+            ("&1t;", "<"),
+            (u"大6",u"大陆"),
+        ]
+        changed = False
+        for rep in replace_list:
+            if rep[0] in self.content:
+                self.content = self.content.replace(rep[0], rep[1])
+                changed = True
+        if changed:
             self.save()
         c = self.content.replace('\n','\n\n')
         return c
 
+    @models.permalink
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
-        return reverse('bookpage', kwargs={'page_number':str(self.page_number)})
+        return ('bookpage', [str(self.page_number)])
+
+
+class Category(models.Model):
+    name = models.CharField(_('Category name'), max_length=50)
+
+    class Meta:
+        verbose_name = _('Category')
+        verbose_name_plural = _('Categories')
+
+    def __unicode__(self):
+        return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('')
+
+
+    

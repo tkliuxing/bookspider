@@ -1944,7 +1944,7 @@ fieldset[disabled] .input-group-btn .btn-default.active {
   font-size: 19px;
   line-height: 1.042;
   font-weight: 700;
-  padding: 14px 21px;
+  padding: 17px 21px;
 }
 .navbar-brand > [class*="fui-"] {
   font-size: 15px;
@@ -2068,7 +2068,7 @@ select[multiple].navbar-input {
   padding-right: 19px;
   padding-left: 19px;
   padding-top: 9px;
-  padding-bottom: 9px;
+  padding-bottom: 0px;
 }
 @media (max-width: 767px) {
   .navbar-form .form-group {
@@ -2338,6 +2338,7 @@ select[multiple].navbar-form .btn {
 }
 .navbar-default .navbar-form .form-control {
   border-color: transparent;
+  width:100%;
 }
 .navbar-default .navbar-form .form-control:-moz-placeholder {
   color: #aeb6bf;

@@ -1,5 +1,5 @@
 body{
-	padding-top: 20px;
+	padding-top: 70px;
 }
 
 .panel-body.bookinfo{
@@ -18,23 +18,24 @@ body{
 	margin-right: 0px;
 }
 .page-title{
+	display: block;
 	white-space:nowrap;
+	color: #FFFFFF;
 }
 .page-title:hover{
 	text-decoration:underline;
+	background-color: #3498DB;
+	color: #FFFFFF;
 }
 
-.page-title>a{
-	color: #fff;
-}
-
-.page-title>a:visited{
-	color: #CFCFCF;
+.page-title:visited{
+	color: #000000;
+	background-color: #1ABC9C;
 }
 
 .pagecontent{
 	text-indent: 2em;
-	border-bottom: 1px solid #cfcfcf;
+	border-bottom: 1px solid #CFCFCF;
 }
 .pagecontent>h2{
 	padding-bottom: 30px;
@@ -68,7 +69,5 @@ body{
 .bs-docs-footer-links li>a{
 	color: #1abc9c;
 }
-
-
 
 

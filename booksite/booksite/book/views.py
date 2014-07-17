@@ -7,14 +7,12 @@ from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 
 from .models import Book, BookPage
-from .ajax import ajax_success, ajax_error
 
 home = TemplateView.as_view(template_name="book/index.html")
 
 
 def home(request):
     books = Book.objects.all()
-    paginator = Paginator(books, 30)
     C = {}
     p = Paginator(books, 30)
     try:

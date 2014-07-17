@@ -31,6 +31,9 @@
 			</a>
 			{% endif %}
 			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">回目录</a>
+			{% if user.is_superuser %}
+			<a target="_blank" class="btn btn-danger" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
+			{% endif %}
 			{% if bookpage.next_number %}
 			<a href="{% url 'bookpage' bookpage.next_number %}" class="btn btn-success">
 				<span>下一页</span>
