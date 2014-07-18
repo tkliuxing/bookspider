@@ -13,8 +13,16 @@ home = TemplateView.as_view(template_name="book/index.html")
 
 
 def home(request):
-    books = Book.objects.all()
     C = {}
+    books = Book.objects.all()
+    if request.GET.get('s',''):
+        books = books.filter(title__contains=request.GET['s'])
+        C['search'] = True
+    if request.GET.get('a',''):
+        books = Book.objects.filter(author=request.GET['a'])
+        C['author'] = request.GET['a']
+        if not books:
+            raise Http404
     p = Paginator(books, 30)
     try:
         page = p.page(int(request.GET.get('p', 1)))
@@ -47,7 +55,7 @@ def category(request, category):
     C['pagination'] = page
     C['category'] = CATEGORYS[category]
     C['categorynav'] = "nav%s" % category
-    return render(request, 'book/category.html', C)
+    return render(request, 'book/index.html', C)
 
 
 def bookindex(request, book_id=0):

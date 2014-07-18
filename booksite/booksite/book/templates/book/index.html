@@ -1,20 +1,33 @@
 {% extends "book/base.html" %}
 
-{% block pagetitle %} -- 简洁,无广告的在线阅读{% endblock pagetitle %}
+{% block pagetitle %}
+{% if author %} -- 作者-{{author}}{% else %}
+{% if category %} -- {{category}}{% else %} -- 简洁,无广告的在线阅读{% endif %}
+{% endif %}
+{% endblock pagetitle %}
 
 {% block content %}
-<div class="row" id="NAVID" data-nav="navallbook">
+<div class="row" id="NAVID" data-nav="{% if categorynav %}{{categorynav}}{% else %}navallbook{% endif %}">
+	{% if not search %}
 	<div class="col-md-12">
 		<ol class="breadcrumb">
-			<li class="active">书籍列表</li>
+			<li class="active">{% if category %}
+				{{category}}类
+			{% else %}
+				{% if author %}{{author}}的{% endif %}
+			{% endif %} 书籍列表</li>
 		</ol>
 	</div>
+	{% endif %}
 	{% for book in books %}
 	<div class="col-sm-6 col-md-4">
 		<div class="panel panel-info">
 			<div class="panel-heading">
-				<h3 class="panel-title">{{book.title}} <small>({{book.category}})</small></h3>
-				<span>&#8211;&#8211;&#8211;&#8211;{{book.author}}</span>
+				<h3 class="panel-title">
+					<a href="{{book.get_absolute_url}}">{{book.title}}</a>
+					<small>({{book.category}})</small>
+				</h3>
+				<span>&#8211;&#8211;&#8211;&#8211;<a href="/?a={{book.author}}">{{book.author}}</a></span>
 			</div>
 			<div class="bookinfo panel-body">
 				<div class="caption">
@@ -30,10 +43,17 @@
 		</div>
 	</div>
 	{% empty %}
+	{% if search %}
+	<div class="jumbotron">
+		<h1>真遗憾, 没找到诶!</h1>
+		<p>要不要去别的网站试一试?</p>
+	</div>
+	{% else %}
 	<div class="jumbotron">
 		<h1>Hello, world!</h1>
 		<p>...</p>
 	</div>
+	{% endif %}
 	{% endfor %}
 </div>
 {% if pagination.has_other_pages %}

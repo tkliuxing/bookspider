@@ -52,10 +52,10 @@
 					<li><a href="{% url 'login' %}">登录</a></li>
 					{% endif %}
 				</ul>
-				<form class="navbar-form navbar-right" role="search">
+				<form class="navbar-form navbar-right" action="/" method="get" role="search">
 					<div class="form-group">
 						<div class="input-group">
-							<input class="form-control" id="navbarInput-01" type="search" placeholder="搜索书籍标题">
+							<input name="s" class="form-control" id="navbarInput-01" type="search" placeholder="搜索书籍标题">
 							<span class="input-group-btn">
 								<button type="submit" class="btn"><span class="fui-search"></span></button>
 							</span>
