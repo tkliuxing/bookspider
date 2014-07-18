@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 	<title>看小说,么?{% block pagetitle %}{% endblock pagetitle %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
 	<link href="{% static 'flatui/bootstrap/css/prettify.css' %}" rel="stylesheet">
 	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
@@ -11,20 +12,20 @@
 	{% endblock headercss %}
 </head>
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-		<div class="container">
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
 					<span class="sr-only">折叠导航</span>
 				</button>
 				<a class="navbar-brand" href="/">看小说,么?</a>
 			</div>
-			<div class="collapse navbar-collapse">
+			<div class="collapse navbar-collapse" id="navbar-collapse-1">
 				<ul class="nav navbar-nav main">
 					<li id="navallbook"><a href="/">全部小说</a></li>
 					<li class="dropdown" id="nav-category">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">分类阅读<span class="caret"></span></a>
-						<span class="dropdown-arrow dropdown-arrow-inverse"></span>
+						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">分类阅读<span class="caret"></span></a>
+						<span class="hidden-xs dropdown-arrow dropdown-arrow-inverse"></span>
 						<ul class="dropdown-menu dropdown-inverse" role="menu">
 							<li id="navg"><a href="{% url 'category' 'g' %}">玄幻魔法</a></li>
 							<li id="nava"><a href="{% url 'category' 'a' %}">侦探推理</a></li>
@@ -39,10 +40,10 @@
 				<ul class="nav navbar-nav navbar-right">
 					{% if user.is_authenticated %}
 					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">个人中心<span class="caret"></span></a>
-						<span class="dropdown-arrow dropdown-arrow-inverse"></span>
+						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">个人中心<span class="caret"></span></a>
+						<span class="hidden-xs dropdown-arrow dropdown-arrow-inverse"></span>
 						<ul class="dropdown-menu dropdown-inverse" role="menu">
-							<li><a href="#">我的账户</a></li>
+							<li><a href="javascript:;">我的账户</a></li>
 							<li id="navbma"><a href="{% url 'bookmark' %}">我的书架</a></li>
 							<li class="divider"></li>
 							<li><a href="{% url 'logout' %}">登出</a></li>

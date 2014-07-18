@@ -1,9 +1,9 @@
 body{
-	padding-top: 70px;
+	padding-top: 0px;
 }
 
 .panel-body.bookinfo{
-	height: 300px;
+	height: 260px;
 	overflow: scroll;
 	text-indent:2em;
 }
@@ -52,7 +52,6 @@ body{
 .bs-docs-footer {
 	padding-top: 40px;
 	padding-bottom: 40px;
-	margin-top: 100px;
 	color: #777;
 	text-align: center;
 	border-top: 1px solid #e5e5e5;

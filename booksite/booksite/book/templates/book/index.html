@@ -9,7 +9,7 @@
 {% block content %}
 <div class="row" id="NAVID" data-nav="{% if categorynav %}{{categorynav}}{% else %}navallbook{% endif %}">
 	{% if not search %}
-	<div class="col-md-12">
+	<div class="col-md-12 col-xs-12 col-sm-12">
 		<ol class="breadcrumb">
 			<li class="active">{% if category %}
 				{{category}}类
@@ -20,7 +20,7 @@
 	</div>
 	{% endif %}
 	{% for book in books %}
-	<div class="col-sm-6 col-md-4">
+	<div class="col-xs-12 col-sm-6 col-md-4">
 		<div class="panel panel-info">
 			<div class="panel-heading">
 				<h3 class="panel-title">
