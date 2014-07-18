@@ -1,12 +1,12 @@
 {% extends "book/base.html" %}
 
-{% block pagetitle %} -- 简洁,无广告的在线阅读{% endblock pagetitle %}
+{% block pagetitle %} -- {{category}}{% endblock pagetitle %}
 
 {% block content %}
-<div class="row" id="NAVID" data-nav="navallbook">
+<div class="row" id="NAVID" data-nav="{{categorynav}}">
 	<div class="col-md-12">
 		<ol class="breadcrumb">
-			<li class="active">书籍列表</li>
+			<li class="active">{{category}} 书籍列表</li>
 		</ol>
 	</div>
 	{% for book in books %}

@@ -4,7 +4,7 @@ AJAX返回值统一处理
 返回统一格式的JSON数据
 已封装为HttpResponse对象
 """
-from django.utils import simplejson as json
+import simplejson as json
 from django.http import HttpResponse
 
 

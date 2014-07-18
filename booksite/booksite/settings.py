@@ -30,7 +30,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'livereload',
     'south',
+    'captcha',
     'booksite.book',
+    'booksite.usercenter',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -70,11 +72,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+TEMPLATE_DIRS = os.path.join(BASE_DIR, 'booksite/templates')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'usercenter.User'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 try:
     from .local_settings import *

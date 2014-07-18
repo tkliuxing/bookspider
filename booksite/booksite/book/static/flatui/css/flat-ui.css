@@ -269,7 +269,7 @@ h6 small,
 .h4 small,
 .h5 small,
 .h6 small {
-  color: #e7e9ec;
+  color: #A0A0A0;
 }
 h1,
 h2,
@@ -3644,8 +3644,8 @@ fieldset[disabled] .twitter-typeahead .tt-hint {
   float: left;
   font-size: 15px;
   line-height: 1.4;
-  padding-top: 5px;
-  width: 50%;
+  padding-top: 10px;
+  /*width: 50%;*/
 }
 .pallete-item {
   width: 140px;

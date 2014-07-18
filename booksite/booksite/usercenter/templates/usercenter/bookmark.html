@@ -1,0 +1,51 @@
+{% extends "usercenter/base.html" %}
+
+{% block pagetitle %} -- 个人中心-我的书签{% endblock pagetitle %}
+
+{% block content %}
+<div class="row" id="NAVID" data-nav="navbma">
+	<div class="col-md-12">
+		<table class="table">
+			<tr>
+				<th>书籍</th>
+				<th>章节</th>
+				<th>添加时间</th>
+				<th></th>
+			</tr>
+			{% for bookmark in bookmarks %}
+			<tr>
+				<td><a href="{{bookmark.book.get_absolute_url}}">{{bookmark.book.title}}</a></td>
+				<td><a href="{{bookmark.page.get_absolute_url}}">{{bookmark.page.title_html}}</a></td>
+				<td>{{bookmark.create_time|date:"Y-m-d H:i"}}</td>
+				<td><a href="javascript:;" data-url="{% url 'del_bookmark' bookmark.pk %}" class="delbma">删除</a></td>
+			</tr>
+			{% empty %}
+			<tr>
+				<td>未添加任何书签!</td>
+				<td>不是要看小说么?</td>
+				<td>快去找本书看吧!</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+{% endblock content %}
+
+{% block footerjs %}
+<script>
+$(function(){
+	$(".delbma").click(function(event){
+		var this_a = $(event.target);
+		$.post(this_a.data("url"),{},function(data){
+			if(data.success){
+				this_a.parent().parent().slideUp().remove();
+				alert(data.data);
+			}else{
+				alert(data.error_message);
+			}
+		},'json');
+		return false;
+	});
+});
+</script>
+{% endblock footerjs %}

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
+
 
 class Book(models.Model):
     origin_url = models.TextField()
@@ -18,9 +20,8 @@ class Book(models.Model):
         s = u"\n\n".join(self.info.split("\n"))
         return s
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('bookindex', [str(self.id)])
+        return reverse('bookindex', args=[str(self.id)])
 
 
 class BookPage(models.Model):
@@ -48,7 +49,7 @@ class BookPage(models.Model):
     def content_html(self):
         replace_list = [
             ("&1t;", "<"),
-            (u"大6",u"大陆"),
+            ("大6", "大陆"),
         ]
         changed = False
         for rep in replace_list:
@@ -57,27 +58,12 @@ class BookPage(models.Model):
                 changed = True
         if changed:
             self.save()
-        c = self.content.replace('\n','\n\n')
+        c = self.content.replace('\n', '\n\n')
         return c
 
-    @models.permalink
+    @property
+    def book(self):
+        return Book.objects.get(book_number=self.book_number)
+
     def get_absolute_url(self):
-        return ('bookpage', [str(self.page_number)])
-
-
-class Category(models.Model):
-    name = models.CharField(_('Category name'), max_length=50)
-
-    class Meta:
-        verbose_name = _('Category')
-        verbose_name_plural = _('Categories')
-
-    def __unicode__(self):
-        return self.name
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('')
-
-
-    
+        return reverse('bookpage', args=[str(self.page_number)])

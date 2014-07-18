@@ -1,7 +1,5 @@
 {% extends "book/base.html" %}
-{% block pagetitle %}
-{{book.title}}--{{bookpage.title_html}}
-{% endblock pagetitle %}
+{% block pagetitle %} -- {{book.title}} {{bookpage.title_html}}{% endblock pagetitle %}
 {% block content %}
 <div class="row">
 	<div class="col-md-12">
@@ -11,9 +9,45 @@
 			<li class="active">{{bookpage.title_html}}</li>
 		</ol>
 	</div>
+	<div class="col-md-12 text-center">
+		<h2 class="text-center">{{bookpage.title_html}}</h2>
+		<div class="col-md-12">&nbsp;</div>
+		<div class="btn-group">
+			{% if bookpage.prev_number %}
+			<a href="{% url 'bookpage' bookpage.prev_number %}" class="btn btn-success">
+				<span class="fui-arrow-left"></span>
+				<span>上一页</span>
+			</a>
+			{% else %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">
+				<span class="fui-arrow-left"></span>
+				<span>上一页</span>
+			</a>
+			{% endif %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
+			<a href="javascript:;" class="btn btn-info" id="TBMABtn">加入书签</a>
+			{% if bookpage.next_number %}
+			<a href="{% url 'bookpage' bookpage.next_number %}" class="btn btn-success">
+				<span>下一页</span>
+				<span class="fui-arrow-right"></span>
+			</a>
+			{% else %}
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">
+				<span>下一页</span>
+				<span class="fui-arrow-right"></span>
+			</a>
+			{% endif %}
+		</div>
+		<div class="col-md-10 col-md-offset-1 text-center pagebutton">
+			<div class="alert alert-info" role="alert" id="TBMA" style="display:none;">
+				书签已添加, 请到<strong>书架</strong>查看
+			</div>
+			<div class="alert alert-danger" role="alert" id="TBMAERR" style="display:none;"></div>
+		</div>
+	</div>
+	<div class="col-md-12">&nbsp;</div>
 	<div class="col-md-1">&nbsp;</div>
 	<div class="col-md-10 pagecontent">
-		<h2 class="text-center">{{bookpage.title_html}}</h2>
 		{{bookpage.content_html|linebreaks}}
 	</div>
 	<div class="col-md-1">&nbsp;</div>
@@ -30,7 +64,8 @@
 				<span>上一页</span>
 			</a>
 			{% endif %}
-			<a href="{% url 'bookindex' book.pk %}" class="btn btn-success">回目录</a>
+			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
+			<a href="javascript:;" class="btn btn-info" id="BMABtn">加入书签</a>
 			{% if user.is_superuser %}
 			<a target="_blank" class="btn btn-danger" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
 			{% endif %}
@@ -46,6 +81,56 @@
 			</a>
 			{% endif %}
 		</div>
+		<div class="col-md-10 col-md-offset-1 text-center pagebutton">
+			<div class="alert alert-info" role="alert" id="BMA" style="display:none;">
+				书签已添加, 请到<strong>书架</strong>查看
+			</div>
+			<div class="alert alert-danger" role="alert" id="BMAERR" style="display:none;"></div>
+		</div>
 	</div>
 </div>
 {% endblock content %}
+
+{% block footerjs %}
+<script>
+(function($){
+{% if user.is_authenticated %}
+	$("#BMABtn").click(function(){
+		$.post("{% url 'add_bookmark' %}", {pageid:'{{bookpage.pk}}'}, function(data){
+			if(data.success){
+				$('#BMA').slideDown();
+				setTimeout(function(){$('#BMA').slideUp()},2000);
+			}else{
+				$('#BMAERR').text(data.error_message);
+				$('#BMAERR').slideDown();
+				setTimeout(function(){$('#BMAERR').slideUp()},5000);
+			}
+		}, 'json');
+		return false;
+	});
+	$("#TBMABtn").click(function(){
+		$.post("{% url 'add_bookmark' %}", {pageid:'{{bookpage.pk}}'}, function(data){
+			if(data.success){
+				$('#TBMA').slideDown();
+				setTimeout(function(){$('#TBMA').slideUp()},2000);
+			}else{
+				$('#TBMAERR').text(data.error_message);
+				$('#TBMAERR').slideDown();
+				setTimeout(function(){$('#TBMAERR').slideUp()},5000);
+			}
+		}, 'json');
+		return false;
+	});
+{% else %}
+	$("#BMABtn").click(function(){
+		location.href = '{% url "login" %}?next='+location.href;
+		return false;
+	});
+	$("#TBMABtn").click(function(){
+		location.href = '{% url "login" %}?next='+location.href;
+		return false;
+	});
+{% endif %}
+})(jQuery);
+</script>
+{% endblock footerjs %}

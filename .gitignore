@@ -6,3 +6,5 @@ bookspider/crawls
 dump.rdb
 .project
 .editorconfig
+gulpfile.js
+booksite/node_modules

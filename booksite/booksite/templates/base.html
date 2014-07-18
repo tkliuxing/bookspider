@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>看小说,么?{% block pagetitle %}{% endblock pagetitle %}</title>
+	<link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+	<link href="{% static 'flatui/bootstrap/css/prettify.css' %}" rel="stylesheet">
+	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	{% block headercss %}
+	{% endblock headercss %}
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+					<span class="sr-only">折叠导航</span>
+				</button>
+				<a class="navbar-brand" href="/">看小说,么?</a>
+			</div>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav main">
+					<li id="navallbook"><a href="/">全部小说</a></li>
+					<li class="dropdown" id="nav-category">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">分类阅读<span class="caret"></span></a>
+						<span class="dropdown-arrow dropdown-arrow-inverse"></span>
+						<ul class="dropdown-menu dropdown-inverse" role="menu">
+							<li id="navg"><a href="{% url 'category' 'g' %}">玄幻魔法</a></li>
+							<li id="nava"><a href="{% url 'category' 'a' %}">侦探推理</a></li>
+							<li id="navb"><a href="{% url 'category' 'b' %}">武侠修真</a></li>
+							<li id="navc"><a href="{% url 'category' 'c' %}">网游动漫</a></li>
+							<li id="navd"><a href="{% url 'category' 'd' %}">历史军事</a></li>
+							<li id="nave"><a href="{% url 'category' 'e' %}">都市言情</a></li>
+							<li id="navf"><a href="{% url 'category' 'f' %}">散文诗词</a></li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					{% if user.is_authenticated %}
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">个人中心<span class="caret"></span></a>
+						<span class="dropdown-arrow dropdown-arrow-inverse"></span>
+						<ul class="dropdown-menu dropdown-inverse" role="menu">
+							<li><a href="#">我的账户</a></li>
+							<li id="navbma"><a href="{% url 'bookmark' %}">我的书架</a></li>
+							<li class="divider"></li>
+							<li><a href="{% url 'logout' %}">登出</a></li>
+						</ul>
+					</li>
+					{% else %}
+					<li><a href="{% url 'login' %}">登录</a></li>
+					{% endif %}
+				</ul>
+				<form class="navbar-form navbar-right" role="search">
+					<div class="form-group">
+						<div class="input-group">
+							<input class="form-control" id="navbarInput-01" type="search" placeholder="搜索书籍标题">
+							<span class="input-group-btn">
+								<button type="submit" class="btn"><span class="fui-search"></span></button>
+							</span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</nav>
+	<div class="container">{% block content %}{% endblock content %}</div>
+	<footer class="bs-docs-footer">
+		<div class="container text-center">
+			<p>本网站由<a href="http://twitter.com/ouyanghongyu" target="_blank">@ouyanghongyu</a>设计与制作.</p>
+			<p>更多信息请查看<a href="https://github.com/tkliuxing/bookspider">我的GitHub</a>.</p>
+			<p>本项目源码受 <a href="https://github.com/tkliuxing/bookspider/blob/master/LICENSE" target="_blank">Apache</a> 开源协议保护. 本站收录文章版权归原作者所有.</p>
+			<ul class="bs-docs-footer-links muted">
+				<li>当前版本： v1.0</li>
+				<li>·</li>
+				<li><a href="https://github.com/tkliuxing/bookspider">GitHub 仓库</a></li>
+				<li>·</li>
+				<li><a href="https://github.com/tkliuxing/bookspider/issues?state=open">Issues</a></li>
+			</ul>
+		</div>
+	</footer>
+	<script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
+	<script src="{% static 'flatui/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'flatui/js/bootstrap-select.js' %}"></script>
+	<script src="{% static 'flatui/js/bootstrap-switch.js' %}"></script>
+	<script src="{% static 'flatui/js/typeahead.js' %}"></script>
+	<script src="{% static 'js/pagination.js' %}"></script>
+	<script src="{% static 'js/application.js' %}"></script>
+	<script>
+	// using jQuery
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+		crossDomain: false, // obviates need for sameOrigin test
+		beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type)) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
+	</script>
+	{% block footerjs %}
+	{% endblock footerjs %}
+</body>
+</html>
