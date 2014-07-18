@@ -11,7 +11,7 @@
 	</div>
 	<div class="col-md-12 text-center">
 		<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
-		<h5 class="text-center visible-xs-inline">{{bookpage.title_html}}</h5>
+		<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
 		<div class="col-md-12">&nbsp;</div>
 		<div class="btn-group">
 			{% if bookpage.prev_number %}
@@ -83,7 +83,7 @@
 			{% endif %}
 		</div>
 		<div class="col-xs-12">&nbsp;</div>
-		<div class="visible-xs-block btn-group">
+		<div class="btn-group hidden-sm hidden-md hidden-lg">
 			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
 			{% if user.is_superuser %}
 			<a target="_blank" class="btn btn-danger" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>

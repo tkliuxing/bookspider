@@ -78,6 +78,10 @@ TEMPLATE_DIRS = os.path.join(BASE_DIR, 'booksite/templates')
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'booksite/static'),
+)
+
 
 AUTH_USER_MODEL = 'usercenter.User'
 
