@@ -1,5 +1,7 @@
 {% extends "book/base.html" %}
 {% block pagetitle %} -- {{book.title}} 目录{% endblock pagetitle %}
+{% block keymeta %}{{book.title}};{{book.author}}{% endblock keymeta %}
+{% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock keydesc %}
 {% block content %}
 <div class="row pagelist">
 	<div class="col-md-12">

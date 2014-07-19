@@ -4,7 +4,10 @@ body{
 body.invert{
 	background-color: #000;
 }
-
+.pull-right{
+	float: right;
+	display: block;
+}
 .panel-body.bookinfo{
 	height: 260px;
 	overflow: scroll;

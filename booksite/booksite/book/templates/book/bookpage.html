@@ -1,9 +1,8 @@
 {% extends "book/base.html" %}
 {% load static %}
 {% block pagetitle %} -- {{book.title}} {{bookpage.title_html}}{% endblock pagetitle %}
-{% block headercss %}
-<link href="{% static 'js/spectrum/spectrum.css' %}" rel="stylesheet">
-{% endblock headercss %}
+{% block keymeta %}{{book.title}};{{book.author}}{% endblock keymeta %}
+{% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock keydesc %}
 {% block content %}
 <div class="row">
 	<div class="col-md-12">
@@ -111,7 +110,6 @@
 {% endblock content %}
 
 {% block footerjs %}
-<script src="{% static 'js/spectrum/spectrum.js' %}"></script>
 {{SESSIONS}}
 <script>
 (function($){
@@ -124,6 +122,20 @@
 			case 39: location.href=next;
 			break;
 		}
+	});
+	scroller = false;
+	$(".pagecontent").dblclick(function(){
+		position = window.scrollY;
+		if(scroller){
+			clearInterval(scroller);
+			scroller = false;
+		}else{
+			scroller = setInterval(function(){
+				window.scrollTo(0, position);
+				position += 1;
+			}, 40);
+		}
+		return false;
 	});
 	$(".btn.invert").click(function(){
 		$('body').toggleClass('invert');

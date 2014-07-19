@@ -2,7 +2,7 @@
 
 {% block pagetitle %}
 {% if author %} -- 作者-{{author}}{% else %}
-{% if category %} -- {{category}}{% else %} -- 简洁,无广告的在线阅读{% endif %}
+{% if category %} -- {{category}}{% else %}最简洁的免费小说在线阅读,小说TXT下载网{% endif %}
 {% endif %}
 {% endblock pagetitle %}
 
@@ -23,23 +23,30 @@
 	<div class="col-xs-12 col-sm-6 col-md-4">
 		<div class="panel panel-info">
 			<div class="panel-heading">
+				{% if not user.is_superuser %}
+				<a class="visible-xs btn btn-primary pull-right" href="{{book.get_absolute_url}}">进入阅读</a>
+				{% endif %}
 				<h3 class="panel-title">
 					<a href="{{book.get_absolute_url}}">{{book.title}}</a>
 					<small>({{book.category}})</small>
 				</h3>
 				<span>&#8211;&#8211;&#8211;&#8211;<a href="/?a={{book.author}}">{{book.author}}</a></span>
 			</div>
-			<div class="bookinfo panel-body">
+			<div class="hidden-xs bookinfo panel-body">
 				<div class="caption">
 					{{ book.info_html|linebreaks }}
 				</div>
 			</div>
+			{% if user.is_superuser %}
 			<div class="panel-footer">
 				<a class="btn btn-primary" href="{{book.get_absolute_url}}">进入阅读</a>
-				{% if user.is_superuser %}
 				<a target="_blank" class="btn btn-danger" href="/admin/book/book/{{book.pk}}/">编辑信息</a>
-				{% endif %}
 			</div>
+			{% else %}
+			<div class="panel-footer hidden-xs">
+				<a class="btn btn-primary" href="{{book.get_absolute_url}}">进入阅读</a>
+			</div>
+			{% endif %}
 		</div>
 	</div>
 	{% empty %}
