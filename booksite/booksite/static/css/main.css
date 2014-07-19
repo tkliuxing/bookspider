@@ -1,6 +1,9 @@
 body{
 	padding-top: 0px;
 }
+body.invert{
+	background-color: #000;
+}
 
 .panel-body.bookinfo{
 	height: 260px;
@@ -32,7 +35,9 @@ body{
 	color: #000000;
 	background-color: #1ABC9C;
 }
-
+.breadcrumb.invert{
+	background-color: #383838;
+}
 .pagecontent{
 	text-indent: 2em;
 	border-bottom: 1px solid #CFCFCF;
@@ -44,11 +49,17 @@ body{
 	font-size: 20px;
 	line-height: 40px;
 }
+.pagecontent.invert{
+	color: #9FA1B4;
+	background-color: #000000;
+}
 
 .pagebutton{
 	padding-top: 20px;
 }
-
+footer.invert{
+	background-color: #000000;
+}
 .bs-docs-footer {
 	padding-top: 40px;
 	padding-bottom: 40px;

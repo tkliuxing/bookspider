@@ -79,6 +79,9 @@ def bookindexajax(request, book_id=0):
     return HttpResponse(data)
 
 def bookpage(request, page_number=0):
+    if request.GET.get('invert',False):
+        request.session['invert'] = not request.session.get('invert', False)
+        return HttpResponse('')
     if page_number == 0:
         raise Http404
     bookpage = get_object_or_404(BookPage, page_number=page_number)
@@ -86,4 +89,5 @@ def bookpage(request, page_number=0):
     C = {}
     C['book'] = book
     C['bookpage'] = bookpage
+    C['invert'] = request.session.get('invert', False)
     return render(request, 'book/bookpage.html', C)

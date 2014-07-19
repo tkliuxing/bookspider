@@ -1,5 +1,9 @@
 {% extends "book/base.html" %}
+{% load static %}
 {% block pagetitle %} -- {{book.title}} {{bookpage.title_html}}{% endblock pagetitle %}
+{% block headercss %}
+<link href="{% static 'js/spectrum/spectrum.css' %}" rel="stylesheet">
+{% endblock headercss %}
 {% block content %}
 <div class="row">
 	<div class="col-md-12">
@@ -12,7 +16,11 @@
 	<div class="col-md-12 text-center">
 		<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 		<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
-		<div class="col-md-12">&nbsp;</div>
+		<div class="col-md-12">
+		{% if user.is_superuser %}
+		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
+		{% endif %}
+		</div>
 		<div class="btn-group">
 			{% if bookpage.prev_number %}
 			<a href="{% url 'bookpage' bookpage.prev_number %}" class="btn btn-success">
@@ -25,7 +33,6 @@
 				<span>上一页</span>
 			</a>
 			{% endif %}
-			<a href="{% url 'bookindex' book.pk %}" class="hidden-xs btn btn-primary">回目录</a>
 			<a href="javascript:;" class="btn btn-info" id="TBMABtn">加入书签</a>
 			{% if bookpage.next_number %}
 			<a href="{% url 'bookpage' bookpage.next_number %}" class="btn btn-success">
@@ -67,9 +74,7 @@
 			{% endif %}
 			<a href="{% url 'bookindex' book.pk %}" class="hidden-xs btn btn-primary">回目录</a>
 			<a href="javascript:;" class="btn btn-info" id="BMABtn">加入书签</a>
-			{% if user.is_superuser %}
-			<a target="_blank" class="hidden-xs btn btn-danger" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
-			{% endif %}
+			<a href="javascript:;" class="hidden-xs btn btn-primary invert">反色</a>
 			{% if bookpage.next_number %}
 			<a href="{% url 'bookpage' bookpage.next_number %}" class="btn btn-success">
 				<span>下一页</span>
@@ -83,11 +88,11 @@
 			{% endif %}
 		</div>
 		<div class="col-xs-12">&nbsp;</div>
-		<div class="btn-group hidden-sm hidden-md hidden-lg">
-			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
-			{% if user.is_superuser %}
-			<a target="_blank" class="btn btn-danger" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
-			{% endif %}
+		<div class="col-xs-12">
+			<div class="btn-group hidden-sm hidden-md hidden-lg">
+				<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
+				<a href="javascript:;" class="btn btn-primary invert">反色</a>
+			</div>
 		</div>
 		<div class="col-md-10 col-md-offset-1 text-center pagebutton">
 			<div class="alert alert-info" role="alert" id="BMA" style="display:none;">
@@ -95,11 +100,19 @@
 			</div>
 			<div class="alert alert-danger" role="alert" id="BMAERR" style="display:none;"></div>
 		</div>
+		<div class="col-xs-12">&nbsp;</div>
+		<div class="col-xs-12">
+		{% if user.is_superuser %}
+		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
+		{% endif %}
+		</div>
 	</div>
 </div>
 {% endblock content %}
 
 {% block footerjs %}
+<script src="{% static 'js/spectrum/spectrum.js' %}"></script>
+{{SESSIONS}}
 <script>
 (function($){
 	$(document).keydown(function(e){
@@ -108,11 +121,26 @@
 		switch(e.which){
 			case 37: location.href=prev;
 			break;
-
 			case 39: location.href=next;
 			break;
 		}
 	});
+	$(".btn.invert").click(function(){
+		$('body').toggleClass('invert');
+		$('.pagecontent').toggleClass('invert');
+		$('.navbar').toggleClass('navbar-inverse');
+		$('.breadcrumb').toggleClass('invert');
+		$('footer').toggleClass('invert');
+		$.get("./?invert=1",function(data){},'json');
+		return false;
+	});
+	{% if invert %}
+	$('body').toggleClass('invert');
+	$('.pagecontent').toggleClass('invert');
+	$('.navbar').toggleClass('navbar-inverse');
+	$('.breadcrumb').toggleClass('invert');
+	$('footer').toggleClass('invert');
+	{% endif %}
 	{% if user.is_authenticated %}
 	$("#BMABtn").click(function(){
 		$.post("{% url 'add_bookmark' %}", {pageid:'{{bookpage.pk}}'}, function(data){
