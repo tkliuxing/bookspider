@@ -1,10 +1,10 @@
+*.pyc
+*~
 booksite/booksite.egg-info
+*.sublime-project
 *.sublime-workspace
-booksite/booksite/book/migrations
 local_settings.py
 bookspider/crawls
 dump.rdb
-.project
 .editorconfig
-gulpfile.js
 booksite/node_modules
