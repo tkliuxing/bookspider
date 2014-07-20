@@ -56,7 +56,6 @@ body.invert{
 	color: #9FA1B4;
 	background-color: #000000;
 }
-
 .pagebutton{
 	padding-top: 20px;
 }
@@ -82,5 +81,10 @@ footer.invert{
 .bs-docs-footer-links li>a{
 	color: #1abc9c;
 }
-
+.transparent_class {
+	filter:alpha(opacity=45);
+	-moz-opacity:0.45;
+	-khtml-opacity: 0.45;
+	opacity: 0.45;
+}
 

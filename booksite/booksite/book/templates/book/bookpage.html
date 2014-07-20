@@ -112,12 +112,14 @@
 	$(".btn.invert").click(function(){
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
+		$('.btn').toggleClass('transparent_class');
 		$.get("./?invert=1",function(data){},'json');
 		return false;
 	});
 	{% if invert %}
 	$('.inv').toggleClass('invert');
 	$('.navbar').toggleClass('navbar-inverse');
+	$('.btn').toggleClass('transparent_class');
 	{% endif %}
 	{% if user.is_authenticated %}
 	$("#BMABtn").click(function(){
