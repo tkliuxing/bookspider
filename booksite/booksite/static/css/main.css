@@ -10,7 +10,7 @@ body.invert{
 }
 .panel-body.bookinfo{
 	height: 260px;
-	overflow: scroll;
+	overflow-y: scroll;
 	text-indent:2em;
 }
 
