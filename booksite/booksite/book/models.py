@@ -50,6 +50,8 @@ class BookPage(models.Model):
         replace_list = [
             ("&1t;", "<"),
             ("大6", "大陆"),
+            ("&ldqo;", "“"),
+            ("&rdqo;", "”"),
         ]
         changed = False
         for rep in replace_list:
