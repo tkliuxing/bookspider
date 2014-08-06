@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import time
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
@@ -7,14 +8,14 @@ from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 
-from .models import Book, BookPage
+from .models import Book, BookPage, BookRank
 
 home = TemplateView.as_view(template_name="book/index.html")
 
 
 def home(request):
     C = {}
-    books = Book.objects.all()
+    books = Book.objects.all().order_by('pk')
     if request.GET.get('s',''):
         books = books.filter(title__contains=request.GET['s'])
         C['search'] = True
@@ -86,8 +87,35 @@ def bookpage(request, page_number=0):
         raise Http404
     bookpage = get_object_or_404(BookPage, page_number=page_number)
     book = get_object_or_404(Book, book_number=bookpage.book_number)
+    if request.user.is_authenticated():
+        skey = 'time-book-%d'%book.pk
+        now = int(time.time())
+        timeold = request.session.setdefault(skey,now)
+        if (now-timeold) > 21600:
+            request.session[skey] = now
+            book.get_bookrank().add_point()
+        elif now == timeold:
+            book.get_bookrank().add_point()
     C = {}
     C['book'] = book
     C['bookpage'] = bookpage
     C['invert'] = request.session.get('invert', False)
     return render(request, 'book/bookpage.html', C)
+
+def bookrank(request):
+    C = {}
+    model_fields_dict = dict(map(lambda x:(x.name,x), BookRank._meta._field_name_cache))
+    model_fields_dict.pop('book')
+    sort_key = request.GET.get("s", None)
+    if model_fields_dict.has_key(sort_key):
+        bookranks = BookRank.objects.all().order_by("-%s" % sort_key, "-all_point", "book__pk")
+    else:
+        bookranks = BookRank.objects.all().order_by("-all_point", "book__pk")
+    p = Paginator(bookranks, 30)
+    try:
+        page = p.page(int(request.GET.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['bookranks'] = page.object_list
+    C['pagination'] = page
+    return render(request, 'book/bookrank.html', C)

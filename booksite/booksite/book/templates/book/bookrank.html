@@ -1,0 +1,60 @@
+{% extends "book/base.html" %}
+{% block pagetitle %} -- 排行榜{% endblock pagetitle %}
+
+{% block content %}
+<div class="row" id="NAVID" data-nav="navbp">
+	<div class="col-md-12">
+		<table class="table">
+			<tr>
+				<th>排名</th>
+				<th>书籍</th>
+				<th><span data-skey="all_point">总点击</span></th>
+				<th><span data-skey="mon_point">月点击</span></th>
+				<th><span data-skey="wek_point">周点击</span></th>
+				<th><span data-skey="all_push">总推荐</span></th>
+				<th><span data-skey="mon_push">月推荐</span></th>
+				<th><span data-skey="wek_push">周推荐</span></th>
+				<th><span data-skey="all_fav">总收藏</span></th>
+			</tr>
+			{% for bookrank in bookranks %}
+			<tr>
+				<td>{{forloop.counter}}</td>
+				<td><a href="{{bookrank.book.get_absolute_url}}">{{bookrank.book.title}}</a></td>
+				<td>{{bookrank.all_point}}</td>
+				<td>{{bookrank.mon_point}}</td>
+				<td>{{bookrank.wek_point}}</td>
+				<td>{{bookrank.all_push}}</td>
+				<td>{{bookrank.mon_push}}</td>
+				<td>{{bookrank.wek_push}}</td>
+				<td>{{bookrank.all_fav}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+{% if pagination.has_other_pages %}
+<div class="pagination">
+	<ul>
+		{% if pagination.has_previous %}
+		<li class="btn btn-sm">
+			<a href="#" data-num="1" class="fui-arrow-left"><span class="fui-arrow-left"></span></a>
+		</li>
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.previous_page_number}}" class="fui-arrow-left"></a>
+		</li>
+		{% endif %}
+		<li class="active">
+			<a href="javascript:;">{{pagination.number}}</a>
+		</li>
+		{% if pagination.has_next %}
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.next_page_number}}" class="fui-arrow-right"></a>
+		</li>
+		<li class="btn btn-sm">
+			<a href="#" data-num="{{pagination.paginator.num_pages}}" class="fui-arrow-right"><span class="fui-arrow-right"></span></a>
+		</li>
+		{% endif %}
+	</ul>
+</div>
+{% endif %}
+{% endblock content %}

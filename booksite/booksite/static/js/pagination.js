@@ -10,6 +10,16 @@ $(function() {
         return paraObj
     }
 
+    function urlparse(paras) {
+        var paraObj = geturlqueryobj(location.href)
+        var returnValue = paraObj[paras.toLowerCase()];
+        if (typeof(returnValue) == "undefined") {
+            return "";
+        } else {
+            return returnValue;
+        }
+    }
+
     function genurlquerystring(obj) {
         var qs = "";
         for (val in obj) {
@@ -59,4 +69,24 @@ $(function() {
         return false;
     });
     // ------- END pagination -------
+    // ----- sort -----
+    $("th>span[data-skey]").toggleClass("tha");
+    $("th>span[data-skey]").click(function(event) {
+        var this_span = $(event.target);
+        var qobj = geturlqueryobj(location.href);
+        qobj["s"] = this_span.data('skey');
+        location.href = genurlquerystring(qobj);
+    });
+    var sort_key = urlparse('s');
+    $("th>span[data-skey]").each(function(pos, obj) {
+        // 根据排序关键字来添加图标
+        if (encodeURI($(obj).data('skey')) == sort_key) {
+            $(obj).parent().append("<span class='caret'></span>");
+        }
+    });
+    if ($("th span.caret").length == 0) {
+        // 如果没有默认的排序选项,则添加图标到节点编号列
+        $("th").eq(1).append("<span class='caret'></span>");
+    }
+    // ----- end sort -----
 });

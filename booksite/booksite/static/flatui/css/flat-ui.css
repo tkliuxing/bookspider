@@ -1907,13 +1907,6 @@ fieldset[disabled] .input-group-btn .btn-default.active {
     margin-bottom: 3px;
   }
 }
-.container > .navbar-header,
-.container-fluid > .navbar-header,
-.container > .navbar-collapse,
-.container-fluid > .navbar-collapse {
-  margin-right: -21px;
-  margin-left: -21px;
-}
 @media (min-width: 768px) {
   .container > .navbar-header,
   .container-fluid > .navbar-header,

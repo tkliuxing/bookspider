@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
+from django.db import connection
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 
 class Book(models.Model):
@@ -22,6 +24,9 @@ class Book(models.Model):
 
     def get_absolute_url(self):
         return reverse('bookindex', args=[str(self.id)])
+
+    def get_bookrank(self):
+        return BookRank.objects.get_or_create(book=self)[0]
 
 
 class BookPage(models.Model):
@@ -69,3 +74,42 @@ class BookPage(models.Model):
 
     def get_absolute_url(self):
         return reverse('bookpage', args=[str(self.page_number)])
+
+
+class BookRank(models.Model):
+    class Meta:
+        verbose_name = _('BookRank')
+        verbose_name_plural = _('BookRanks')
+
+    book = models.OneToOneField(Book)
+
+    all_point = models.IntegerField(_("总点击"), default=0)
+    mon_point = models.IntegerField(_("月点击"), default=0)
+    wek_point = models.IntegerField(_("周点击"), default=0)
+
+    all_push = models.IntegerField(_("周推荐"), default=0)
+    mon_push = models.IntegerField(_("周推荐"), default=0)
+    wek_push = models.IntegerField(_("周推荐"), default=0)
+
+    all_fav = models.IntegerField(_("总收藏"), default=0)
+
+    def add_point(self):
+        cursor = connection.cursor()
+        cursor.execute("\
+            update book_bookrank \
+            set all_point=all_point+1,mon_point=mon_point+1,wek_point=wek_point+1 \
+            where id=%s;", [self.pk])
+
+    def add_push(self):
+        cursor = connection.cursor()
+        cursor.execute("\
+            update book_bookrank \
+            set all_push=all_push+1,mon_push=mon_push+1,wek_push=wek_push+1 \
+            where id=%s;", [self.pk])
+
+    def add_fav(self):
+        cursor = connection.cursor()
+        cursor.execute("\
+            update book_bookrank \
+            set all_fav=all_fav+1 \
+            where id=%s;", [self.pk])
