@@ -44,7 +44,20 @@ def add_bookmark(request):
             page = BookPage.objects.get(pk=request.POST.get('pageid','-1'))
         except:
             return ajax_error("章节错误!")
-        request.user.create_bookmark(page)
+        obj, created = BookMark.objects.get_or_create(
+            user=request.user,
+            book=page.book,
+            defaults={"page": page}
+        )
+        if not created:
+            obj.delete()
+            obj = BookMark.objects.create(
+                user=request.user,
+                book=page.book,
+                page=page
+            )
+        else:
+            page.book.get_bookrank().add_fav()
         return ajax_success(data="添加成功!")
     else:
         raise Http404
@@ -55,7 +68,9 @@ def del_bookmark(request, bookmark_id):
     if request.method == 'POST':
         try:
             bookmark = BookMark.objects.get(pk=bookmark_id, user=request.user)
+            book = bookmark.book
             bookmark.delete()
+            book.get_bookrank().sub_fav()
         except:
             return ajax_error("无法删除此书签!")
         return ajax_success(data="删除成功!")

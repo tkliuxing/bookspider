@@ -7,23 +7,9 @@ from django.contrib.auth.models import AbstractUser
 from booksite.book.models import Book, BookPage
 
 class User(AbstractUser):
-
-    def create_bookmark(self, page):
-        """添加书签"""
-        obj, created = BookMark.objects.get_or_create(
-            user=self,
-            book=page.book,
-            defaults={"page": page}
-        )
-        if not created:
-            obj.delete()
-            obj = BookMark.objects.create(
-                user=self,
-                book=page.book,
-                page=page
-            )
-        return obj
-
+    '''用户'''
+    def __unicode__(self):
+        return self.username
 
 
 class BookMark(models.Model):

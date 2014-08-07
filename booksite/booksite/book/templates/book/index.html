@@ -35,7 +35,7 @@
 			<div class="hidden-xs bookinfo panel-body">
 				<div class="caption">
 					{% with bookrank=book.get_bookrank %}
-					<p>总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}}</p>
+					<p>总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}} 总收藏: {{bookrank.all_fav}}</p>
 					{% endwith %}
 					{{ book.info_html|linebreaks }}
 				</div>

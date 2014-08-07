@@ -113,3 +113,10 @@ class BookRank(models.Model):
             update book_bookrank \
             set all_fav=all_fav+1 \
             where id=%s;", [self.pk])
+
+    def sub_fav(self):
+        cursor = connection.cursor()
+        cursor.execute("\
+            update book_bookrank \
+            set all_fav=all_fav-1 \
+            where id=%s;", [self.pk])
