@@ -15,7 +15,7 @@ home = TemplateView.as_view(template_name="book/index.html")
 
 def home(request):
     C = {}
-    books = Book.objects.all().order_by('pk')
+    books = Book.objects.all().order_by('book_number')
     if request.GET.get('s',''):
         books = books.filter(title__contains=request.GET['s'])
         C['search'] = True

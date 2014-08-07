@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import unicode_literals
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -90,4 +89,4 @@ LOGIN_REDIRECT_URL = '/'
 try:
     from .local_settings import *
 except:
-    raise ImportError(u'应当使用与settings同级别目录下的local_settings文件')
+    raise ImportError('应当使用与settings同级别目录下的local_settings文件')
