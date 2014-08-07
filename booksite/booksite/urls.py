@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^usercenter/', include(usercenter_urls)),
     url(r'^login/$', 'booksite.usercenter.views.login_view', name='login'),
+    url(r'^signup/$', 'booksite.usercenter.views.signup', name='signup'),
     url(r'^logout/$', 'booksite.usercenter.views.logout_view', name='logout'),
     url(r'^captcha/', include('captcha.urls')),
 )

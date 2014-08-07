@@ -14,6 +14,13 @@
 		<form class="form-horizontal" role="form" action="." method="post" id="login-form">
 			{% csrf_token %}
 			<div class="form-group{% if form.errors %} error{% endif %}">
+				<label class="share-label col-sm-2" for="id_captcha">验证码</label>
+				<div class="col-sm-10">
+					{{form.captcha}}
+					<a class="btn btn-info" href="javascript:location=location;"><span class="glyphicon glyphicon-repeat"></span></a>
+				</div>
+			</div>
+			<div class="form-group{% if form.errors %} error{% endif %}">
 				<label class="share-label col-sm-2" for="id_username">用户名</label>
 				<div class="col-sm-10">
 					<input id="id_username" class="form-control" maxlength="254" name="username" type="text">
@@ -23,13 +30,6 @@
 				<label class="share-label col-sm-2" for="id_password">密码</label>
 				<div class="col-sm-10">
 					<input id="id_password" class="form-control" name="password" type="password">
-				</div>
-			</div>
-			<div class="form-group{% if form.errors %} error{% endif %}">
-				<label class="share-label col-sm-2" for="id_captcha">验证码</label>
-				<div class="col-sm-10">
-					{{form.captcha}}
-					<a class="btn btn-info" href="javascript:location=location;"><span class="glyphicon glyphicon-repeat"></span></a>
 				</div>
 			</div>
 			<input type="hidden" name="this_is_the_login_form" value="1" />
