@@ -49,14 +49,18 @@ class DouluoSpider(Spider):
             yield book
             hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
             for href in hrefs:
-                yield Request(urlparse.urljoin(url,href), callback=self.parse)
+                rel_url = urlparse.urljoin(url, href)
+                if RC.get(rel_url):
+                    continue
+                yield Request(rel_url, callback=self.parse)
         # 书目
         elif BOOK_INDEX_URL_RE.match(url):
             hrefs = sel.xpath("//dl/dd/a/@href").extract()
             for href in hrefs:
-                if RC.get(urlparse.urljoin(url, href)):
+                rel_url = urlparse.urljoin(url, href)
+                if RC.get(rel_url):
                     continue
-                yield Request(urlparse.urljoin(url,href), callback=self.parse)
+                yield Request(rel_url, callback=self.parse)
         #章节
         elif BOOK_PAGE_URL_RE.match(url):
             page = BookpageItem()
