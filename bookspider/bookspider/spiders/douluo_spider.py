@@ -107,7 +107,7 @@ class DouluoSpider(Spider):
                     # 去掉重复书页
                     if BOOK_INFO_URL_RE.match(href):
                         book_number = BOOK_INFO_URL_RE.match(href).groupdict()['book_id']
-                        if RC.hget('books', str(book_number))):
+                        if RC.hget('books', str(book_number)):
                             continue
                     yield Request(href, callback=self.parse)
 
