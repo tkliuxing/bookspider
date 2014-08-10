@@ -132,7 +132,11 @@ def load_nall_page(request, page_id=0):
     ).order_by('page_number')[:10]
     data = render_to_string(
         'book/pagecontent.html',
-        {'bookpages': bookpages, 'book': book},
+        {
+            'bookpages': bookpages,
+            'book': book,
+            'invert': request.session.get('invert', False),
+        },
         context_instance=RequestContext(request)
     )
     return ajax_success(data)

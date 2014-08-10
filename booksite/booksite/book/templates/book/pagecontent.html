@@ -4,9 +4,9 @@
 	<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 	<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
 	<div class="btn-group">
-		<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
-		<a href="javascript:;" class="btn btn-info TBMABtn" data-pn="{{bookpage.pk}}">加入书签</a>
-		<a href="javascript:;" class="btn btn-primary invert">昼／夜</a>
+		<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary{%if invert%} transparent_class{%endif%}">回目录</a>
+		<a href="javascript:;" class="btn btn-info TBMABtn{%if invert%} transparent_class{%endif%}" data-pn="{{bookpage.pk}}">加入书签</a>
+		<a href="javascript:;" class="btn btn-primary invert{%if invert%} transparent_class{%endif%}">昼／夜</a>
 	</div>
 	<div class="col-md-10 col-md-offset-1 text-center pagebutton">
 		<div class="alert alert-info" role="alert" id="TBMA{{bookpage.pk}}" style="display:none;">
@@ -17,7 +17,7 @@
 </div>
 <div class="col-md-12">&nbsp;</div>
 <div class="col-md-1">&nbsp;</div>
-<div class="col-md-10 pagecontent inv">
+<div class="col-md-10 pagecontent inv{%if invert%} invert{%endif%}">
 	{{bookpage.content_html|linebreaks}}
 </div>
 <div class="col-md-1">&nbsp;</div>
