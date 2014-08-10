@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import json
+
 import redis
 
 from scrapy.exceptions import DropItem
 
-from bookspider.items import BookinfoItem, BookpageItem, Book, BookPage
+from bookspider.items import BookinfoItem, BookpageItem
 
 RC = redis.Redis()
 
@@ -14,15 +14,16 @@ class BookinfoPipeline(object):
     def process_item(self, item, spider):
         if not isinstance(item, BookinfoItem):
             return item
-        if item['book_number'] in self.ids_seen:
+        if RC.hget('books', str(item['book_number'])):
             raise DropItem("Duplicate item found: %s" % item['book_number'])
         else:
-            self.ids_seen.add(item['book_number'])
             try:
                 item.save()
+                RC.hset('books', str(item['book_number']), 'True')
                 print str(item['book_number']).ljust(10),"-"*10,item['title']
                 return item
             except:
+                RC.hset('books', str(item['book_number']), 'True')
                 raise DropItem("Duplicate item found: %s" % item['book_number'])
 
 
@@ -32,10 +33,9 @@ class BookpagePipeline(object):
     def process_item(self, item, spider):
         if not isinstance(item, BookpageItem):
             return item
-        if item['page_number'] in self.ids_seen:
+        if RC.get(item['origin_url']):
             raise DropItem("Duplicate item found: %s" % item['page_number'])
         else:
-            self.ids_seen.add(item['page_number'])
             try:
                 item.save()
                 RC.set(item['origin_url'], 'True')
@@ -44,5 +44,6 @@ class BookpagePipeline(object):
                 print ' '.join(item['title'].split()[1:])
                 return item
             except:
+                RC.set(item['origin_url'], 'True')
                 raise DropItem("Duplicate item found: %s" % item['page_number'])
 
