@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 
-from booksite.book.ajax import ajax_success
+from booksite.ajax import ajax_success
 from .models import Book, BookPage, BookRank
 
 home = TemplateView.as_view(template_name="book/index.html")
