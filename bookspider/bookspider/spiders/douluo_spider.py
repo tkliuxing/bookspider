@@ -9,7 +9,6 @@ from pyquery import PyQuery as PQ
 from scrapy.spider import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
-from scrapy.exceptions import CloseSpider
 
 from bookspider.items import BookinfoItem, BookpageItem
 
@@ -44,20 +43,23 @@ class DouluoSpider(Spider):
             book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
             # 去重
             if RC.hget('books', str(book['book_number'])):
-                raise CloseSpider('Duplicate Book')
-            book['origin_url'] = url
-            book['title'] = jQ("h1").text()
-            book['author'] = jQ("h2").eq(0).text().replace(u"作者：","")
-            book['category'] = jQ("h2").eq(2).text().replace(u"所属：","")
-            book['info'] = jQ(".msgarea>p").text().replace(" ","\n")
-            yield book
-            hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
-            for href in hrefs:
-                rel_url = urlparse.urljoin(url, href)
-                # 去重
-                if RC.get(rel_url):
-                    continue
-                yield Request(rel_url, callback=self.parse)
+                # 书籍重复则进入目录抓取章节
+                hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
+                for href in hrefs:
+                    rel_url = urlparse.urljoin(url, href)
+                    yield Request(rel_url, callback=self.parse)
+            else:
+                # 否则生成书籍信息
+                book['origin_url'] = url
+                book['title'] = jQ("h1").text()
+                book['author'] = jQ("h2").eq(0).text().replace(u"作者：","")
+                book['category'] = jQ("h2").eq(2).text().replace(u"所属：","")
+                book['info'] = jQ(".msgarea>p").text().replace(" ","\n")
+                yield book
+                hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
+                for href in hrefs:
+                    rel_url = urlparse.urljoin(url, href)
+                    yield Request(rel_url, callback=self.parse)
         # 书目
         elif BOOK_INDEX_URL_RE.match(url):
             hrefs = sel.xpath("//dl/dd/a/@href").extract()
@@ -71,29 +73,31 @@ class DouluoSpider(Spider):
         elif BOOK_PAGE_URL_RE.match(url):
             page = BookpageItem()
             page['origin_url'] = url
-            # 去重
-            if RC.get(page['origin_url']):
-                raise CloseSpider('Duplicate BookPage')
-            page['title'] = sel.xpath('//h1/text()').extract()[0]
-            page['content'] = jQ('#BookText').text().replace(" ","\n")
-            page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
-            page['page_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['page_id']
             next_href = self.get_next_page_url(response)
             prev_href = self.get_prev_page_url(response)
-            page_number_re = re.compile(r'(?P<number>\d+).+')
-            if page_number_re.match(prev_href):
-                page['prev_number'] = page_number_re.match(prev_href).groupdict()['number']
+            # 去重并尝试下一页
+            if RC.get(page['origin_url']):
+                next_rel_href = urlparse.urljoin(url, next_href)
+                prev_rel_href = urlparse.urljoin(url, prev_href)
+                if not RC.get(next_rel_href):
+                    yield Request(next_rel_href, callback=self.parse)
+                if not RC.get(prev_rel_href):
+                    yield Request(prev_rel_href, callback=self.parse)
             else:
-                page['prev_number'] = None
-            if page_number_re.match(next_href):
-                page['next_number'] = page_number_re.match(next_href).groupdict()['number']
-            else:
-                page['next_number'] = None
-            yield page
-            # 爬下一页
-            #yield Request(urlparse.urljoin(url,next_href), callback=self.parse)
-            # 爬上一页
-            #yield Request(urlparse.urljoin(url,prev_href), callback=self.parse)
+                page['title'] = sel.xpath('//h1/text()').extract()[0]
+                page['content'] = jQ('#BookText').text().replace(" ","\n")
+                page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
+                page['page_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['page_id']
+                page_number_re = re.compile(r'(?P<number>\d+).+')
+                if page_number_re.match(prev_href):
+                    page['prev_number'] = page_number_re.match(prev_href).groupdict()['number']
+                else:
+                    page['prev_number'] = None
+                if page_number_re.match(next_href):
+                    page['next_number'] = page_number_re.match(next_href).groupdict()['number']
+                else:
+                    page['next_number'] = None
+                yield page
         # 继续爬行
         else:
             for href in sel.xpath("//a/@href").extract():
