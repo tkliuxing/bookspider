@@ -61,6 +61,10 @@ body.invert{
 .pagebutton{
 	padding-top: 20px;
 }
+.bottombtn{
+	line-height: 70px;
+	font-size: 26px;
+}
 footer.invert{
 	background-color: #000000;
 }

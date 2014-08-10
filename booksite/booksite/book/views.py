@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 import time
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
+from django.template import RequestContext
 from django.views.generic import TemplateView
 from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 
+from booksite.book.ajax import ajax_success
 from .models import Book, BookPage, BookRank
 
 home = TemplateView.as_view(template_name="book/index.html")
@@ -87,6 +89,7 @@ def bookpage(request, page_number=0):
         raise Http404
     bookpage = get_object_or_404(BookPage, page_number=page_number)
     book = get_object_or_404(Book, book_number=bookpage.book_number)
+    # 注册用户的点击数据统计
     if request.user.is_authenticated():
         skey = 'time-book-%d'%book.pk
         now = int(time.time())
@@ -119,3 +122,18 @@ def bookrank(request):
     C['bookranks'] = page.object_list
     C['pagination'] = page
     return render(request, 'book/bookrank.html', C)
+
+def load_nall_page(request, page_id=0):
+    bookpage = BookPage.objects.get(pk=page_id)
+    book = Book.objects.get(book_number=bookpage.book_number)
+    bookpages = BookPage.objects.filter(
+        book_number=bookpage.book_number,
+        page_number__gt=bookpage.page_number
+    ).order_by('page_number')[:10]
+    data = render_to_string(
+        'book/pagecontent.html',
+        {'bookpages': bookpages, 'book': book},
+        context_instance=RequestContext(request)
+    )
+    return ajax_success(data)
+

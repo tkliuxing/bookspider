@@ -4,7 +4,7 @@
 {% block keymeta %}{{book.title}};{{book.author}}{% endblock keymeta %}
 {% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock keydesc %}
 {% block content %}
-<div class="row">
+<div class="row" id="FIELD">
 	<div class="col-md-12">
 		<ol class="breadcrumb inv">
 			<li class="hidden-xs"><a href="/">书籍列表</a></li>
@@ -15,21 +15,16 @@
 	<div class="col-md-12 text-center">
 		<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 		<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
-		<div class="col-md-12">
-		{% if user.is_superuser %}
-		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
-		{% endif %}
-		</div>
 		<div class="btn-group">
 			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
-			<a href="javascript:;" class="btn btn-info" id="TBMABtn">加入书签</a>
+			<a href="javascript:;" class="btn btn-info TBMABtn" data-pn="{{bookpage.pk}}">加入书签</a>
 			<a href="javascript:;" class="btn btn-primary invert">昼／夜</a>
 		</div>
 		<div class="col-md-10 col-md-offset-1 text-center pagebutton">
-			<div class="alert alert-info" role="alert" id="TBMA" style="display:none;">
+			<div class="alert alert-info" role="alert" id="TBMA{{bookpage.pk}}" style="display:none;">
 				书签已添加, 请到<strong>书架</strong>查看
 			</div>
-			<div class="alert alert-danger" role="alert" id="TBMAERR" style="display:none;"></div>
+			<div class="alert alert-danger" role="alert" id="TBMAERR{{bookpage.pk}}" style="display:none;"></div>
 		</div>
 	</div>
 	<div class="col-md-12">&nbsp;</div>
@@ -71,12 +66,14 @@
 			</div>
 			<div class="alert alert-danger" role="alert" id="BMAERR" style="display:none;"></div>
 		</div>
-		<div class="col-xs-12">&nbsp;</div>
-		<div class="col-xs-12">
-		{% if user.is_superuser %}
+	</div>
+	{% if user.is_superuser %}
+	<div class="col-md-12 text-center bottombtn">
 		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
-		{% endif %}
-		</div>
+	</div>
+	{% endif %}
+	<div class="col-md-12 text-center bottombtn nextbox">
+		<a class="readnall text-center" data-pn="{{bookpage.pk}}" href="javascript:;">阅读后续10章</a>
 	</div>
 </div>
 {% endblock content %}
@@ -109,12 +106,23 @@
 		}
 		return false;
 	});
-	$(".btn.invert").click(function(){
+	$(".btn.invert").die().live('click', function(){
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
 		$('.btn').toggleClass('transparent_class');
 		$.get("./?invert=1",function(data){},'json');
 		return false;
+	});
+	$(".readnall").die().live('click', function(){
+		var this_a = $(event.target);
+		var page_number=this_a.data('pn');
+		$.get('/nallpage/'+page_number, function(data){
+			if(data.success){
+				$('.nextbox').remove();
+				$('#FIELD').append($(data.data));
+				$('.col-md-12.text-center.pagebutton').remove();
+			}
+		}, 'json');
 	});
 	{% if invert %}
 	$('.inv').toggleClass('invert');
@@ -135,14 +143,16 @@
 		}, 'json');
 		return false;
 	});
-	$("#TBMABtn").click(function(){
-		$.post("{% url 'add_bookmark' %}", {pageid:'{{bookpage.pk}}'}, function(data){
+	$(".TBMABtn").click(function(event){
+		var this_a = $(event.target);
+		var page_number=this_a.data('pn');
+		$.post("{% url 'add_bookmark' %}", {pageid:page_number}, function(data){
 			if(data.success){
-				$('#TBMA').slideDown();
+				$('#TBMA'+page_number).slideDown();
 				setTimeout(function(){$('#TBMA').slideUp()},2000);
 			}else{
-				$('#TBMAERR').text(data.error_message);
-				$('#TBMAERR').slideDown();
+				$('#TBMAERR'+page_number).text(data.error_message);
+				$('#TBMAERR'+page_number).slideDown();
 				setTimeout(function(){$('#TBMAERR').slideUp()},5000);
 			}
 		}, 'json');
@@ -153,7 +163,7 @@
 		location.href = '{% url "login" %}?next='+location.href;
 		return false;
 	});
-	$("#TBMABtn").click(function(){
+	$(".TBMABtn").click(function(){
 		location.href = '{% url "login" %}?next='+location.href;
 		return false;
 	});
