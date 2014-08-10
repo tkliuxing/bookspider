@@ -9,6 +9,7 @@ from pyquery import PyQuery as PQ
 from scrapy.spider import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
+from scrapy.exceptions import CloseSpider
 
 from bookspider.items import BookinfoItem, BookpageItem
 
@@ -40,16 +41,20 @@ class DouluoSpider(Spider):
         #书页
         if BOOK_INFO_URL_RE.match(url):
             book = BookinfoItem()
+            book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
+            # 去重
+            if RC.hget('books', str(book['book_number'])):
+                raise CloseSpider('Duplicate Book')
             book['origin_url'] = url
             book['title'] = jQ("h1").text()
             book['author'] = jQ("h2").eq(0).text().replace(u"作者：","")
             book['category'] = jQ("h2").eq(2).text().replace(u"所属：","")
             book['info'] = jQ(".msgarea>p").text().replace(" ","\n")
-            book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
             yield book
             hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
             for href in hrefs:
                 rel_url = urlparse.urljoin(url, href)
+                # 去重
                 if RC.get(rel_url):
                     continue
                 yield Request(rel_url, callback=self.parse)
@@ -58,6 +63,7 @@ class DouluoSpider(Spider):
             hrefs = sel.xpath("//dl/dd/a/@href").extract()
             for href in hrefs:
                 rel_url = urlparse.urljoin(url, href)
+                # 去重
                 if RC.get(rel_url):
                     continue
                 yield Request(rel_url, callback=self.parse)
@@ -65,6 +71,9 @@ class DouluoSpider(Spider):
         elif BOOK_PAGE_URL_RE.match(url):
             page = BookpageItem()
             page['origin_url'] = url
+            # 去重
+            if RC.get(page['origin_url']):
+                raise CloseSpider('Duplicate BookPage')
             page['title'] = sel.xpath('//h1/text()').extract()[0]
             page['content'] = jQ('#BookText').text().replace(" ","\n")
             page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
@@ -91,12 +100,15 @@ class DouluoSpider(Spider):
                 if self.is_pass_url(href):
                     continue
                 if not href.startswith('javascript:') and href != '/' and not href.startswith("#"):
-                    # print href
                     href = urlparse.urljoin(url,href)
-                    if BOOK_PAGE_URL_RE.match(href):
-                        continue
+                    # 去掉重复章节
                     if RC.get(href):
                         continue
+                    # 去掉重复书页
+                    if BOOK_INFO_URL_RE.match(href):
+                        book_number = BOOK_INFO_URL_RE.match(href).groupdict()['book_id']
+                        if RC.hget('books', str(book_number))):
+                            continue
                     yield Request(href, callback=self.parse)
 
     def get_npage_url(self, response, page_a=2):
