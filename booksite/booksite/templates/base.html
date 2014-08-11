@@ -5,7 +5,12 @@
 	<title>看小说,么?{% spaceless %}{% block pagetitle %}{% endblock pagetitle %}{% endspaceless %}</title>
 	<meta name="keywords" content="{% spaceless %}{% block keymeta %}看小说么{% endblock keymeta %}{% endspaceless %}">
 	<meta name="description" content="{% spaceless %}{% block keydesc %}看小说,么?最简洁的小说阅读网站,提供都市小说.玄幻小说.仙侠小说.历史小说.网游小说.免费小说等在线阅读.{% endblock keydesc %}{% endspaceless %}">
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+	<link rel="apple-touch-icon" href="{% static 'img/iapp.ico.jpg' %}">
+	<link rel="shortcut icon" href="{% static 'img/iapp.ico.jpg' %}" type="image/x-icon">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="看小说么">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
 	<link href="{% static 'flatui/bootstrap/css/prettify.css' %}" rel="stylesheet">
 	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
