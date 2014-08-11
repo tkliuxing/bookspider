@@ -30,6 +30,8 @@
 	<div class="col-md-12">&nbsp;</div>
 	<div class="col-md-1">&nbsp;</div>
 	<div class="col-md-10 pagecontent inv">
+		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGDOWN"></div>
+		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGUP"></div>
 		{{bookpage.content_html|linebreaks}}
 	</div>
 	<div class="col-md-1">&nbsp;</div>
@@ -106,6 +108,20 @@
 		}
 		return false;
 	});
+	{# 触屏翻页 #}
+	function auto_width_pg(){
+		content_width_haf = parseInt($(".pagecontent").width()/2);
+		$(".PGDOWN").css("left",content_width_haf+15);
+		$(".PGDOWN").css("width",content_width_haf+"px");
+		$(".PGUP").css("width",content_width_haf+"px");
+	};
+	auto_width_pg();
+	$(".PGDOWN").click(function(){
+		window.scrollTo(0, window.scrollY+window.innerHeight-20);
+	});
+	$(".PGUP").click(function(){
+		window.scrollTo(0, window.scrollY-window.innerHeight+20);
+	});
 	$(".btn.invert").die().live('click', function(){
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
@@ -121,6 +137,13 @@
 				$('.nextbox').remove();
 				$('#FIELD').append($(data.data));
 				$('.col-md-12.text-center.pagebutton').remove();
+				auto_width_pg();
+				$(".PGDOWN").click(function(){
+					window.scrollTo(0, window.scrollY+window.innerHeight-20);
+				});
+				$(".PGUP").click(function(){
+					window.scrollTo(0, window.scrollY-window.innerHeight+20);
+				});
 			}
 		}, 'json');
 	});
@@ -143,17 +166,17 @@
 		}, 'json');
 		return false;
 	});
-	$(".TBMABtn").click(function(event){
+	$(".TBMABtn").die().live('click', function(event){
 		var this_a = $(event.target);
 		var page_number=this_a.data('pn');
 		$.post("{% url 'add_bookmark' %}", {pageid:page_number}, function(data){
 			if(data.success){
 				$('#TBMA'+page_number).slideDown();
-				setTimeout(function(){$('#TBMA').slideUp()},2000);
+				setTimeout(function(){$('#TBMA'+page_number).slideUp()},2000);
 			}else{
 				$('#TBMAERR'+page_number).text(data.error_message);
 				$('#TBMAERR'+page_number).slideDown();
-				setTimeout(function(){$('#TBMAERR').slideUp()},5000);
+				setTimeout(function(){$('#TBMAERR'+page_number).slideUp()},5000);
 			}
 		}, 'json');
 		return false;
@@ -163,7 +186,7 @@
 		location.href = '{% url "login" %}?next='+location.href;
 		return false;
 	});
-	$(".TBMABtn").click(function(){
+	$(".TBMABtn").die().live('click', function(){
 		location.href = '{% url "login" %}?next='+location.href;
 		return false;
 	});
