@@ -102,7 +102,7 @@
 			var this_a = $(event.target);
 			$.post(this_a.data('url'),{},function(data){
 				if(data.success){
-					alert("正在更新本章");
+					alert("正在更新本书");
 				}else{
 					alert(data.error_message);
 				}
