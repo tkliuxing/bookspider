@@ -44,6 +44,7 @@
 			<div class="panel-footer">
 				<a class="btn btn-primary" href="{{book.get_absolute_url}}">进入阅读</a>
 				<a target="_blank" class="btn btn-danger" href="/admin/book/book/{{book.pk}}/">编辑信息</a>
+		<a class="bookfixpic btn btn-danger" href="javascript:;" data-url="{% url 'bookfixpic' book.pk %}">更新图章</a>
 			</div>
 			{% else %}
 			<div class="panel-footer hidden-xs">
@@ -92,3 +93,23 @@
 </div>
 {% endif %}
 {% endblock content %}
+
+{% block footerjs %}
+{% if user.is_authenticated %}
+	<script>
+	(function($){
+		$(".pagefixpic").die().live('click', function(event){
+			var this_a = $(event.target);
+			$.post(this_a.data('url'),{},function(data){
+				if(data.success){
+					alert("正在更新本章");
+				}else{
+					alert(data.error_message);
+				}
+			},'json');
+			return false;
+		});
+	})(jQuery);
+	</script>
+{% endif %}
+{% endblock footerjs %}
