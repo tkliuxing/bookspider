@@ -98,7 +98,7 @@
 {% if user.is_authenticated %}
 	<script>
 	(function($){
-		$(".pagefixpic").die().live('click', function(event){
+		$(".bookfixpic").die().live('click', function(event){
 			var this_a = $(event.target);
 			$.post(this_a.data('url'),{},function(data){
 				if(data.success){
