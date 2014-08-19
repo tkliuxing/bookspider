@@ -86,6 +86,8 @@ AUTH_USER_MODEL = 'usercenter.User'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
 try:
     from .local_settings import *
 except:

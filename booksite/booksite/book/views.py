@@ -8,9 +8,11 @@ from django.views.generic import TemplateView
 from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
+from django.contrib.auth.decorators import login_required
 
 from booksite.ajax import ajax_success
 from .models import Book, BookPage, BookRank
+from .tasks import update_page, update_book_pic_page
 
 home = TemplateView.as_view(template_name="book/index.html")
 
@@ -140,4 +142,22 @@ def load_nall_page(request, page_id=0):
         context_instance=RequestContext(request)
     )
     return ajax_success(data)
+
+@login_required
+def page_fix_pic(request, page_id=0):
+    if not request.user.is_superuser:
+        raise Http404
+    bookpage = get_object_or_404(BookPage, pk=page_id)
+    title = bookpage.title
+    book_title = bookpage.book.title
+    update_page.delay(page_id, book_title, title)
+    return ajax_success()
+
+@login_required
+def book_fix_pic(request, book_id=0):
+    if not request.user.is_superuser:
+        raise Http404
+    book = get_object_or_404(Book, pk=book_id)
+    update_book_pic_page.delay(book.book_number, 200)
+    return ajax_success()
 

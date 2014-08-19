@@ -72,6 +72,7 @@
 	{% if user.is_superuser %}
 	<div class="col-md-12 text-center bottombtn">
 		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
+		<a class="pagefixpic" href="javascript:;" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
 	</div>
 	{% endif %}
 	<div class="col-md-12 text-center bottombtn nextbox">
@@ -81,7 +82,6 @@
 {% endblock content %}
 
 {% block footerjs %}
-{{SESSIONS}}
 <script>
 (function($){
 	$(document).keydown(function(e){
@@ -179,6 +179,17 @@
 				setTimeout(function(){$('#TBMAERR'+page_number).slideUp()},5000);
 			}
 		}, 'json');
+		return false;
+	});
+	$(".pagefixpic").die().live('click', function(event){
+		var this_a = $(event.target);
+		$.post(this_a.data('url'),{},function(data){
+			if(data.success){
+				alert("正在更新本章");
+			}else{
+				alert(data.error_message);
+			}
+		},'json');
 		return false;
 	});
 	{% else %}

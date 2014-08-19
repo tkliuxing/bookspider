@@ -21,7 +21,11 @@ urlpatterns = patterns('',
     url(r'^book/(?P<book_id>\d+)/$', 'booksite.book.views.bookindex', name='bookindex'),
     url(r'^bookindex/(?P<book_id>\d+)/$', 'booksite.book.views.bookindexajax', name='bookindexajax'),
     url(r'^page/(?P<page_number>\d+)/$', 'booksite.book.views.bookpage', name='bookpage'),
+
     url(r'^nallpage/(?P<page_id>\d+)/$', 'booksite.book.views.load_nall_page', name='nallpage'),
+    url(r'^fixpic/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_fix_pic', name='pagefixpic'),
+    url(r'^fixpic/book/(?P<book_id>\d+)/$', 'booksite.book.views.book_fix_pic', name='bookfixpic'),
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'^usercenter/', include(usercenter_urls)),
     url(r'^login/$', 'booksite.usercenter.views.login_view', name='login'),
