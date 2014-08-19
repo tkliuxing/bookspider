@@ -54,7 +54,7 @@ def get_bookpage_match_url(book_index, page_title):
     """从章节目录获得匹配的章节url"""
     if isinstance(book_index, PQ):
         jq = book_index
-    if isinstance(book_index, (unicode, str)):
+    elif isinstance(book_index, (unicode, str)):
         jq = PQ(book_index)
     else:
         raise TypeError
