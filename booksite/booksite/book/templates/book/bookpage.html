@@ -15,6 +15,11 @@
 	<div class="col-md-12 text-center">
 		<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 		<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
+		{% if user.is_superuser %}
+		<div class="col-md-12 text-center bottombtn" style="line-height: 40px;font-size: 12px;">
+			<a class="pagefixpic" href="javascript:;" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
+		</div>
+		{% endif %}
 		<div class="btn-group">
 			<a href="{% url 'bookindex' book.pk %}" class="btn btn-primary">回目录</a>
 			<a href="javascript:;" class="btn btn-info TBMABtn" data-pn="{{bookpage.pk}}">加入书签</a>
@@ -27,14 +32,14 @@
 			<div class="alert alert-danger" role="alert" id="TBMAERR{{bookpage.pk}}" style="display:none;"></div>
 		</div>
 	</div>
-	<div class="col-md-12">&nbsp;</div>
-	<div class="col-md-1">&nbsp;</div>
+	<div class="col-md-12 hidden-xs">&nbsp;</div>
+	<div class="col-md-1 hidden-xs">&nbsp;</div>
 	<div class="col-md-10 pagecontent inv">
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGDOWN"></div>
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGUP"></div>
 		{{bookpage.content_html|linebreaks}}
 	</div>
-	<div class="col-md-1">&nbsp;</div>
+	<div class="col-md-1 hidden-xs">&nbsp;</div>
 	<div class="col-md-12 text-center pagebutton">
 		<div class="btn-group">
 			{% if bookpage.prev_number %}
@@ -71,10 +76,12 @@
 	</div>
 	{% if user.is_superuser %}
 	<div class="col-md-12 text-center bottombtn">
-		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑信息</a>
-		<a class="pagefixpic" href="javascript:;" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
+		<a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑本章</a>
 	</div>
 	{% endif %}
+	<div class="col-md-12">
+		<hr/>
+	</div>
 	<div class="col-md-12 text-center bottombtn nextbox">
 		<a class="readnall text-center" data-pn="{{bookpage.pk}}" href="javascript:;">阅读后续10章</a>
 	</div>
