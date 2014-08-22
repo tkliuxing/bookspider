@@ -9,8 +9,9 @@ from django.http import Http404, HttpResponse
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
-from booksite.ajax import ajax_success
+from booksite.ajax import ajax_success, ajax_error
 from .models import Book, BookPage, BookRank
 from .tasks import update_page, update_book_pic_page
 
@@ -151,7 +152,19 @@ def page_fix_pic(request, page_id=0):
     title = bookpage.title
     book_title = bookpage.book.title
     update_page.delay(page_id, book_title, title)
+    cache.set("pagetask-%s" % page_id, 'RUN', 600)
     return ajax_success()
+
+@login_required
+def page_task_check(request, page_id=0):
+    if not request.user.is_superuser:
+        raise Http404
+    get_object_or_404(BookPage, pk=page_id)
+    status = cache.get("pagetask-%s" % page_id)
+    if status:
+        return ajax_success(data={'status':status})
+    else:
+        return ajax_error('未知的任务')
 
 @login_required
 def book_fix_pic(request, book_id=0):

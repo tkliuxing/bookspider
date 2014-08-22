@@ -7,6 +7,7 @@ import urlparse
 from pyquery import PyQuery as PQ
 
 from celery import shared_task
+from django.core.cache import cache
 
 from booksite.book.models import BookPage, Book
 
@@ -86,6 +87,7 @@ def update_page(page_id, book_title, page_title):
     page = BookPage.objects.get(pk=page_id)
     page.content = content
     page.save()
+    cache.set("pagetask-%s" % page_id, 'DONE', 600)
     return content
 
 

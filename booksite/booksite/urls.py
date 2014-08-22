@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^nallpage/(?P<page_id>\d+)/$', 'booksite.book.views.load_nall_page', name='nallpage'),
     url(r'^fixpic/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_fix_pic', name='pagefixpic'),
     url(r'^fixpic/book/(?P<book_id>\d+)/$', 'booksite.book.views.book_fix_pic', name='bookfixpic'),
+    url(r'^taskcheck/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_task_check', name='pagetaskcheck'),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^usercenter/', include(usercenter_urls)),

@@ -16,8 +16,11 @@
 		<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 		<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
 		{% if user.is_superuser %}
-		<div class="col-md-12 text-center bottombtn" style="line-height: 40px;font-size: 12px;">
-			<a class="pagefixpic" href="javascript:;" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
+		<div class="col-md-12" style="margin-bottom:5px;">
+			<div class="btn-group text-center">
+				<a class="btn btn-warning btn-sm pagefixpic" href="javascript:;" data-churl="{% url 'pagetaskcheck' bookpage.pk %}" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
+				<a class="btn btn-success btn-sm" href="javascript:location.reload(true);">刷新当前页面</a>
+			</div>
 		</div>
 		{% endif %}
 		<div class="btn-group">
@@ -193,6 +196,21 @@
 		$.post(this_a.data('url'),{},function(data){
 			if(data.success){
 				alert("正在更新本章");
+				check_page_fn = function(){
+					$.get(this_a.data('churl'), function(data){
+						if(data.success){
+							if(data.data.status === 'DONE'){
+								clearInterval(check_page);
+								location.reload(true);
+							}
+						}else{
+							clearInterval(check_page);
+							alert(data.error_message);
+						}
+					}, 'json');
+				}
+				check_page = setInterval(check_page_fn, 1000);
+				check_page_fn();
 			}else{
 				alert(data.error_message);
 			}

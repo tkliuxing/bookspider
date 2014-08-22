@@ -4,8 +4,8 @@
 	<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
 	<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
 	{% if user.is_superuser %}
-	<div class="col-md-12 text-center bottombtn" style="line-height: 40px;font-size: 12px;">
-		<a class="pagefixpic" href="javascript:;" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
+	<div class="col-md-12" style="margin-bottom:5px;">
+		<a class="btn btn-success btn-sm" href="{{bookpage.get_absolute_url}}">单独阅读本章</a>
 	</div>
 	{% endif %}
 	<div class="btn-group">

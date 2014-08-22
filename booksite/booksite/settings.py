@@ -86,6 +86,18 @@ AUTH_USER_MODEL = 'usercenter.User'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379:1',
+        'KEY_PREFIX': 'booksite',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+            'PASSWORD': '',  # Optional
+        }
+    }
+}
+
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 try:
