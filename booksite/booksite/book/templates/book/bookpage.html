@@ -21,6 +21,10 @@
 				<a class="btn btn-warning btn-sm pagefixpic" href="javascript:;" data-churl="{% url 'pagetaskcheck' bookpage.pk %}" data-url="{% url 'pagefixpic' bookpage.pk %}">更新图片章节</a>
 				<a class="btn btn-success btn-sm" href="javascript:location.reload(true);">刷新当前页面</a>
 			</div>
+			<div class="">&nbsp;</div>
+			<div class="alert alert-info" role="alert" style="display:none;">
+				章节更新中
+			</div>
 		</div>
 		{% endif %}
 		<div class="btn-group">
@@ -195,7 +199,9 @@
 		var this_a = $(event.target);
 		$.post(this_a.data('url'),{},function(data){
 			if(data.success){
-				alert("正在更新本章");
+				var alert_window = this_a.parent().parent().find(".alert");
+				alert_window.slideDown();
+				setTimeout(function(){alert_window.slideUp()},10000);
 				check_page_fn = function(){
 					$.get(this_a.data('churl'), function(data){
 						if(data.success){
@@ -209,7 +215,7 @@
 						}
 					}, 'json');
 				}
-				check_page = setInterval(check_page_fn, 1000);
+				check_page = setInterval(check_page_fn, 1500);
 				check_page_fn();
 			}else{
 				alert(data.error_message);
