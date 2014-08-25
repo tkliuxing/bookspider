@@ -45,6 +45,7 @@ body.invert{
 }
 .pagecontent{
 	text-indent: 2em;
+	word-wrap: break-word;
 }
 .pagecontent>h2{
 	padding-bottom: 30px;
@@ -52,6 +53,7 @@ body.invert{
 .pagecontent>p{
 	font-size: 20px;
 	line-height: 40px;
+	word-wrap: break-word;
 }
 .pagecontent.invert{
 	color: #9FA1B4;
