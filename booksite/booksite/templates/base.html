@@ -1,4 +1,5 @@
 {% load static %}
+{% load assets %}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -11,15 +12,18 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-title" content="看小说么">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
-	<link href="{% static 'flatui/bootstrap/css/prettify.css' %}" rel="stylesheet">
-	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
-	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	{% assets "css_all" %}
+		<link href="{{ ASSET_URL }}" rel="stylesheet">
+	{% endassets %}
 	{% if BAIDUTONGJI_ID %}
 		{% include "baidutongji.html" %}
 	{% endif %}
 	{% block headercss %}
 	{% endblock headercss %}
+	{% block headerjs %}
+	<script>var DATA_DIC = DATA_DIC || {}</script>
+	{% endblock headerjs %}
+
 </head>
 <body class="inv">
 {% spaceless %}
@@ -95,44 +99,9 @@
 			</ul>
 		</div>
 	</footer>
-	<script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
-	<script src="{% static 'flatui/js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'flatui/js/bootstrap-select.js' %}"></script>
-	<script src="{% static 'flatui/js/bootstrap-switch.js' %}"></script>
-	<script src="{% static 'flatui/js/typeahead.js' %}"></script>
-	<script src="{% static 'js/pagination.js' %}"></script>
-	<script src="{% static 'js/application.js' %}"></script>
-	<script>
-	// using jQuery
-	function getCookie(name) {
-		var cookieValue = null;
-		if (document.cookie && document.cookie != '') {
-			var cookies = document.cookie.split(';');
-			for (var i = 0; i < cookies.length; i++) {
-				var cookie = jQuery.trim(cookies[i]);
-				// Does this cookie string begin with the name we want?
-				if (cookie.substring(0, name.length + 1) == (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
-	var csrftoken = getCookie('csrftoken');
-	function csrfSafeMethod(method) {
-		// these HTTP methods do not require CSRF protection
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
-	$.ajaxSetup({
-		crossDomain: false, // obviates need for sameOrigin test
-		beforeSend: function(xhr, settings) {
-			if (!csrfSafeMethod(settings.type)) {
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		}
-	});
-	</script>
+	{% assets "js_all" %}
+		<script src="{{ ASSET_URL }}" rel="stylesheet"></script>
+	{% endassets %}
 	{% block footerjs %}
 	{% endblock footerjs %}
 </body>

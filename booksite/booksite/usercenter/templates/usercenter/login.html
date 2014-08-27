@@ -15,9 +15,8 @@
 			{% csrf_token %}
 			<div class="form-group{% if form.errors %} error{% endif %}">
 				<label class="share-label col-sm-2" for="id_captcha">验证码</label>
-				<div class="col-sm-10">
+				<div class="col-sm-10" id="CAPTCHA" data-url="{% url 'captcha-refresh' %}">
 					{{form.captcha}}
-					<a class="btn btn-info" href="javascript:location=location;"><span class="glyphicon glyphicon-repeat"></span></a>
 				</div>
 			</div>
 			<div class="form-group{% if form.errors %} error{% endif %}">
@@ -50,10 +49,3 @@
 <div class="col-md-3">&nbsp;</div>
 {% endblock content %}
 
-{% block footerjs %}
-<script>
-$(function(){
-	$("#id_captcha_1").addClass("form-control").css({width:'50%',display:'inline-block'})
-});
-</script>
-{% endblock footerjs %}

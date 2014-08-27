@@ -5,7 +5,7 @@
 	<h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
 	{% if user.is_superuser %}
 	<div class="col-md-12" style="margin-bottom:5px;">
-		<a class="btn btn-success btn-sm" href="{{bookpage.get_absolute_url}}">单独阅读本章</a>
+		<a class="btn btn-success btn-sm{%if invert%} transparent_class{%endif%}" href="{{bookpage.get_absolute_url}}">单独阅读本章</a>
 	</div>
 	{% endif %}
 	<div class="btn-group">

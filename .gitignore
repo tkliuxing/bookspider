@@ -8,3 +8,5 @@ bookspider/crawls
 dump.rdb
 .editorconfig
 booksite/node_modules
+.webassets-cache
+booksite/sroot/

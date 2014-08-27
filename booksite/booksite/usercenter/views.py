@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import urlparse
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseBadRequest
+from django.utils.http import is_safe_url
+from django.core.urlresolvers import reverse
 from django import forms
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import login as auth_loginview
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -79,6 +82,19 @@ class MyUserCreationForm(UserCreationForm):
 
 
 def login_view(request):
+    if request.user.is_authenticated():
+        return redirect("home")
+    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    print redirect_to
+    if not redirect_to:
+        referer = request.META.get("HTTP_REFERER")
+        if is_safe_url(url=referer, host=request.get_host()):
+            next_path = urlparse.urlparse(referer).path
+            loging_url = reverse('login')
+            print next_path, loging_url
+            if next_path.startswith(loging_url):
+                redirect("home")
+            return redirect(loging_url+"?next="+next_path)
     return auth_loginview(
         request,
         template_name="usercenter/login.html",
