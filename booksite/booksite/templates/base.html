@@ -15,6 +15,9 @@
 	<link href="{% static 'flatui/bootstrap/css/prettify.css' %}" rel="stylesheet">
 	<link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	{% if BAIDUTONGJI_ID %}
+		{% include "baidutongji.html" %}
+	{% endif %}
 	{% block headercss %}
 	{% endblock headercss %}
 </head>

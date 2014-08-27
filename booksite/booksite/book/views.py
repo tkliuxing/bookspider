@@ -129,10 +129,18 @@ def bookrank(request):
 def load_nall_page(request, page_id=0):
     bookpage = BookPage.objects.get(pk=page_id)
     book = Book.objects.get(book_number=bookpage.book_number)
-    bookpages = BookPage.objects.filter(
-        book_number=bookpage.book_number,
-        page_number__gt=bookpage.page_number
-    ).order_by('page_number')[:10]
+    bookpages = []
+    next_page_number = bookpage.next_number
+    # 使用链式获取比排序后截取快
+    for i in range(10):
+        try:
+            next_page = BookPage.objects.get(page_number=next_page_number)
+        except:
+            break
+        else:
+            bookpages.append(next_page)
+            next_page_number = next_page.next_number
+
     data = render_to_string(
         'book/pagecontent.html',
         {
