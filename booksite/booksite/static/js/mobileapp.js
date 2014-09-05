@@ -115,12 +115,15 @@
 		var click_x = parseInt(event.clientX);
 		if (click_x < (window_width / 5 * 2)) {
 			window.scrollTo(0, window.scrollY - window.innerHeight + 20);
+			return false;
 		}
 		if ((window_width / 5 * 2) < click_x && click_x < (window_width / 5 * 3)) {
 			$(".ui-footer").toolbar("toggle");
+			return false;
 		}
 		if ((window_width / 5 * 3) < click_x) {
 			window.scrollTo(0, window.scrollY + window.innerHeight - 20);
+			return false;
 		}
 	});
 
