@@ -70,14 +70,15 @@
 			$(".ui-page-theme-a").addClass("ui-page-theme-b");
 			$(".ui-page-theme-a").removeClass("ui-page-theme-a");
 		}
-		console.log(DATA_DIC);
 	});
 
 	$.mobile.document.on("swipeleft", ".pagecontent", function() {
-		$.mobile.changePage($(".next_a").eq(0).attr('href'));
+		$(".next_a").last().click();
+		return false;
 	});
 	$.mobile.document.on("swiperight", ".pagecontent", function() {
-		$.mobile.changePage($(".prev_a").eq(0).attr('href'));
+		$(".prev_a").last().click();
+		return false;
 	});
 
 	// 添加书签
