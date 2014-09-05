@@ -73,10 +73,10 @@
 		console.log(DATA_DIC);
 	});
 
-	$(window).on("swipeleft", function() {
+	$.mobile.document.on("swipeleft", ".pagecontent", function() {
 		$.mobile.changePage($(".next_a").eq(0).attr('href'));
 	});
-	$(window).on("swiperight", function() {
+	$.mobile.document.on("swiperight", ".pagecontent", function() {
 		$.mobile.changePage($(".prev_a").eq(0).attr('href'));
 	});
 
