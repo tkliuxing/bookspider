@@ -7,6 +7,12 @@ AJAX返回值统一处理
 import simplejson as json
 from django.http import HttpResponse
 
+def must_ajax(func):
+    def view(request, *args, **kwargs):
+        if not request.is_ajax():
+            return HttpResponse(status=400)
+        return func(request, *args, **kwargs)
+    return view
 
 def ajax_success(data=None, **kwargs):
     """

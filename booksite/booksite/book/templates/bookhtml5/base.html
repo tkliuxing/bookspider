@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<title>看小说么?</title>
+	<meta name="keywords" content="看小说么">
+	<meta name="description" content="看小说,么?最简洁的小说阅读网站,提供都市小说.玄幻小说.仙侠小说.历史小说.网游小说.免费小说等在线阅读.">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+	<link rel="apple-touch-icon" href="{% static 'img/iapp.ico.jpg' %}">
+	<link rel="shortcut icon" href="{% static 'img/iapp.ico.jpg' %}" type="image/x-icon">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="看小说么">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" href="{% static 'jmobile/jquery.mobile-1.4.3.min.css' %}">
+	<link rel="stylesheet" href="{% static 'jmobile/jquery.mobile.theme-1.4.3.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/mobile.css' %}">
+	{% if BAIDUTONGJI_ID %}
+		{% include "baidutongji.html" %}
+	{% endif %}
+	{% block headercss %}
+	{% endblock headercss %}
+	<script src="{% static 'flatui/js/jquery-1.10.2.min.js' %}"></script>
+	<script src="{% static 'jmobile/jquery.mobile-1.4.3.min.js' %}"></script>
+	<script>
+		var DATA_DIC = DATA_DIC || {'dn':'day'};
+		DATA_DIC["add_bookmark_url"] = "{% url 'add_bookmark' %}";
+	</script>
+	{% block headerjs %}
+	{% endblock headerjs %}
+</head>
+
+<body>
+{% block content %}
+<div data-role="page" id="home" data-theme="b">
+	<div data-role="header"
+	data-position="fixed">
+		<h1>看小说么?</h1>
+	</div>
+
+	<div data-role="content">
+		{% for book in books %}
+			<div data-role="collapsible" data-iconpos="right" data-mini="true">
+				<h4>{{book.title}}</h4>
+				<p>{{book.author}}-{{book.category}}</p>
+				{{ book.info_html|linebreaks }}
+				<a href="{% url 'mb_bookindex' book.pk %}" data-role="button">阅读</a>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div data-role="footer"
+	data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li>
+				{% if not user.is_authenticated %}
+					<a href="{% url 'mb_login' %}" data-icon="info">登录</a>
+				{% else %}
+					<a href="{% url 'mb_logout' %}" data-icon="action">登出</a>
+				{% endif %}
+				</li>
+				<li><a href="javascript:;" class="dnchange" data-icon="star">昼夜</a></li>
+				<li>
+				{% if user.is_authenticated %}
+					<a href="{% url 'mb_bookmark' %}" class="shelfbtn" data-icon="bars">书架</a>
+				{% else %}
+					<a href="#" data-icon="info">信息</a>
+				{% endif %}
+			</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}
+
+<script src="{% static 'js/mobileapp.js' %}"></script>
+</body>
+
+</html>

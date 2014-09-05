@@ -99,6 +99,14 @@
 		$('.navbar').toggleClass('navbar-inverse');
 		$('.btn').toggleClass('transparent_class');
 	}
+	// 切换夜间模式
+	$(".btn.invert").die().live('click', function() {
+		$('.inv').toggleClass('invert');
+		$('.navbar').toggleClass('navbar-inverse');
+		$('.btn').toggleClass('transparent_class');
+		$.get("./?invert=1", function(data) {}, 'json');
+		return false;
+	});
 	// 加载后续章节
 	$(".readnall").die().live('click', function() {
 		var this_a = $(event.target);
@@ -153,13 +161,6 @@
 	});
 	$(".PGUP").click(function() {
 		window.scrollTo(0, window.scrollY - window.innerHeight + 20);
-	});
-	$(".btn.invert").die().live('click', function() {
-		$('.inv').toggleClass('invert');
-		$('.navbar').toggleClass('navbar-inverse');
-		$('.btn').toggleClass('transparent_class');
-		$.get("./?invert=1", function(data) {}, 'json');
-		return false;
 	});
 	// 更新图片章节
 	$(".pagefixpic").die().live('click', function(event) {

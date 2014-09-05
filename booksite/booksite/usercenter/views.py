@@ -19,7 +19,7 @@ from captcha.fields import CaptchaField
 
 from booksite.book.models import BookPage
 from booksite.usercenter.models import BookMark, User
-from booksite.ajax import ajax_success, ajax_error
+from booksite.ajax import ajax_success, ajax_error, must_ajax
 
 
 class MyAuthenticationForm(AuthenticationForm):
@@ -81,17 +81,15 @@ class MyUserCreationForm(UserCreationForm):
         return user
 
 
-def login_view(request):
+def login_view(request, html5=False):
     if request.user.is_authenticated():
         return redirect("home")
     redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
-    print redirect_to
     if not redirect_to:
         referer = request.META.get("HTTP_REFERER")
         if is_safe_url(url=referer, host=request.get_host()):
             next_path = urlparse.urlparse(referer).path
             loging_url = reverse('login')
-            print next_path, loging_url
             if next_path.startswith(loging_url):
                 redirect("home")
             return redirect(loging_url+"?next="+next_path)
@@ -100,6 +98,34 @@ def login_view(request):
         template_name="usercenter/login.html",
         authentication_form=MyAuthenticationForm
     )
+
+
+def mb_login(request):
+    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    if not redirect_to:
+        referer = request.META.get("HTTP_REFERER")
+        if is_safe_url(url=referer, host=request.get_host()):
+            next_path = urlparse.urlparse(referer).path
+            loging_url = reverse('mb_login')
+            if next_path.startswith(loging_url):
+                redirect_to = reverse('mb')
+            else:
+                redirect_to = next_path
+    if request.method == "GET":
+        return render(request, "bookhtml5/login.html", {'next': redirect_to})
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            auth_login(request, form.get_user())
+            return redirect(redirect_to)
+        else:
+            return render(request, "bookhtml5/login.html", {'next': redirect_to, 'error': True})
+    return Http404
+
+
+def mb_logout(request):
+    auth_logout(request)
+    return redirect('mb')
 
 
 def signup(request):
@@ -130,6 +156,11 @@ def bookmark(request):
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
     return render(request, "usercenter/bookmark.html", C)
 
+@login_required(login_url='/mobile/login/')
+def mb_bookmark(request):
+    C = {}
+    C['bookmarks'] = BookMark.objects.filter(user=request.user)
+    return render(request, "bookhtml5/bookmark.html", C)
 
 @login_required
 def add_bookmark(request):

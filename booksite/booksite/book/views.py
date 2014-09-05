@@ -38,6 +38,26 @@ def home(request):
     C['pagination'] = page
     return render(request, 'book/index.html', C)
 
+def mb_index(request):
+    C = {}
+    books = Book.objects.all().order_by('book_number')
+    if request.GET.get('s',''):
+        books = books.filter(title__contains=request.GET['s'])
+        C['search'] = True
+    if request.GET.get('a',''):
+        books = Book.objects.filter(author=request.GET['a'])
+        C['author'] = request.GET['a']
+        if not books:
+            raise Http404
+    p = Paginator(books, 30)
+    try:
+        page = p.page(int(request.GET.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['books'] = page.object_list
+    C['pagination'] = page
+    return render(request, 'bookhtml5/base.html', C)
+
 def category(request, category):
     CATEGORYS = {
         "a":"侦探推理",
@@ -74,6 +94,18 @@ def bookindex(request, book_id=0):
     C['bookpages'] = bookpages
     return render(request, 'book/bookindex.html', C)
 
+
+def mb_bookindex(request, book_id=0):
+    if book_id == 0:
+        raise Http404
+    book = get_object_or_404(Book, pk=book_id)
+    bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
+    C = {}
+    C['book'] = book
+    C['bookpages'] = bookpages
+    return render(request, 'bookhtml5/bookindex.html', C)
+
+
 @cache_page(60*60)
 def bookindexajax(request, book_id=0):
     if book_id == 0:
@@ -107,6 +139,32 @@ def bookpage(request, page_number=0):
     C['bookpage'] = bookpage
     C['invert'] = request.session.get('invert', False)
     return render(request, 'book/bookpage.html', C)
+
+
+def mb_bookpage(request, page_number=0):
+    if request.GET.get('invert',False):
+        request.session['invert'] = not request.session.get('invert', False)
+        return HttpResponse('')
+    if page_number == 0:
+        raise Http404
+    bookpage = get_object_or_404(BookPage, page_number=page_number)
+    book = get_object_or_404(Book, book_number=bookpage.book_number)
+    # 注册用户的点击数据统计
+    if request.user.is_authenticated():
+        skey = 'time-book-%d'%book.pk
+        now = int(time.time())
+        timeold = request.session.setdefault(skey,now)
+        if (now-timeold) > 21600:
+            request.session[skey] = now
+            book.get_bookrank().add_point()
+        elif now == timeold:
+            book.get_bookrank().add_point()
+    C = {}
+    C['book'] = book
+    C['bookpage'] = bookpage
+    C['invert'] = request.session.get('invert', False)
+    return render(request, 'bookhtml5/bookpage.html', C)
+
 
 def bookrank(request):
     C = {}

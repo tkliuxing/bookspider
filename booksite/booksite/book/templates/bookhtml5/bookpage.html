@@ -1,0 +1,41 @@
+{% extends "bookhtml5/base.html" %}
+
+{% block content %}
+<div data-role="page" data-theme="{%if invert%}b{%else%}a{%endif%}">
+	<div data-role="header">
+		<a href="{% url 'mb' %}" class="homebtn" data-role="button" data-icon="home">首页</a>
+		<h1>{{book.title}}</h1>
+		<a href="{% url 'mb_bookmark' %}" class="shelfbtn" data-role="button" data-icon="bars">书架</a>
+	</div>
+
+	<div class="pagecontent" data-role="content">
+		<h4 style="text-align:center;">{{bookpage.title_html}}</h4>
+		<div class="content" style="font-size: 14px;padding: 0 5px 0 5px;text-indent: 1em;line-height: 18px;word-wrap: break-word;word-break: break-all;">
+			{{bookpage.content_html|linebreaks}}
+		</div>
+	</div>
+
+	<div data-role="footer"
+	data-position="fixed"
+	data-fullscreen="true"
+	data-tap-toggle="false">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="{% url 'mb_bookindex' book.pk %}" data-icon="bullets" data-transition="pop">书目</a></li>
+				{% if bookpage.prev_number %}
+				<li><a class="prev_a" data-icon="arrow-l" href="{% url 'mb_bookpage' bookpage.prev_number %}" data-transition="slide" data-direction="reverse">上一页</a></li>
+				{% else %}
+				<li><a class="prev_a" data-icon="arrow-l" href="{% url 'mb_bookindex' book.pk %}" data-transition="slide" data-direction="reverse">上一页</a></li>
+				{% endif %}
+				<li><a href="javascript:;" class="dnchange" data-icon="recycle">昼夜</a></li>
+				{% if bookpage.next_number %}
+				<li><a class="next_a" data-icon="arrow-r" href="{% url 'mb_bookpage' bookpage.next_number %}" data-transition="slide">下一页</a></li>
+				{% else %}
+				<li><a class="next_a" data-icon="arrow-r" href="{% url 'mb_bookindex' book.pk %}" data-transition="slide">下一页</a></li>
+				{% endif %}
+				<li><a href="#" data-pageid="{{bookpage.pk}}" class="bookmark" data-icon="star">书签</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock content %}
