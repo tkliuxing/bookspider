@@ -1,0 +1,8 @@
+{% for book in books %}
+	<div class="bookinfo" data-role="collapsible" data-iconpos="right" data-mini="true">
+		<h4>{{book.title}}</h4>
+		<p>{{book.author}}-{{book.category}}</p>
+		{{ book.info_html|linebreaks }}
+		<a href="{% url 'mb_bookindex' book.pk %}" class="bookbtn ui-link ui-btn ui-shadow ui-corner-all"" role="button" data-role="button">阅读</a>
+	</div>
+{% endfor %}

@@ -1,0 +1,56 @@
+{% extends "bookhtml5/base.html" %}
+
+{% block content %}
+<div data-role="page" id="search">
+	<div data-role="header"
+	data-position="fixed">
+		<a
+		href="javascript:;"
+		data-role="button"
+		data-rel="back"
+		data-icon="carat-l"
+		data-transition="pop">返回</a>
+		<h1>看小说么?</h1>
+		<a href="{% url 'mb' %}" data-icon="home" data-role="button">首页</a>
+	</div>
+
+	<div data-role="content">
+		<form id="searchform" action="{% url 'mb_search' %}" method="get">
+			<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
+				<label for="s" class="ui-hidden-accessible">书籍名称</label>
+				<input type="text" name="s" id="s" placeholder="书籍名称">
+			</div>
+			<input
+			type="submit"
+			data-role="button"
+			data-icon="search"
+			value="搜索">
+		</form>
+		<div id="searchrel" data-loadurl="{% url 'mb_searchload' %}" data-pagetotal="{{pagination.paginator.num_pages}}" data-currpage="1">
+		{% for book in books %}
+			<div class="bookinfo" data-role="collapsible" data-iconpos="right" data-mini="true">
+				<h4>{{book.title}}</h4>
+				<p>{{book.author}}-{{book.category}}</p>
+				{{ book.info_html|linebreaks }}
+				<a href="{% url 'mb_bookindex' book.pk %}" data-role="button">阅读</a>
+			</div>
+		{% endfor %}
+		</div>
+	</div>
+
+	<div data-role="footer"
+	data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="{% url 'mb' %}" data-icon="home">首页</a></li>
+				<li><a href="javascript:;" class="dnchange" data-icon="star">昼夜</a></li>
+				{% if not user.is_authenticated %}
+				<li><a href="{% url 'mb_login' %}" data-icon="info">登录</a></li>
+				{% else %}
+				<li><a href="{% url 'mb_bookmark' %}" data-transition="pop" data-icon="bars">书架</a></li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock content %}

@@ -1,4 +1,33 @@
 (function($) {
+	// utils function
+	function geturlqueryobj(url) {
+		var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+		var paraObj = {}
+		for (i = 0; j = paraString[i]; i++) {
+			paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+		}
+		delete(paraObj[""])
+		return paraObj
+	}
+
+	function urlparse(paras) {
+		var paraObj = geturlqueryobj(location.href)
+		var returnValue = paraObj[paras.toLowerCase()];
+		if (typeof(returnValue) == "undefined") {
+			return "";
+		} else {
+			return returnValue;
+		}
+	}
+
+	function genurlquerystring(obj) {
+		var qs = "";
+		for (val in obj) {
+			qs = qs + val + "=" + obj[val] + "&";
+		}
+		qs = "?" + qs;
+		return qs;
+	}
 	// using jQuery
 	function getCookie(name) {
 		var cookieValue = null;
@@ -65,10 +94,15 @@
 			$("[data-theme='b']").attr('data-theme', 'a');
 			$(".ui-page-theme-b").addClass("ui-page-theme-a");
 			$(".ui-page-theme-b").removeClass("ui-page-theme-b");
+			$.get("./?invert=1", function(data) {}, 'json');
 		} else {
 			$("[data-theme='a']").attr('data-theme', 'b');
 			$(".ui-page-theme-a").addClass("ui-page-theme-b");
 			$(".ui-page-theme-a").removeClass("ui-page-theme-a");
+			$.get("./?invert=1", function(data) {}, 'json');
+		}
+		if (DATA_DIC.footer_hidden === true) {
+			$(".ui-footer-fullscreen").toolbar("hide");
 		}
 	});
 
@@ -108,7 +142,55 @@
 		}, 'json');
 		return false;
 	});
-
+	// 页面底部加载书籍列表
+	$(window).on('scrollstop', function() {
+		if ($("#search").length) {
+			var tag = "#searchrel";
+		} else {
+			if ($("#home").length) {
+				var tag = "#indexrel";
+			} else {
+				return false;
+			}
+		}
+		var now = Date.now();
+		if (!$(tag).data("timestap")) {
+			$(tag).data("timestap", now);
+		} else {
+			if (now - parseInt($(tag).data("timestap")) < 600) {
+				return false;
+			}
+		}
+		var scrollTop = $(window).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(window).height();
+		if (scrollTop + windowHeight >= scrollHeight) {
+			var current_page = parseInt($(tag).data("currpage"));
+			var total_page = parseInt($(tag).data("pagetotal"));
+			if (current_page < total_page) {
+				console.log(Date.now());
+				var next_page = current_page + 1;
+				var data = {
+					'p': next_page
+				};
+				if (urlparse('s')) {
+					data['s'] = decodeURIComponent(urlparse('s'));
+				}
+				$.get($(tag).data("loadurl"), data, function(data) {
+					if (data.success) {
+						$(tag).append(data.data);
+						$(".bookinfo").collapsible({
+							iconpos: "right",
+							mini: true
+						});
+						// $(".bookbtn").button();
+					}
+					$(tag).data("currpage", next_page);
+					$(tag).data("timestap", now);
+				}, 'json');
+			}
+		}
+	})
 	// tap
 	$.mobile.document.on('vclick', '.pagecontent', function(event) {
 		var window_width = parseInt(window.screen.availWidth);
@@ -118,7 +200,12 @@
 			return false;
 		}
 		if ((window_width / 5 * 2) < click_x && click_x < (window_width / 5 * 3)) {
-			$(".ui-footer").toolbar("toggle");
+			$(".ui-footer-fullscreen").toolbar("toggle");
+			if (DATA_DIC.footer_hidden === true) {
+				DATA_DIC.footer_hidden = false;
+			} else {
+				DATA_DIC.footer_hidden = true;
+			}
 			return false;
 		}
 		if ((window_width / 5 * 3) < click_x) {

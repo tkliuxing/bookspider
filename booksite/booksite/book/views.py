@@ -41,22 +41,68 @@ def home(request):
 def mb_index(request):
     C = {}
     books = Book.objects.all().order_by('book_number')
-    if request.GET.get('s',''):
-        books = books.filter(title__contains=request.GET['s'])
-        C['search'] = True
     if request.GET.get('a',''):
         books = Book.objects.filter(author=request.GET['a'])
         C['author'] = request.GET['a']
         if not books:
             raise Http404
-    p = Paginator(books, 30)
+    p = Paginator(books, 15)
+    page = p.page(1)
+    C['books'] = page.object_list
+    C['pagination'] = page
+    return render(request, 'bookhtml5/base.html', C)
+
+
+def mb_search(request):
+    C = {}
+    books = Book.objects.all().order_by('book_number')
+    if request.GET.get('s',''):
+        books = books.filter(title__contains=request.GET['s'])
+        C['search'] = True
+    else:
+        books = []
+    p = Paginator(books, 15)
     try:
         page = p.page(int(request.GET.get('p', 1)))
     except:
         page = p.page(1)
     C['books'] = page.object_list
     C['pagination'] = page
-    return render(request, 'bookhtml5/base.html', C)
+    print page.paginator.num_pages
+    return render(request, 'bookhtml5/search.html', C)
+
+
+def mb_searchload(request):
+    C = {}
+    books = Book.objects.all().order_by('book_number')
+    if request.GET.get('s',''):
+        books = books.filter(title__contains=request.GET['s'])
+        C['search'] = True
+    else:
+        books = []
+    print request.GET.get('s','')
+    p = Paginator(books, 15)
+    try:
+        page = p.page(int(request.GET.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['books'] = page.object_list
+    data = render_to_string('bookhtml5/searchload.html', C)
+    return ajax_success(data=data)
+
+
+def mb_load(request):
+    C = {}
+    books = Book.objects.all().order_by('book_number')
+    p = Paginator(books, 15)
+    try:
+        page = p.page(int(request.GET.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['books'] = page.object_list
+    data = render_to_string('bookhtml5/searchload.html', C)
+    return ajax_success(data=data)
+
 
 def category(request, category):
     CATEGORYS = {

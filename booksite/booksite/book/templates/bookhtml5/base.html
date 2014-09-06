@@ -3,6 +3,7 @@
 <html lang="zh-CN">
 <head>
 	<title>看小说么?</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="keywords" content="看小说么">
 	<meta name="description" content="看小说,么?最简洁的小说阅读网站,提供都市小说.玄幻小说.仙侠小说.历史小说.网游小说.免费小说等在线阅读.">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
@@ -38,14 +39,16 @@
 	</div>
 
 	<div data-role="content">
+		<div id="indexrel" data-loadurl="{% url 'mb_load' %}" data-pagetotal="{{pagination.paginator.num_pages}}" data-currpage="1">
 		{% for book in books %}
-			<div data-role="collapsible" data-iconpos="right" data-mini="true">
+			<div calss="bookinfo" data-role="collapsible" data-iconpos="right" data-mini="true">
 				<h4>{{book.title}}</h4>
 				<p>{{book.author}}-{{book.category}}</p>
 				{{ book.info_html|linebreaks }}
 				<a href="{% url 'mb_bookindex' book.pk %}" data-role="button">阅读</a>
 			</div>
 		{% endfor %}
+		</div>
 	</div>
 
 	<div data-role="footer"
@@ -66,7 +69,8 @@
 				{% else %}
 					<a href="#" data-icon="info">信息</a>
 				{% endif %}
-			</li>
+				</li>
+				<li><a href="{% url 'mb_search' %}" data-icon="search" data-transition="pop">搜索</a></li>
 			</ul>
 		</div>
 	</div>
