@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import time
+import difflib
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -10,6 +11,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django import forms
 
 from booksite.ajax import ajax_success, ajax_error
 from .models import Book, BookPage, BookRank
@@ -284,5 +286,53 @@ def book_fix_pic(request, book_id=0):
         raise Http404
     book = get_object_or_404(Book, pk=book_id)
     update_book_pic_page.delay(book.book_number, 200)
+    return ajax_success()
+
+
+@login_required
+def edit_line(request):
+    if not request.user.is_superuser:
+        raise Http404
+    class CheckForm(forms.Form):
+        pagenum = forms.ModelChoiceField(queryset=BookPage.objects.all())
+        linenum = forms.IntegerField(min_value=0)
+        pageline = forms.CharField(max_length=2000)
+    if request.method != "POST":
+        raise HttpResponse(status_code=405)
+    form = CheckForm(request.POST)
+    if form.is_valid():
+        page = form.cleaned_data["pagenum"]
+        page_contents = page.content.split("\n")
+        line_number = form.cleaned_data["linenum"]
+        for i,e in enumerate(page_contents):
+            if i == line_number:
+                dif = difflib.Differ()
+                diffline = ("\n".join(
+                    list(dif.compare(e.splitlines(1),form.cleaned_data["pageline"].splitlines(1)))
+                    )
+                ).replace(" ","　").replace("-","－").replace("?","？").replace("+","＋")
+                repr(diffline)
+                # print diffline
+                page_contents[i] = form.cleaned_data["pageline"]
+        page.content = "\n".join(page_contents)
+        page.save()
+        return ajax_success(form.cleaned_data["pageline"])
+    else:
+        return ajax_error(form.errors.as_json())
+
+@login_required
+def del_line(request, page_id=0):
+    if request.method != "POST":
+        raise HttpResponse(status_code=405)
+    if not request.user.is_superuser:
+        raise Http404
+    page = get_object_or_404(BookPage, pk=page_id)
+    page_contents = page.content.split("\n")
+    try:
+        page_contents.pop(int(request.POST["ln"]))
+    except:
+        return ajax_error("非法数据!")
+    page.content = "\n".join(page_contents)
+    page.save()
     return ajax_success()
 

@@ -39,6 +39,8 @@ urlpatterns = patterns('',
     url(r'^fixpic/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_fix_pic', name='pagefixpic'),
     url(r'^fixpic/book/(?P<book_id>\d+)/$', 'booksite.book.views.book_fix_pic', name='bookfixpic'),
     url(r'^taskcheck/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_task_check', name='pagetaskcheck'),
+    url(r'^lineupdate/$', 'booksite.book.views.edit_line', name="lineupdate"),
+    url(r'^lineremove/(?P<page_id>\d+)/$', 'booksite.book.views.del_line', name="del_line"),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^usercenter/', include(usercenter_urls)),

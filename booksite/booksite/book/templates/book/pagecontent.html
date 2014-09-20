@@ -1,4 +1,4 @@
-{% load static %}
+{% load static paragraphedit %}
 {% for bookpage in bookpages %}
 <div class="col-md-12 text-center">
 	<h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
@@ -22,10 +22,10 @@
 </div>
 <div class="col-md-12 hidden-xs">&nbsp;</div>
 <div class="col-md-1 hidden-xs">&nbsp;</div>
-<div class="col-md-10 pagecontent inv{%if invert%} invert{%endif%}">
+<div class="col-md-10 pagecontent inv{%if invert%} invert{%endif%}" data-pagenum="{{bookpage.pk}}" data-dellurl="{% url 'del_line' bookpage.pk %}">
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGDOWN"></div>
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGUP"></div>
-	{{bookpage.content_html|linebreaks}}
+	{{bookpage.content_html|paragraphlines}}
 </div>
 <div class="col-md-1 hidden-xs">&nbsp;</div>
 {% if user.is_superuser %}

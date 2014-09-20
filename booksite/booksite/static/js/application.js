@@ -1,4 +1,6 @@
 (function($) {
+	ALLOWKEY = true;
+	LOADMORE = false;
 	// using jQuery
 	function getCookie(name) {
 		var cookieValue = null;
@@ -42,7 +44,6 @@
 			height: '42px',
 		});
 		new_a.append($("#CAPTCHA>img"));
-		console.log(new_a);
 		$("#CAPTCHA").prepend(new_a);
 		$("#CAPTCHA>a.recaptcha").click(function(event) {
 			$.get($("#CAPTCHA").data('url'), function(data) {
@@ -67,15 +68,17 @@
 	}
 	// 键盘翻页
 	$(document).keydown(function(e) {
-		var prev = $(".prev_page_a").eq(0).attr("href");
-		var next = $(".next_page_a").eq(0).attr("href");
-		switch (e.which) {
-			case 37:
-				location.href = prev;
-				break;
-			case 39:
-				location.href = next;
-				break;
+		if (ALLOWKEY && !LOADMORE) {
+			var prev = $(".prev_page_a").eq(0).attr("href");
+			var next = $(".next_page_a").eq(0).attr("href");
+			switch (e.which) {
+				case 37:
+					location.href = prev;
+					break;
+				case 39:
+					location.href = next;
+					break;
+			}
 		}
 	});
 	// 双击滚动
@@ -113,6 +116,7 @@
 		var page_number = this_a.data('pn');
 		$.get('/nallpage/' + page_number + '/', function(data) {
 			if (data.success) {
+				LOADMORE = true;
 				$('.nextbox').remove();
 				$('#FIELD').append($(data.data));
 				$('.col-md-12.text-center.pagebutton').remove();
@@ -193,4 +197,71 @@
 		}, 'json');
 		return false;
 	});
+	// 编辑段落内容
+	if ($(".modal").length) {
+		$(".pagecontent>p").die().live('click', function(event) {
+			var this_p = $(event.target);
+			$(".modal").modal('toggle');
+			ALLOWKEY = false;
+			$("#Lineedit").find("textarea").val(this_p.text());
+			$(document.getElementsByName("linenum")).val(this_p.data("parnum"));
+			$(document.getElementsByName("pagenum")).val(this_p.parent().data("pagenum"));
+			$("#Lineedit").unbind('submit');
+			$("#Lineedit").submit(function() {
+				$.post($("#Lineedit").attr("action"), $("#Lineedit").serializeArray(), function(data) {
+					if (data.success) {
+						$("#Savelinedone").text("保存成功!");
+						$("#Savelinedone").slideDown();
+						setTimeout(function() {
+							$("#Savelinedone").slideUp();
+						}, 2000);
+						this_p.text($("#Lineedit").find("textarea").val());
+					} else {
+						$("#Savelinedone").text(data.error_message);
+						$("#Savelinedone").slideDown();
+						setTimeout(function() {
+							$("#Savelinedone").slideUp();
+						}, 2000);
+					}
+				}, 'json');
+				return false;
+			});
+			$("#Delline").die().live('click', function() {
+				var post_url = this_p.parent().data("dellurl");
+				$.post(post_url, {
+					"ln": this_p.data("parnum")
+				}, function(data) {
+					if (data.success) {
+						$("#Savelinedone").text("删除成功!");
+						$("#Savelinedone").slideDown();
+						setTimeout(function() {
+							$("#Savelinedone").slideUp();
+							$(".modal").modal('toggle');
+							ALLOWKEY = true;
+						}, 1000);
+						var this_ln = parseInt(this_p.data("parnum"));
+						$.each(this_p.parent().find("p"), function(i, elem) {
+							var line_num = parseInt($(elem).data("parnum"));
+							if (line_num > this_ln) {
+								var to_num = line_num - 1;
+								$(elem).data("parnum", to_num.toString());
+								$(elem).attr("data-parnum", to_num.toString());
+							}
+						});
+						this_p.remove();
+					} else {
+						$("#Savelinedone").text(data.error_message);
+						$("#Savelinedone").slideDown();
+						setTimeout(function() {
+							$("#Savelinedone").slideUp();
+						}, 2000);
+					}
+				}, 'json');
+			});
+		});
+		$("#Closemodal").die().live('click', function() {
+			$(".modal").modal('toggle');
+			ALLOWKEY = true;
+		});
+	}
 })(jQuery);

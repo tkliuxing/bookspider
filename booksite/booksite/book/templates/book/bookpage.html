@@ -1,5 +1,5 @@
 {% extends "book/base.html" %}
-{% load static %}
+{% load static paragraphedit %}
 {% block pagetitle %} -- {{book.title}} {{bookpage.title_html}}{% endblock pagetitle %}
 {% block keymeta %}{{book.title}};{{book.author}}{% endblock keymeta %}
 {% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock keydesc %}
@@ -14,6 +14,14 @@
 	DATA_DIC["add_bookmark_url"] = "{% url 'add_bookmark' %}";
 	DATA_DIC["invert"] = {%if invert%}true;{%else%}false;{%endif%}
 </script>
+{% if user.is_superuser %}
+<style>
+.pagecontent>p:hover{
+	cursor: pointer;
+	background-color: #FFFCD5;
+}
+</style>
+{% endif %}
 {% endblock headerjs %}
 
 {% block content %}
@@ -58,10 +66,10 @@
 	</div>
 	<div class="col-md-12 hidden-xs">&nbsp;</div>
 	<div class="col-md-1 hidden-xs">&nbsp;</div>
-	<div class="col-md-10 pagecontent inv">
+	<div class="col-md-10 pagecontent inv" data-pagenum="{{bookpage.pk}}" data-dellurl="{% url 'del_line' bookpage.pk %}">
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGDOWN"></div>
 		<div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGUP"></div>
-		{{bookpage.content_html|linebreaks}}
+		{{bookpage.content_html|paragraphlines}}
 	</div>
 	<div class="col-md-1 hidden-xs">&nbsp;</div>
 	<div class="col-md-12 text-center pagebutton">
@@ -112,3 +120,32 @@
 </div>
 {% endblock content %}
 
+{% block footerblock %}
+{% if user.is_superuser %}
+<div class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form id="Lineedit" action="{% url 'lineupdate' %}" method="post">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+					<h4 class="modal-title">段落编辑</h4>
+				</div>
+				<div class="modal-body">
+					<textarea name="pageline" style="width: 100%;height: 150px;resize: none;"></textarea>
+					<input type="hidden" value="" name="linenum">
+					<input type="hidden" value="" name="pagenum">
+					<div id="Savelinedone" class="alert alert-warning" style="display:none;" role="alert">
+						保存成功!
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button id="Closemodal" type="button" class="btn btn-default">关闭</button>
+					<button id="Delline" type="button" class="btn btn-danger">删除本行</button>
+					<button type="submit" class="btn btn-primary">保存改动</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock footerblock %}
