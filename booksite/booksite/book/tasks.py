@@ -76,7 +76,7 @@ class KuaiYan(object):
         rp = re.compile(ur".*(\(手打中文.*\)).*")
         for i in rp.findall(content):
             content = content.replace(i, '')
-        return content
+        return "%s\n\n%s" % (match_a.text, content)
 
 
 @shared_task
