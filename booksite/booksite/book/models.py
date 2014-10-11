@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import hashlib
+import cPickle as pickle
 from django.db import models
 from django.db import connection
 from django.core.urlresolvers import reverse
@@ -77,6 +79,7 @@ class BookPage(models.Model):
 
 
 class BookRank(models.Model):
+
     class Meta:
         verbose_name = _('BookRank')
         verbose_name_plural = _('BookRanks')
@@ -95,28 +98,79 @@ class BookRank(models.Model):
 
     def add_point(self):
         cursor = connection.cursor()
-        cursor.execute("\
-            update book_bookrank \
-            set all_point=all_point+1,mon_point=mon_point+1,wek_point=wek_point+1 \
-            where id=%s;", [self.pk])
+        cursor.execute(
+            "update book_bookrank "
+            "set all_point=all_point+1,mon_point=mon_point+1,wek_point=wek_point+1 "
+            "where id=%s;", [self.pk])
 
     def add_push(self):
         cursor = connection.cursor()
-        cursor.execute("\
-            update book_bookrank \
-            set all_push=all_push+1,mon_push=mon_push+1,wek_push=wek_push+1 \
-            where id=%s;", [self.pk])
+        cursor.execute(
+            "update book_bookrank "
+            "set all_push=all_push+1,mon_push=mon_push+1,wek_push=wek_push+1 "
+            "where id=%s;", [self.pk])
 
     def add_fav(self):
         cursor = connection.cursor()
-        cursor.execute("\
-            update book_bookrank \
-            set all_fav=all_fav+1 \
-            where id=%s;", [self.pk])
+        cursor.execute(
+            "update book_bookrank "
+            "set all_fav=all_fav+1 "
+            "where id=%s;", [self.pk])
 
     def sub_fav(self):
         cursor = connection.cursor()
-        cursor.execute("\
-            update book_bookrank \
-            set all_fav=all_fav-1 \
-            where id=%s;", [self.pk])
+        cursor.execute(
+            "update book_bookrank "
+            "set all_fav=all_fav-1 "
+            "where id=%s;", [self.pk])
+
+
+def replace_pipelines(page_content):
+    replace_rule = KeyValueStorage.objects.get_or_create(
+        key="REPLACE_RULE",
+        defaults={"key": "REPLACE_RULE", "value": "", "long_value": ""}
+    )
+    if not replace_rule.value:
+        return page_content
+
+
+class KeyValueStorage(models.Model):
+
+    """
+    当值数据过大时, 保存到 long_value 字段,
+    value 字段保存 long_value 的 hashlib.sha256(self.long_value).hexdigest()
+    """
+    key = models.CharField(_('键名'), max_length=50, db_index=True)
+    value = models.CharField(_('短值'), max_length=128, blank=True)
+    long_value = models.TextField(_('长值'), blank=True, default='')
+
+    class Meta:
+        verbose_name = _('KeyValueStorage')
+        verbose_name_plural = _('KeyValueStorages')
+
+    def __unicode__(self):
+        return self.key
+
+    def save(self, *args, **kwargs):
+        if self.long_value:
+            self.value = hashlib.sha256(self.long_value).hexdigest()
+        super(KeyValueStorage, self).save(*args, **kwargs)
+
+    def val():
+        def fget(self):
+            if not self.long_value:
+                return self.value
+            else:
+                return pickle.loads(self.long_value)
+
+        def fset(self, value):
+            if isinstance(value, (str, unicode)) and len(value) < 128:
+                self.value = value
+                self.long_value = ""
+            else:
+                self.long_value = pickle.dumps(value)
+
+        def fdel(self):
+            pass
+        return locals()
+    val = property(**val())
