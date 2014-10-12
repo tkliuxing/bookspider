@@ -24,6 +24,11 @@ html5_urls = patterns('',
     url(r'^page/(?P<page_number>\d+)/$', 'booksite.book.views.mb_bookpage', name='mb_bookpage'),
 )
 
+background_urls = patterns('booksite.background.views',
+    url(r'^$', 'index', name="home"),
+    url(r'^replace/$', 'replace', name="replace"),
+)
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'booksite.views.home', name='home'),
@@ -38,7 +43,8 @@ urlpatterns = patterns('',
     url(r'^nallpage/(?P<page_id>\d+)/$', 'booksite.book.views.load_nall_page', name='nallpage'),
     url(r'^fixpic/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_fix_pic', name='pagefixpic'),
     url(r'^fixpic/book/(?P<book_id>\d+)/$', 'booksite.book.views.book_fix_pic', name='bookfixpic'),
-    url(r'^taskcheck/page/(?P<page_id>\d+)/$', 'booksite.book.views.page_task_check', name='pagetaskcheck'),
+    url(r'^taskcheck/page/(?P<page_id>\d+)/$',
+       'booksite.book.views.page_task_check', name='pagetaskcheck'),
     url(r'^lineupdate/$', 'booksite.book.views.edit_line', name="lineupdate"),
     url(r'^lineremove/(?P<page_id>\d+)/$', 'booksite.book.views.del_line', name="del_line"),
 
@@ -50,6 +56,8 @@ urlpatterns = patterns('',
     url(r'^captcha/', include('captcha.urls')),
 
     url(r'^mobile/', include(html5_urls)),
+
+    url(r'^bbg/', include(background_urls, namespace='bbg', app_name='booksite.background')),
 )
 
 if settings.DEBUG:

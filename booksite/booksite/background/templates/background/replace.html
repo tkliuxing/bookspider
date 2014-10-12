@@ -1,0 +1,44 @@
+{% extends "background/base.html" %}
+
+{% block content %}
+<div id="NAVID" data-nav="replace"></div>
+<div class="row">
+	<div class="col-xs-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				替换规则
+				<a href="javascript:void(0)" class="btn btn-sm btn-success pull-right">创建</a>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<td>规则</td>
+							<td style="width:150px;">操作</td>
+						</tr>
+					</thead>
+					<tbody>
+				{% for rep in replace_rule %}
+						<tr>
+							<td>{{rep}}</td>
+							<td class="table-action">
+								<a href="javascript:void(0)" class="btn btn-xs btn-primary">应用</a>
+								<a href="javascript:void(0)" class="btn btn-xs btn-danger">删除</a>
+							</td>
+						</tr>
+				{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">替换历史</div>
+			<div class="panel-body">
+				
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}

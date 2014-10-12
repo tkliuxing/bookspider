@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'captcha',
     'booksite.book',
     'booksite.usercenter',
+    'booksite.background',
 )
 
 MIDDLEWARE_CLASSES = (

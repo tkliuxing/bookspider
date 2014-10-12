@@ -125,15 +125,6 @@ class BookRank(models.Model):
             "where id=%s;", [self.pk])
 
 
-def replace_pipelines(page_content):
-    replace_rule = KeyValueStorage.objects.get_or_create(
-        key="REPLACE_RULE",
-        defaults={"key": "REPLACE_RULE", "value": "", "long_value": ""}
-    )
-    if not replace_rule.value:
-        return page_content
-
-
 class KeyValueStorage(models.Model):
 
     """
@@ -151,17 +142,12 @@ class KeyValueStorage(models.Model):
     def __unicode__(self):
         return self.key
 
-    def save(self, *args, **kwargs):
-        if self.long_value:
-            self.value = hashlib.sha256(self.long_value).hexdigest()
-        super(KeyValueStorage, self).save(*args, **kwargs)
-
     def val():
         def fget(self):
             if not self.long_value:
                 return self.value
             else:
-                return pickle.loads(self.long_value)
+                return pickle.loads(str(self.long_value))
 
         def fset(self, value):
             if isinstance(value, (str, unicode)) and len(value) < 128:
@@ -169,6 +155,7 @@ class KeyValueStorage(models.Model):
                 self.long_value = ""
             else:
                 self.long_value = pickle.dumps(value)
+                self.value = hashlib.sha256(self.long_value).hexdigest()
 
         def fdel(self):
             pass

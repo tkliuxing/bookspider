@@ -3,23 +3,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-	<title>看小说,么?{% spaceless %}{% block pagetitle %}{% endblock pagetitle %}{% endspaceless %}</title>
-	<meta name="keywords" content="{% spaceless %}{% block keymeta %}看小说么{% endblock keymeta %}{% endspaceless %}">
-	<meta name="description" content="{% spaceless %}{% block keydesc %}看小说,么?最简洁的小说阅读网站,提供都市小说.玄幻小说.仙侠小说.历史小说.网游小说.免费小说等在线阅读.{% endblock keydesc %}{% endspaceless %}">
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
-	<link rel="apple-touch-icon" href="{% static 'img/iapp.ico.jpg' %}">
-	<link rel="shortcut icon" href="{% static 'img/iapp.ico.jpg' %}" type="image/x-icon">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-title" content="看小说么">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	{% assets "css_all" %}
-		<link href="{{ ASSET_URL }}" rel="stylesheet">
-	{% endassets %}
-	{% if BAIDUTONGJI_ID %}
-		{% include "baidutongji.html" %}
-	{% endif %}
+	<title>看小说么?</title>
+	<link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap.min.css' %}">
+	{# {% assets "css_all_bkg" %} #}
+		{# <link href="{{ ASSET_URL }}" rel="stylesheet"> #}
+	{# {% endassets %} #}
+	<link rel="stylesheet" href="{% static 'botspmd/css/material.css' %}">
+	<link rel="stylesheet" href="{% static 'botspmd/css/ripples.css' %}">
+	<link rel="stylesheet" href="{% static 'css/background.css' %}">
 	{% block headercss %}
 	{% endblock headercss %}
+	<script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
 	{% block headerjs %}
 	<script>var DATA_DIC = DATA_DIC || {}</script>
 	{% endblock headerjs %}
@@ -27,7 +21,7 @@
 </head>
 <body class="inv">
 {% spaceless %}
-	<nav class="navbar navbar-default" role="navigation">
+	<nav class="navbar navbar-inverse" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
@@ -53,7 +47,7 @@
 						<a href="{% url 'bookrank' %}">排行榜</a>
 					</li>
 					{% if user.is_superuser %}
-					<li>
+					<li class="active">
 						<a href="{% url 'bbg:home' %}">管理后台</a>
 					</li>
 					{% endif %}
@@ -76,20 +70,26 @@
 					{% endif %}
 				</ul>
 				<form class="navbar-form navbar-right" action="/" method="get" role="search">
-					<div class="form-group">
-						<div class="input-group">
-							<input name="s" class="form-control" id="navbarInput-01" type="search" placeholder="搜索书籍标题">
-							<span class="input-group-btn">
-								<button type="submit" class="btn"><span class="fui-search"></span></button>
-							</span>
-						</div>
-					</div>
+					<input name="s" class="form-control col-lg-8 empty" type="search" placeholder="搜索书籍标题" />
 				</form>
 			</div>
 		</div>
 	</nav>
 {% endspaceless %}
-	<div class="container">{% block content %}{% endblock content %}</div>
+	<div class="container">
+		<div class="col-xs-2">
+			<div class="lnav affix">
+				<ul class="nav nav-pills nav-stacked">
+					<li class="active"><a href="{% url 'bbg:home' %}">数据总览</a></li>
+					<li id="lnav-replace"><a href="{% url 'bbg:replace' %}">内容替换</a></li>
+					<li class="disabled"><a href="javascript:void(0)">Disabled</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-xs-10 no-padding">
+		{% block content %}{% endblock content %}
+		</div>
+	</div>
 	{% block footerblock %}{% endblock footerblock %}
 	<footer class="bs-docs-footer inv">
 		<div class="container text-center">
@@ -105,7 +105,7 @@
 			</ul>
 		</div>
 	</footer>
-	{% assets "js_all" %}
+	{% assets "js_all_bkg" %}
 		<script src="{{ ASSET_URL }}" rel="stylesheet"></script>
 	{% endassets %}
 	{% block footerjs %}
