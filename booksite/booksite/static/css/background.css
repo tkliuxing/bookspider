@@ -28,6 +28,26 @@
 .no-padding{
 	padding: 0;
 }
+.b-bottom{
+	border-bottom: 1px solid #ddd;
+}
+.b-right{
+	border-right: 1px solid #ddd;
+}
+.alert h3,h2,h1{
+	line-height: 1;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.page-radio{
+	padding-left: 10px;
+}
+.page-radio label{
+	width: 60px;
+}
+.page-radio label span{
+	left: 30px;
+}
 
 @media (min-width: 768px){
 	.lnav.affix{

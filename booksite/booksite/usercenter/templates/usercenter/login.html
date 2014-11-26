@@ -6,8 +6,6 @@
 	<div class="hidden-xs alert alert-success text-center">
 		<p>
 			<h5>登录</h5>
-			<span>"今天你来看小说么?"</span><br/>
-			<span>"废话,难不成还来看你么?"</span>
 		</p>
 	</div>
 	<div class="well">
@@ -44,6 +42,9 @@
 			</div>
 			{% endif %}
 		</form>
+	</div>
+	<div class="hidden-xs text-center" style="margin-bottom: 20px;">
+		<a href="{% url 'password_reset' %}">找回密码</a>
 	</div>
 </div>
 <div class="col-md-3">&nbsp;</div>

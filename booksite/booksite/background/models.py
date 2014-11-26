@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
+import re
 import hashlib
 import cPickle as pickle
 import time
 import itertools
 from booksite.book.models import KeyValueStorage
+
+
+class GetRuleError(Exception):
+    pass
 
 
 class ReplaceRule(object):
@@ -24,25 +29,59 @@ class ReplaceRule(object):
         return unicode(self).encode("utf-8")
 
     def __unicode__(self):
-        return u"%r -> %r" % (self.rule_res, self.replace_to)
+        try:
+            return u"'%s' -> '%s'" % (
+                self.rule_res.decode("utf-8"),
+                self.replace_to.decode("utf-8"),
+            )
+        except:
+            return u"'%s' -> '%s'" % (
+                self.rule_res,
+                self.replace_to,
+            )
 
     def get_hash(self):
         pickle_data = pickle.dumps([self.rule_res, self.replace_to])
         return hashlib.sha256(pickle_data).hexdigest()
 
+    def replace(self, content, flags=0):
+        rex = re.compile(self.rule_res, flags)
+        return rex.sub(self.replace_to, content)
+
+    def findall(self, content, flags=0):
+        rex = re.compile(self.rule_res, flags)
+        return rex.findall(content)
+
+    def match(self, content, flags=0):
+        rex = re.compile(self.rule_res, flags)
+        return rex.search(content)
+
+    @classmethod
+    def make_rule(cls, db_obj):
+        rule = cls(db_obj.val["rule_res"], db_obj.val["replace_to"])
+        rule.db_data = db_obj
+        rule.hash = db_obj.value
+        return rule
+
     @classmethod
     def all(cls):
-        def make_rule(db_obj):
-            rule = cls(db_obj.val["rule_res"], db_obj.val["replace_to"])
-            rule.db_data = db_obj
-            rule.hash = db_obj.value
-            return rule
-        all_rule_data = KeyValueStorage.objects.filter(key__startswith=cls.KEY_PREFIX)
+        all_rule_data = KeyValueStorage.objects.filter(key__startswith=cls.KEY_PREFIX).order_by("-key")
         iter_data = itertools.imap(
-            make_rule,
+            cls.make_rule,
             all_rule_data
         )
         return iter_data
+
+    @classmethod
+    def get(cls, pk=0):
+        if not pk:
+            raise GetRuleError("primary key error! primary key[%s]" % pk)
+        try:
+            db_data = KeyValueStorage.objects.get(pk=pk)
+        except KeyValueStorage.DoesNotExist:
+            raise GetRuleError("DoesNotExist! primary key[%s]" % pk)
+        else:
+            return cls.make_rule(db_data)
 
     def save(self):
         self.db_data.val = {

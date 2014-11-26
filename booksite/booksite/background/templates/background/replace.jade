@@ -1,0 +1,87 @@
+| {% extends "background/base.html" %}
+- block content
+	#NAVID(data-nav="replace")
+	.row
+		.col-xs-6
+			.panel.panel-primary
+				.panel-heading 替换规则
+					button.btn.btn-sm.btn-success.pull-right(data-target="#myModal",data-toggle="modal") 创建
+				.panel-body
+					table.table
+						thead
+							tr
+								td 规则
+								td(style="width:150px;") 操作
+						tbody
+							- for rep in replace_rule
+								tr
+									td!= rep
+									td
+										button.btn.btn-xs.btn-primary.apply_rule(data-url="{%url 'bbg:apply_rule' rep.db_data.pk%}") 应用
+										a.btn.btn-xs.btn-success(href="{%url 'bbg:edit_rule' rep.db_data.pk%}") 编辑
+										a.btn.btn-xs.btn-danger(href="{%url 'bbg:delete_rule' rep.db_data.pk%}") 删除
+		.col-xs-6
+			.panel.panel-primary
+				.panel-heading 快速替换
+				.panel-body
+					.col-xs-6.text-center(style="border-right:1px solid #ddd;")
+						a.btn.btn-primary.btn-lg.btn-raised(href="{% url 'bbg:replace_page' %}") 替换章节
+					.col-xs-6.text-center
+						a.btn.btn-success.btn-lg.btn-raised(href="{% url 'bbg:replace_book' %}") 替换书籍
+	form#myModal.modal.fade.form-horizontal(method="POST",action=".")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss="modal",type="button")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title 创建替换规则
+				.modal-body
+					- with create_rule_form as CRF
+						| {% csrf_token %}
+						.form-group(class="{%if CRF.rule_res.errors%}has-error{%endif%}")
+							label.col-lg-2.control-label(for="inputRe")!= CRF.rule_res.label
+							.col-lg-10
+								input#inputRe.form-control(type="text",value="{{CRF.rule_res.value|default:''}}",name="rule_res")
+								span.help-block!= CRF.rule_res.errors
+						.form-group(class="{%if CRF.replace_to.errors%}has-error{%endif%}")
+							label.col-lg-2.control-label(for="inputReplace")!= CRF.replace_to.label
+							.col-lg-10
+								input#inputReplace.form-control(type="text",value="{{CRF.replace_to.value|default:''}}",name="replace_to")
+								span.help-block!= CRF.replace_to.errors
+				.modal-footer
+					button.btn.btn-primary.btn-raised(type="submit") 保存
+
+	form#replaceModal.modal.fade.form-horizontal(method="GET",action=".")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss="modal",type="button")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title 创建替换规则
+				.modal-body
+					.form-group
+						label.col-lg-2.control-label(for="Bi") 书籍编号
+						.col-lg-10
+							input#Bi.form-control(type="text",name="bi")
+					.form-group
+						label.col-lg-2.control-label(for="Pn") 章节号码
+						.col-lg-10
+							input#Pn.form-control(type="text",name="pn")
+				.modal-footer
+					input.btn.btn-primary.btn-raised(type="submit") 保存
+- block footerjs
+	if create_rule_form.errors or edit_rule
+		script
+			$(function(){
+				$("#myModal").modal('show');
+			});
+	script
+		$(function(){
+			$(".apply_rule").click(function(event){
+				var this_btn = $(event.currentTarget);
+				$("#replaceModal").attr("action",this_btn.data("url"));
+				$("#replaceModal").modal('show');
+			});
+		});

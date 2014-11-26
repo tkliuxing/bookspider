@@ -1,0 +1,49 @@
+| {% extends "background/base.html" %}
+- block content
+	#NAVID(data-nav="replace")
+	.row
+		.col-xs-12
+			.panel.panel-primary
+				.panel-heading 替换规则
+				.panel-body
+					.col-xs-6.text-center.b-right
+						'#{rule.rule_res}'
+					.col-xs-6.text-center
+						'#{rule.replace_to}'
+		if save
+			.col-xs-12
+				.alert.alert-warning.text-center
+					h2 保存成功!
+		.col-xs-12
+			.panel.panel-primary
+				.panel-heading
+					h3.panel-title 预览
+				.panel-body
+					form.text-center(method="POST",action="./?pn={{page_number}}&bi={{book_id}}",style="margin-bottom:12px;")
+						| {% csrf_token %}
+						input(type="hidden",name="save",value="True")
+						if page_admin_url
+							a.btn.btn-info.btn-lg(href="{{page_admin_url}}",target="_blank") 编辑章节
+						button.btn.btn-warning.btn-lg(type="submit") 确认替换
+					.row
+						if content
+							.col-xs-6
+								.panel.panel-primary
+									.panel-heading
+										h3.panel-title 原文
+									.panel-body
+										!= content|safe|linebreaks
+						div(class="{%if content%}col-xs-6{%else%}col-xs-12{%endif%}")
+							.panel.panel-primary
+								if content
+									.panel-heading
+										h3.panel-title 替换后
+								.panel-body
+									!= r_content|safe|linebreaks
+					form.text-center(method="POST",action="./?pn={{page_number}}&bi={{book_id}}")
+						| {% csrf_token %}
+						input(type="hidden",name="save",value="True")
+						if page_admin_url
+							a.btn.btn-info.btn-lg(href="{{page_admin_url}}",target="_blank") 编辑章节
+						button.btn.btn-warning.btn-lg(type="submit") 确认替换
+

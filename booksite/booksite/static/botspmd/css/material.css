@@ -384,12 +384,12 @@ body .jumbotron-material-lightgrey,
   border-radius: 4px;
   text-transform: uppercase;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.84);
+  color: #fff;
   transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none !important;
 }
 .btn:hover {
-  color: rgba(255, 255, 255, 0.84);
+  color: #fff;
 }
 .btn:hover:not(.btn-link) {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.28);
@@ -837,22 +837,27 @@ body .jumbotron-material-lightgrey,
   border: solid 2px;
   border-color: #5a5a5a;
   animation: uncheck 300ms ease-out forwards;
+  -webkit-animation: uncheck 300ms ease-out forwards;
 }
 .checkbox input[type=checkbox]:focus ~ .check:after {
   opacity: 0.2;
 }
 .checkbox input[type=checkbox]:checked ~ .check:before {
   animation: check 300ms ease-out forwards;
+  -webkit-animation: check 300ms ease-out forwards;
 }
 .checkbox input[type=checkbox]:not(:checked) ~ .check:after {
   animation: rippleOff 500ms linear forwards;
+  -webkit-animation: rippleOff 500ms linear forwards;
 }
 .checkbox input[type=checkbox]:checked ~ .check:after {
   animation: rippleOn 500ms linear forwards;
+  -webkit-animation: rippleOn 500ms linear forwards;
 }
 .checkbox:not(:hover) input[type=checkbox] ~ .check:before,
 .checkbox:not(:hover) input[type=checkbox] ~ .check:after {
   animation-duration: 1ms;
+  -webkit-animation-duration: 1ms;
 }
 .checkbox input[type=checkbox][disabled]:not(:checked) ~ .check:before {
   opacity: 0.5;

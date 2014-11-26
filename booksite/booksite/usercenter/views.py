@@ -12,8 +12,10 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import login as auth_loginview
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.forms import PasswordChangeForm
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.views.generic.edit import FormView
 
 from captcha.fields import CaptchaField
 
@@ -35,7 +37,7 @@ class MyUserCreationForm(UserCreationForm):
     username = forms.RegexField(label=_("Username"), max_length=30,
         regex=r'^[\w.@+-]+$',
         help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                      "@/./+/-/_ only."),
+                    "@/./+/-/_ only."),
         error_messages={
             'invalid': _("This value may contain only letters, numbers and "
                          "@/./+/-/_ characters.")})
@@ -48,7 +50,7 @@ class MyUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("username","email")
+        fields = ("username", "email")
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
@@ -130,7 +132,7 @@ def mb_logout(request):
 
 def signup(request):
     if request.method == "GET":
-        return render(request,"usercenter/signup.html",{'form':MyUserCreationForm()})
+        return render(request, "usercenter/signup.html", {'form': MyUserCreationForm()})
     if request.method == "POST":
         signup_form = MyUserCreationForm(data=request.POST)
         if signup_form.is_valid():
@@ -141,7 +143,7 @@ def signup(request):
             auth_login(request, user)
             return redirect("/")
         else:
-            return render(request,"usercenter/signup.html",{'form':signup_form})
+            return render(request, "usercenter/signup.html", {'form': signup_form})
     return HttpResponseBadRequest()
 
 
@@ -150,11 +152,29 @@ def logout_view(request):
     return redirect("/")
 
 
+class ChangePWDView(FormView):
+
+    """ fields: old_password, new_password1, new_password2 """
+    template_name = "usercenter/changepwd.html"
+    form_class = PasswordChangeForm
+
+    def get_form_kwargs(self):
+        kwargs = super(ChangePWDView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        print kwargs
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return self.render_to_response(self.get_context_data(form=form, success=True))
+
+
 @login_required
 def bookmark(request):
     C = {}
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
     return render(request, "usercenter/bookmark.html", C)
+
 
 @login_required(login_url='/mobile/login/')
 def mb_bookmark(request):
@@ -162,11 +182,12 @@ def mb_bookmark(request):
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
     return render(request, "bookhtml5/bookmark.html", C)
 
+
 @login_required
 def add_bookmark(request):
     if request.method == 'POST':
         try:
-            page = BookPage.objects.get(pk=request.POST.get('pageid','-1'))
+            page = BookPage.objects.get(pk=request.POST.get('pageid', '-1'))
         except:
             return ajax_error("章节错误!")
         obj, created = BookMark.objects.get_or_create(

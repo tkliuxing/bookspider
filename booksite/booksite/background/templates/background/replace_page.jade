@@ -1,0 +1,45 @@
+| {% extends "background/base.html" %}
+- block content
+	#NAVID(data-nav="replace")
+	.row
+		.col-xs-12
+			.panel.panel-primary
+				.panel-heading 替换规则
+				.panel-body
+					form.form-inline(action=".",method="POST")
+						| {% csrf_token %}
+						- with create_rule_form as CRF
+							.form-group(class="{%if CRF.rule_res.errors%}has-error{%endif%}")
+								label.sr-only.control-label(for="inputRe")!= CRF.rule_res.label
+								input.form-control(placeholder="{{CRF.rule_res.label}}",type="text",value="{{CRF.rule_res.value|default:''}}",name="rule_res")
+							.form-group(class="{%if CRF.replace_to.errors%}has-error{%endif%}")
+								label.sr-only.control-label(for="inputReplace")!= CRF.replace_to.label
+								input.form-control(placeholder="{{CRF.replace_to.label}}",type="text",value="{{CRF.replace_to.value|default:''}}",name="replace_to")
+							.form-group(class="{%if CRF.page_number.errors%}has-error{%endif%}")
+								label.sr-only.control-label(for="inputReplace")!= CRF.page_number.label
+								input.form-control(placeholder="{{CRF.page_number.label}}",type="text",value="{{CRF.page_number.value|default:''}}",name="page_number")
+							.radio.radio-primary.page-radio(style="display: inline;")
+								| {% for radio in CRF.p_or_s %}{{radio}}{% endfor %}
+							button.btn.btn-success.btn-sm.btn-raised(type="submit") 提交
+		if save
+			.col-xs-12
+				.alert.alert-warning.text-center
+					h2 保存成功!
+		if content or r_content
+			.col-xs-12
+				.panel.panel-primary
+					.panel-heading 预览
+					.panel-body
+						.row
+							.col-xs-6
+								.panel.panel-primary
+									.panel-heading
+										h3.panel-title 原文
+									.panel-body
+										!= content|safe|linebreaks
+							.col-xs-6
+								.panel.panel-primary
+									.panel-heading
+										h3.panel-title 替换后
+									.panel-body
+										!= r_content|safe|linebreaks

@@ -62,7 +62,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-cn'
 
 TIME_ZONE = 'UTC'
 
@@ -72,7 +72,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-TEMPLATE_DIRS = os.path.join(BASE_DIR, 'booksite/templates')
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'booksite/templates')
+)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -85,13 +87,20 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "booksite.context_processors.analystics",
 )
 
+TEMPLATE_LOADERS = (
+    ('pyjade.ext.django.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATICFILES_FINDERS = (
-   "django.contrib.staticfiles.finders.FileSystemFinder",
-   "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-   "django_assets.finders.AssetsFinder"
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "django_assets.finders.AssetsFinder"
 )
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
@@ -110,10 +119,17 @@ CACHES = {
         'KEY_PREFIX': 'booksite',
         'OPTIONS': {
             'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
-            'PASSWORD': '',  # Optional
+            'PASSWORD': '',
         }
     }
 }
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = '***********@gmail.com'
+EMAIL_HOST_PASSWORD = '******'
+EMAIL_SUBJECT_PREFIX = u'[kanxiaoshuo.me]'
+EMAIL_USE_TLS = True
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
