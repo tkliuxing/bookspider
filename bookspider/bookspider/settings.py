@@ -28,3 +28,7 @@ ITEM_PIPELINES = {
     'bookspider.pipelines.BookinfoPipeline': 300,
     'bookspider.pipelines.BookpagePipeline': 300,
 }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'bookspider.rotate_useragent.RotateUserAgentMiddleware': 400
+}
