@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import multiprocessing
+# import multiprocessing
 
 bind = "127.0.0.1:8888"
-workers = multiprocessing.cpu_count() + 1
+workers = 2
 worker_class = "gevent"
 worker_connections = 3000
 keepalive = 1
