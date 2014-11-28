@@ -19,13 +19,24 @@ BOOK_PAGE_URL_RE = re.compile(r"http:\/\/www\.86696\.cc\/html\/\d+\/(?P<book_id>
 PASS_URL = ['login.php', 'newmessage.php', 'charset=', 'index.php']
 RC = redis.Redis()
 
+
 class DouluoSpider(Spider):
     name = "douluo"
     allowed_domains = ["www.86696.cc"]
-    start_urls = [
-        "http://www.86696.cc/booktopallvisit/0/1.html",
-        "http://www.86696.cc/modules/article/toplist.php?sort=monthvisit"
-    ]
+
+    def __init__(self, starturl=None, frombookid=None, *args, **kwargs):
+        super(DouluoSpider, self).__init__(*args, **kwargs)
+        self.start_urls = [
+            "http://www.86696.cc/booktoppostdate/0/1.html",
+            "http://www.86696.cc/booktoplastupdate/0/1.html",
+        ]
+        if starturl:
+            self.start_urls = starturl.split(" ")
+        if frombookid:
+            self.start_urls = ["http://www.86696.cc/book/%s.html" % bid for bid in frombookid.split(" ")]
+        print "-"*20
+        print "Start from:\n", '\n'.join(self.start_urls)
+        print "-"*20, "\n"
 
     def is_pass_url(self, url):
         for i in PASS_URL:
@@ -37,7 +48,7 @@ class DouluoSpider(Spider):
         url = response.url
         sel = Selector(response)
         jQ = PQ(response.body_as_unicode())
-        #书页
+        # 书页
         if BOOK_INFO_URL_RE.match(url):
             book = BookinfoItem()
             book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
@@ -52,9 +63,9 @@ class DouluoSpider(Spider):
                 # 否则生成书籍信息
                 book['origin_url'] = url
                 book['title'] = jQ("h1").text()
-                book['author'] = jQ("h2").eq(0).text().replace(u"作者：","")
-                book['category'] = jQ("h2").eq(2).text().replace(u"所属：","")
-                book['info'] = jQ(".msgarea>p").text().replace(" ","\n")
+                book['author'] = jQ("h2").eq(0).text().replace(u"作者：", "")
+                book['category'] = jQ("h2").eq(2).text().replace(u"所属：", "")
+                book['info'] = jQ(".msgarea>p").text().replace(" ", "\n")
                 yield book
                 hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
                 for href in hrefs:
@@ -69,7 +80,7 @@ class DouluoSpider(Spider):
                 if RC.get(rel_url):
                     continue
                 yield Request(rel_url, callback=self.parse)
-        #章节
+        # 章节
         elif BOOK_PAGE_URL_RE.match(url):
             page = BookpageItem()
             page['origin_url'] = url
@@ -85,7 +96,7 @@ class DouluoSpider(Spider):
                     yield Request(prev_rel_href, callback=self.parse)
             else:
                 page['title'] = sel.xpath('//h1/text()').extract()[0]
-                page['content'] = jQ('#BookText').text().replace(" ","\n")
+                page['content'] = jQ('#BookText').text().replace(" ", "\n")
                 page['book_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['book_id']
                 page['page_number'] = BOOK_PAGE_URL_RE.match(url).groupdict()['page_id']
                 page_number_re = re.compile(r'(?P<number>\d+).+')
@@ -104,7 +115,7 @@ class DouluoSpider(Spider):
                 if self.is_pass_url(href):
                     continue
                 if not href.startswith('javascript:') and href != '/' and not href.startswith("#"):
-                    href = urlparse.urljoin(url,href)
+                    href = urlparse.urljoin(url, href)
                     # 去掉重复章节
                     if RC.get(href):
                         continue
@@ -134,4 +145,3 @@ class DouluoSpider(Spider):
 
     def get_prev_page_url(self, response):
         return self.get_npage_url(response, page_a=0)
-

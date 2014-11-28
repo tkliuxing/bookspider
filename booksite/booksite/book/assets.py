@@ -14,6 +14,8 @@ js = Bundle(
     'flatui/js/bootstrap-select.js',
     'flatui/js/bootstrap-switch.js',
     'flatui/js/typeahead.js',
+    'js/spin.min.js',
+    'js/jquery.spin.js',
     'js/pagination.js',
     'js/application.js',
     'js/usercenter.js',

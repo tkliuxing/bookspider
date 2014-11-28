@@ -114,21 +114,45 @@
 	$(".readnall").die().live('click', function() {
 		var this_a = $(event.target);
 		var page_number = this_a.data('pn');
-		$.get('/nallpage/' + page_number + '/', function(data) {
-			if (data.success) {
-				LOADMORE = true;
-				$('.nextbox').remove();
-				$('#FIELD').append($(data.data));
-				$('.col-md-12.text-center.pagebutton').remove();
-				auto_width_pg();
-				$(".PGDOWN").click(function() {
-					window.scrollTo(0, window.scrollY + window.innerHeight - 20);
-				});
-				$(".PGUP").click(function() {
-					window.scrollTo(0, window.scrollY - window.innerHeight + 20);
-				});
+		$.ajax({
+			type: 'get',
+			cache: 'false',
+			url: '/nallpage/' + page_number + '/',
+			dataType: 'json',
+			success: function(data) {
+				if (data.success) {
+					LOADMORE = true;
+					$('.nextbox').remove();
+					$('#FIELD').append($(data.data));
+					$('.col-md-12.text-center.pagebutton').remove();
+					auto_width_pg();
+					$(".PGDOWN").click(function() {
+						window.scrollTo(0, window.scrollY + window.innerHeight - 20);
+					});
+					$(".PGUP").click(function() {
+						window.scrollTo(0, window.scrollY - window.innerHeight + 20);
+					});
+				}
+			},
+			beforeSend: function() {
+				var target = $('.nextbox').eq(0);
+				$('.nextbox a').hide();
+				var opts = {
+					lines: 15,
+					length: 23,
+					width: 2,
+					radius: 20,
+					corners: 0,
+					rotate: 9,
+					trail: 77,
+					speed: 1.0,
+					direction: 1,
+					shadow: true,
+					color: '#5566ff'
+				};
+				target.spin(opts);
 			}
-		}, 'json');
+		})
 	});
 	// 添加书签
 	$(".TBMABtn").die().live('click', function(event) {
