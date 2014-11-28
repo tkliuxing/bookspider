@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Scrapy settings for bookspider project
 #
 # For simplicity, this file contains only the most important settings by
@@ -29,6 +30,13 @@ ITEM_PIPELINES = {
     'bookspider.pipelines.BookpagePipeline': 300,
 }
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'bookspider.rotate_useragent.RotateUserAgentMiddleware': 400
+    'bookspider.middlewares.ProxyMiddleware': 100,
+    'bookspider.middlewares.RotateUserAgentMiddleware': 400
 }
+
+try:
+    from .local_settings import *
+except:
+    raise ImportError('应当使用与settings同级别目录下的local_settings文件')

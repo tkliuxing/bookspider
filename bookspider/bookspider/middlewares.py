@@ -1,8 +1,25 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
+# -*- coding: utf-8 -*-
+# import base64
 
 import random
+from scrapy.conf import settings
 from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
+
+
+class ProxyMiddleware(object):
+    # overwrite process request
+
+    def process_request(self, request, spider):
+        # Set the location of the proxy
+        proxy = settings.get("PROXY", "http://183.212.13.116:8123")
+        if not isinstance(proxy, basestring):
+            raise AssertionError("settings.PROXY must be string.")
+        request.meta['proxy'] = proxy
+        # Use the following lines if your proxy requires authentication
+        # proxy_user_pass = "USERNAME:PASSWORD"
+        # setup basic authentication for the proxy
+        # encoded_user_pass = base64.encodestring(proxy_user_pass)
+        # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
 
 
 class RotateUserAgentMiddleware(UserAgentMiddleware):
