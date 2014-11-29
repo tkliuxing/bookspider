@@ -148,7 +148,7 @@
 					speed: 1.0,
 					direction: 1,
 					shadow: true,
-					color: '#5566ff'
+					color: '#58d68d'
 				};
 				target.spin(opts);
 			}
