@@ -140,14 +140,14 @@
 				var opts = {
 					lines: 15,
 					length: 23,
-					width: 2,
+					width: 4,
 					radius: 20,
 					corners: 0,
 					rotate: 9,
 					trail: 77,
 					speed: 1.0,
 					direction: 1,
-					shadow: true,
+					shadow: false,
 					color: '#58d68d'
 				};
 				target.spin(opts);
