@@ -24,7 +24,7 @@ def home(request):
     C = {}
     books = Book.objects.all().order_by('book_number')
     if request.GET.get('s',''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     if request.GET.get('a',''):
         books = Book.objects.filter(author=request.GET['a'])
@@ -59,7 +59,7 @@ def mb_search(request):
     C = {}
     books = Book.objects.all().order_by('book_number')
     if request.GET.get('s',''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     else:
         books = []
@@ -78,11 +78,10 @@ def mb_searchload(request):
     C = {}
     books = Book.objects.all().order_by('book_number')
     if request.GET.get('s',''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     else:
         books = []
-    print request.GET.get('s','')
     p = Paginator(books, 15)
     try:
         page = p.page(int(request.GET.get('p', 1)))
