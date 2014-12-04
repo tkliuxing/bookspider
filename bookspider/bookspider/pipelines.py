@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import redis
 
@@ -59,8 +60,9 @@ class QidianRankPipeline(object):
         if not isinstance(item, QidianRankItem):
             return item
         if item.save():
-            # print "",
-            print str(item['vip_click']).ljust(10), "-"*10, item['title']
+            print item["time_type"],
+            print unicode(item['vip_click']).ljust(10), "-"*10,
+            print item['title'].encode("utf-8")
         else:
-            print "-"*10, "-"*10, item['title']
+            print item["time_type"], "-"*10, "-"*10, item['title']
         return item
