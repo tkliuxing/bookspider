@@ -24,7 +24,7 @@ class DouluoSpider(Spider):
     name = "douluo"
     allowed_domains = ["www.86696.cc"]
 
-    def __init__(self, starturl=None, frombookid=None, *args, **kwargs):
+    def __init__(self, starturl=None, frombookid=None, frombookidrange=None, *args, **kwargs):
         super(DouluoSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             "http://www.86696.cc/booktoppostdate/0/1.html",
@@ -34,6 +34,13 @@ class DouluoSpider(Spider):
             self.start_urls = starturl.split(" ")
         if frombookid:
             self.start_urls = ["http://www.86696.cc/book/%s.html" % bid for bid in frombookid.split(" ")]
+        if frombookidrange:
+            try:
+                fr, to = frombookidrange.split()
+                fr, to = int(fr), int(to)
+            except:
+                raise AttributeError("frombookidrange format error! Should like this: '10 20'.")
+            self.start_urls = ["http://www.86696.cc/book/%s.html" % bid for bid in range(fr, to)]
         print "-"*20
         print "Start from:\n", '\n'.join(self.start_urls)
         print "-"*20, "\n"

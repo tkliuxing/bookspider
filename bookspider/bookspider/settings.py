@@ -28,7 +28,9 @@ REDIRECT_ENABLED = False
 ITEM_PIPELINES = {
     'bookspider.pipelines.BookinfoPipeline': 300,
     'bookspider.pipelines.BookpagePipeline': 300,
+    'bookspider.pipelines.QidianRankPipeline': 300,
 }
+
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,

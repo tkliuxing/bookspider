@@ -90,8 +90,8 @@ class BookRank(models.Model):
     mon_point = models.IntegerField(_("月点击"), default=0)
     wek_point = models.IntegerField(_("周点击"), default=0)
 
-    all_push = models.IntegerField(_("周推荐"), default=0)
-    mon_push = models.IntegerField(_("周推荐"), default=0)
+    all_push = models.IntegerField(_("总推荐"), default=0)
+    mon_push = models.IntegerField(_("月推荐"), default=0)
     wek_push = models.IntegerField(_("周推荐"), default=0)
 
     all_fav = models.IntegerField(_("总收藏"), default=0)
