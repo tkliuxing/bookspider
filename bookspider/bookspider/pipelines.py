@@ -64,5 +64,5 @@ class QidianRankPipeline(object):
             print unicode(item['vip_click']).ljust(10), "-"*10,
             print item['title'].encode("utf-8")
         else:
-            print item["time_type"], "-"*10, "-"*10, item['title']
+            print item["time_type"], "-"*10, "-"*10, item['title'].encode("utf-8")
         return item
