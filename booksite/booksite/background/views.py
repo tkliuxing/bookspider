@@ -29,7 +29,7 @@ def index(request):
     ]
     C['category_data'] = json.dumps(category_data)
     C['book_count'] = book_count
-    return render(request, "background/index.html", C)
+    return render(request, "background/index.jade", C)
 
 
 def replace(request):
@@ -63,7 +63,7 @@ def edit_rule(request, pk=None):
     C['replace_rule'] = replace_rule
     C['create_rule_form'] = form
     C['edit_rule'] = True
-    return render(request, "background/replace.html", C)
+    return render(request, "background/replace_edit.jade", C)
 
 
 def delete_rule(request, pk=None):

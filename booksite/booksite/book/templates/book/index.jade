@@ -1,0 +1,93 @@
+| {% extends "book/base.html" %}
+
+- block pagetitle
+	if author
+		| -- 作者-{{author}}
+	else
+		if category
+			| -- {{category}}
+		else
+			| 最简洁的免费小说在线阅读,小说TXT下载网
+
+- block content
+	#NAVID.row(data-nav="{% if categorynav %}{{categorynav}}{% else %}navallbook{% endif %}")
+		if not search
+			.col-md-12.col-xs-12.col-sm-12
+				ol.breadcrumb
+					li.active
+						if category
+							| {{category}}类
+						else
+							if author
+								| {{author}}的
+						| 书籍列表
+		if books
+			for book in books
+				.col-xs-12.col-sm-6.col-md-4
+					.panel.panel-info
+						.panel-heading
+							if not user.is_superuser
+								a.visible-xs.btn.btn-primary.pull-right(href="{{book.get_absolute_url}}") 进入阅读
+							h3.panel-title
+								a(href="{{book.get_absolute_url}}")!= book.title
+								small
+									| ({{book.category}})
+							span &#8211;&#8211;&#8211;&#8211;
+								a(href="/?a={{book.author}}")!= book.author
+						.hidden-xs.bookinfo.panel-body
+							.caption
+								- with book.get_bookrank as bookrank
+									p
+										| 总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}} 总收藏: {{bookrank.all_fav}}
+									!= book.info_html|linebreaks
+						if user.is_superuser
+							.panel-footer
+								a.btn.btn-primary(href="{{book.get_absolute_url}}") 进入阅读
+								a.btn.btn-danger(target="_blank",href="/admin/book/book/{{book.pk}}/") 编辑信息
+								a.bookfixpic.btn.btn-danger(href="javascript:;",data-url="{% url 'bookfixpic' book.pk %}") 更新图章
+						else
+							.panel-footer.hidden-xs
+								a.btn.btn-primary(href="{{book.get_absolute_url}}") 进入阅读
+		else
+			if search
+				.jumbotron
+					h1 真遗憾, 没找到诶!
+					p 要不要去别的网站试一试?
+			else
+				.jumbotron
+					h1 Hello, world!
+					p ...
+	if pagination.has_other_pages
+		.pagination
+			ul
+				if pagination.has_previous
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="1")
+							span.fui-arrow-left
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="{{pagination.previous_page_number}}")
+				li.active
+					a(href="javascript:;")!= pagination.number
+				if pagination.has_next
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.next_page_number}}")
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.paginator.num_pages}}")
+							span.fui-arrow-right
+
+- block footerjs
+	if user.is_authenticated
+		script
+			(function($){
+				$(".bookfixpic").die().live('click', function(event){
+					var this_a = $(event.target);
+					$.post(this_a.data('url'),{},function(data){
+						if(data.success){
+							alert("正在更新本书");
+						}else{
+							alert(data.error_message);
+						}
+					},'json');
+					return false;
+				});
+			})(jQuery);

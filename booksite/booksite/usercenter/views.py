@@ -161,7 +161,6 @@ class ChangePWDView(FormView):
     def get_form_kwargs(self):
         kwargs = super(ChangePWDView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
-        print kwargs
         return kwargs
 
     def form_valid(self, form):

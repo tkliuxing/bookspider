@@ -1,0 +1,55 @@
+| {% extends "book/base.html" %}
+- block pagetitle
+	| -- 排行榜
+
+- block content
+	#NAVID.row(data-nav="navbp")
+		.col-md-12
+			table.table
+				tr
+					th 排名
+					th 书籍
+					th
+						span(data-skey="all_point") 总点击
+					th
+						span(data-skey="mon_point") 月点击
+					th
+						span(data-skey="wek_point") 周点击
+					th
+						span(data-skey="all_push") 总推荐
+					th
+						span(data-skey="mon_push") 月推荐
+					th
+						span(data-skey="wek_push") 周推荐
+					th
+						span(data-skey="all_fav") 总收藏
+				for bookrank in bookranks
+					tr
+						td
+							| {{forloop.counter|add:number_base}}
+						td
+							a(href="{{bookrank.book.get_absolute_url}}")!= bookrank.book.title
+						td!= bookrank.all_point
+						td!= bookrank.mon_point
+						td!= bookrank.wek_point
+						td!= bookrank.all_push
+						td!= bookrank.mon_push
+						td!= bookrank.wek_push
+						td!= bookrank.all_fav
+	if pagination.has_other_pages
+		.pagination
+			ul
+				if pagination.has_previous
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="1")
+							span.fui-arrow-left
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="{{pagination.previous_page_number}}")
+				li.active
+					a(href="javascript:;")!= pagination.number
+				if pagination.has_next
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.next_page_number}}")
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.paginator.num_pages}}")
+							span.fui-arrow-right

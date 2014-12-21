@@ -1,0 +1,109 @@
+| {% extends "book/base.html" %}
+| {% load static paragraphedit %}
+- block pagetitle
+	| -- {{book.title}} {{bookpage.title_html}}
+- block keymeta
+	| {{book.title}};{{book.author}}
+- block keydesc
+	| {{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么
+- block headerjs
+	| {{ block.super }}
+	script
+		var DATA_DIC = DATA_DIC || {};
+		DATA_DIC["is_page"] = true;
+		DATA_DIC["login_url"] = "{% url 'login' %}";
+		DATA_DIC["add_bookmark_url"] = "{% url 'add_bookmark' %}";
+		DATA_DIC["invert"] = {%if invert%}true;{%else%}false;{%endif%}
+	if user.is_superuser
+		style
+			.pagecontent>p:hover{
+				cursor: pointer;
+				background-color: #FFFCD5;
+			}
+- block content
+	#FIELD.row
+		.col-md-12
+			ol.breadcrumb.inv
+				li.hidden-xs
+					a(href="/") 书籍列表
+				li
+					a(href="{% url 'bookindex' book.pk %}")
+						| {{book.title}}书目
+				li.active.hidden-xs!= bookpage.title_html
+		.col-md-12.text-center
+			h2.text-center.hidden-xs!= bookpage.title_html
+			h5.text-center.visible-xs!= bookpage.title_html
+			if user.is_superuser
+				.col-md-12(style="margin-bottom:5px;")
+					.btn-group.text-center
+						a.btn.btn-warning.btn-sm.pagefixpic(href="javascript:;",data-churl="{% url 'pagetaskcheck' bookpage.pk %}",data-url="{% url 'pagefixpic' bookpage.pk %}") 更新图片章节
+						a.btn.btn-success.btn-sm(href="javascript:location.reload(true);") 刷新当前页面
+					.empty &nbsp;
+					.alert.alert-info(role="alert",style="display:none;") 
+			.btn-group
+				a.btn.btn-primary(href="{% url 'bookindex' book.pk %}") 回目录
+				if user.is_authenticated
+					a.btn.btn-info.TBMABtn(href="javascript:;",data-pn="{{bookpage.pk}}") 加入书签
+				else
+					a.btn.btn-info(href="{% url 'login' %}",data-pn="{{bookpage.pk}}") 加入书签
+				a.btn.btn-primary.invert(href="javascript:;") 昼／夜
+			.col-md-10.col-md-offset-1.text-center.pagebutton
+				.alert.alert-info(role="alert",id="TBMA{{bookpage.pk}}",style="display:none;") 书签已添加, 请到<strong>书架</strong>查看
+				.alert.alert-danger(role="alert",id="TBMAERR{{bookpage.pk}}",style="display:none;")
+		.col-md-12.hidden-xs &nbsp;
+		.col-md-1.hidden-xs &nbsp;
+		.col-md-10.pagecontent.inv(data-pagenum="{{bookpage.pk}}",data-dellurl="{% url 'del_line' bookpage.pk %}")
+			.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGDOWN
+			.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGUP
+			!= bookpage.content_html|paragraphlines
+		.col-md-1.hidden-xs &nbsp;
+		.col-md-12.text-center.pagebutton
+			.btn-group
+				if bookpage.prev_number
+					a.btn.btn-success.prev_page_a(href="{% url 'bookpage' bookpage.prev_number %}")
+						span.fui-arrow-left
+						span 上一页
+				else
+					a.btn.btn-success.prev_page_a(href="{% url 'bookindex' book.pk %}")
+						span.fui-arrow-left
+						span 上一页
+				a.btn.btn-primary(href="{% url 'bookindex' book.pk %}") 回目录
+				if bookpage.next_number
+					a.btn.btn-success.next_page_a(href="{% url 'bookpage' bookpage.next_number %}")
+						span 下一页
+						span.fui-arrow-right
+				else
+					a.btn.btn-success.next_page_a(href="{% url 'bookindex' book.pk %}")
+						span 下一页
+						span.fui-arrow-right
+			.col-xs-12 &nbsp;
+			.col-md-10.col-md-offset-1.text-center.pagebutton
+				#BMA.alert.alert-info(role="alert",style="display:none;") 书签已添加, 请到<strong>书架</strong>查看
+				#BMAERR.alert.alert-danger(role="alert",style="display:none;")
+		if user.is_superuser
+			.col-md-12.text-center.bottombtn
+				a(target="_blank",href="/admin/book/bookpage/{{bookpage.pk}}/") 编辑本章
+		.col-md-12
+			hr
+		.col-md-12.text-center.bottombtn.nextbox
+			a.readnall.text-center(data-pn="{{bookpage.pk}}",href="javascript:;") 阅读后续10章
+- block footerblock
+	if user.is_superuser
+		.modal.fade
+			.modal-dialog
+				.modal-content
+					form#Lineedit(action="{% url 'lineupdate' %}",method="post")
+						.modal-header
+							button.close(type="button",data-dismiss="modal")
+								span(aria-hidden="true") &times;
+								span.sr-only Close
+							h4.modal-title 段落编辑
+						.modal-body
+							textarea(name="pageline",style="width: 100%;height: 150px;resize: none;")
+							input(type="hidden",value="",name="linenum")
+							input(type="hidden",value="",name="pagenum")
+							#Savelinedone.alert.alert-warning(style="display:none;",role="alert") 保存成功!
+						.modal-footer
+							button#Closemodal.btn.btn-default(type="button") 关闭
+							button#Delline.btn.btn-danger(type="button") 删除本行
+							button.btn.btn-primary(type="submit") 保存改动

@@ -1,0 +1,30 @@
+| {%load static paragraphedit%}
+- for bookpage in bookpages
+	.col-md-12.text-center
+		h2.text-center.hidden-xs!= bookpage.title_html
+		h5.text-center.visible-xs!= bookpage.title_html
+		if user.is_superuser
+			.col-md-12(style="margin-bottom:5px;")
+				a.btn.btn-success.btn-sm(class="{%if invert%}transparent_class{%endif%}", href="{{bookpage.get_absolute_url}}") 单独阅读本章
+		.btn-group
+			a.btn.btn-primary(href="{%url 'bookindex' book.pk%}",class="{%if invert%}transparent_class{%endif%}") 回目录
+			a.btn.btn-info.TBMABtn(href="javascript:;",class="{%if invert%}transparent_class{%endif%}",data-pn="{{bookpage.pk}}") 加入书签
+			a.btn.btn-primary.invert(href="javascript:;",class="{%if invert%}transparent_class{%endif%}") 昼／夜
+		.col-md-10.col-md-offset-1.text-center.pagebutton
+			.alert.alert-info(role="alert",id="TBMA{{bookpage.pk}}",style="display:none;") 书签已添加, 请到<strong>书架</strong>查看
+			.alert.alert-danger(role="alert",id="TBMAERR{{bookpage.pk}}",style="display:none;")
+	.col-md-12.hidden-xs &nbsp;
+	.col-md-1.hidden-xs &nbsp;
+	.col-md-10.pagecontent.inv(class="{%if invert%} invert{%endif%}",data-pagenum="{{bookpage.pk}}",data-dellurl="{%url 'del_line' bookpage.pk%}")
+		.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGDOWN
+		.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGUP
+		!= bookpage.content_html|paragraphlines
+	.col-md-1.hidden-xs &nbsp;
+	- if user.is_superuser
+		.col-md-12.text-center.bottombtn
+			a(target="_blank",href="/admin/book/bookpage/{{bookpage.pk}}/") 编辑本章
+	.col-md-12
+		hr
+	- if forloop.last
+		.col-md-12.text-center.bottombtn.nextbox
+			a.readnall.text-center(data-pn="{{bookpage.pk}}" href="javascript:;") 阅读后续10章
