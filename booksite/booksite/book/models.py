@@ -15,6 +15,8 @@ class Book(models.Model):
     category = models.CharField(max_length=20, blank=True)
     info = models.TextField(blank=True)
     book_number = models.IntegerField(db_index=True, unique=True)
+    last_update = models.DateTimeField(auto_now=True, null=True, blank=True, default=None, db_index=True)
+    last_page_number = models.IntegerField(default=0, null=True, blank=True)
 
     class Meta:
         ordering = ['book_number']
@@ -24,11 +26,43 @@ class Book(models.Model):
         s = u"\n\n".join(self.info.split("\n"))
         return s
 
+    def last_page():
+        doc = "The last_page property."
+        def fget(self):
+            if self.last_page_number:
+                return BookPage.objects.get(page_number=self.last_page_number)
+            else:
+                last_page_number = BookPage.objects.filter(
+                    book_number=self.book_number
+                    ).aggregate(
+                    last=models.Max('page_number')
+                    )['last']
+                return BookPage.objects.get(page_number=last_page_number)
+        def fset(self, value):
+            self.last_page_number = value.page_number
+        def fdel(self):
+            self.last_page_number = None
+        return locals()
+    last_page = property(**last_page())
+
     def get_absolute_url(self):
         return reverse('bookindex', args=[str(self.id)])
 
     def get_bookrank(self):
         return BookRank.objects.get_or_create(book=self)[0]
+
+    def get_category_url(self):
+        CATEGORYS = {
+            "侦探推理": "a",
+            "武侠修真": "b",
+            "网游动漫": "c",
+            "历史军事": "d",
+            "都市言情": "e",
+            "散文诗词": "f",
+            "玄幻魔法": "g",
+        }
+        return reverse('category', args=[CATEGORYS.get(self.category, "g")])
+
 
 
 class BookPage(models.Model):
@@ -73,6 +107,12 @@ class BookPage(models.Model):
     @property
     def book(self):
         return Book.objects.get(book_number=self.book_number)
+
+    def update_news(self):
+        """更新书籍的最后章节和最后更新时间"""
+        book = self.book
+        book.last_page = self
+        book.save()
 
     def get_absolute_url(self):
         return reverse('bookpage', args=[str(self.page_number)])

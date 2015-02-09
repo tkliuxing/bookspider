@@ -52,6 +52,9 @@
 					<li id="navp">
 						<a href="{% url 'bookrank' %}">排行榜</a>
 					</li>
+					<li id="navnews">
+						<a href="{% url 'booknews' %}">最近更新</a>
+					</li>
 					{% if user.is_superuser %}
 					<li>
 						<a href="{% url 'bbg:home' %}">管理后台</a>

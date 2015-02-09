@@ -14,16 +14,19 @@
 		.col-md-12
 			h2.text-center!= book.title
 	#Pages.row.pagelist
-		#Alert.alert.alert-warning.alert-dismissible.hide(role="alert")
-			button.close(type="button",data-dismiss="alert")
-				span(aria-hidden="true") &times;
-				span.sr-only Close
-			strong 书籍不存在!
-		div.alert.alert-info.alert-dismissible.text-center(role="alert")
-			button.close(type="button",data-dismiss="alert")
-				span(aria-hidden="true") &times;
-				span.sr-only Close
-			strong 书籍目录加载中, 请耐心等待......
+		for page in bookpages
+			.col-md-4
+				a.palette.palette-emerald.page-title(href="{{page.get_absolute_url}}")!= page.title_html
+		//- #Alert.alert.alert-warning.alert-dismissible.hide(role="alert")
+		//- 	button.close(type="button",data-dismiss="alert")
+		//- 		span(aria-hidden="true") &times;
+		//- 		span.sr-only Close
+		//- 	strong 书籍不存在!
+		//- div.alert.alert-info.alert-dismissible.text-center(role="alert")
+		//- 	button.close(type="button",data-dismiss="alert")
+		//- 		span(aria-hidden="true") &times;
+		//- 		span.sr-only Close
+		//- 	strong 书籍目录加载中, 请耐心等待......
 - block footerjs
 	script
 		$(function(){

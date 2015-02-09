@@ -1,0 +1,46 @@
+| {% extends "book/base.html" %}
+- block pagetitle
+	| -- 最近更新
+
+- block content
+	#NAVID.row(data-nav="navnews")
+		.col-md-12
+			table.table
+				tr
+					th(style="width:75px;") 类别
+					th(style="width:130px;") 小说书名
+					th 小说章节
+					th(style="width:100px;") 作者
+					th(style="width:95px;") 更新时间
+				for book in books
+					tr
+						td
+							a(href="{{book.get_category_url}}")!= book.category
+						td
+							a(href="{{book.get_absolute_url}}",title="{{book.title}}")
+								| {{book.title|truncatechars:"8"}}
+						td
+							a(href="{{book.last_page.get_absolute_url}}",title="{{book.last_page.title_html}}")
+								| {{book.last_page.title_html|truncatechars:"50"}}
+						td
+							a(href="/?a={{book.author}}",title="{{book.author}}")
+								| {{book.author|truncatechars:"6"}}
+						td
+							| {{book.last_update|date:"m-d H:M"}}
+	if pagination.has_other_pages
+		.pagination
+			ul
+				if pagination.has_previous
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="1")
+							span.fui-arrow-left
+					li.btn.btn-sm
+						a.fui-arrow-left(href="#",data-num="{{pagination.previous_page_number}}")
+				li.active
+					a(href="javascript:;")!= pagination.number
+				if pagination.has_next
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.next_page_number}}")
+					li.btn.btn-sm
+						a.fui-arrow-right(href="#",data-num="{{pagination.paginator.num_pages}}")
+							span.fui-arrow-right

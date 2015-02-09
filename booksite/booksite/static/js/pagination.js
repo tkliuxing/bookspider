@@ -84,9 +84,5 @@ $(function() {
             $(obj).parent().append("<span class='caret'></span>");
         }
     });
-    if ($("th span.caret").length == 0) {
-        // 如果没有默认的排序选项,则添加图标到节点编号列
-        $("th").eq(1).append("<span class='caret'></span>");
-    }
     // ----- end sort -----
 });

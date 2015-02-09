@@ -129,7 +129,7 @@ def category(request, category):
     C['categorynav'] = "nav%s" % category
     return render(request, 'book/index.jade', C)
 
-
+@cache_page(60*60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
@@ -232,6 +232,23 @@ def bookrank(request):
     C['pagination'] = page
     C['number_base'] = PREPAGE*(page.number-1)
     return render(request, 'book/bookrank.jade', C)
+
+
+@cache_page(60 * 60)
+def booknews(request):
+    """最近更新列表"""
+    C = {}
+    TOTALPAGE = 20
+    PREPAGE = 20
+    books = Book.objects.order_by("-last_update", "book_number")[:TOTALPAGE*PREPAGE]
+    p = Paginator(books, PREPAGE)
+    try:
+        page = p.page(int(request.GET.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['books'] = page.object_list
+    C['pagination'] = page
+    return render(request, 'book/booknews.jade', C)
 
 
 def load_nall_page(request, page_id=0):
