@@ -44,6 +44,7 @@ class BookpagePipeline(object):
         else:
             try:
                 item.save()
+                item.instance.update_news()
                 RC.set(item['origin_url'], 'True')
                 print str(item['book_number']).ljust(10), "-"*10,
                 print str(item['page_number']).ljust(10), "-"*10,
