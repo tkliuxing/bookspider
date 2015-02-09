@@ -9,9 +9,12 @@ from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
 class ProxyMiddleware(object):
     # overwrite process request
 
+    def __init__(self, *args, **kwargs):
+        self.proxy_list = settings.get("PROXY_LIST",["http://183.212.13.116:8123"])
+
     def process_request(self, request, spider):
         # Set the location of the proxy
-        proxy = settings.get("PROXY", "http://183.212.13.116:8123")
+        proxy = random.choice(self.proxy_list)
         if not isinstance(proxy, basestring):
             raise AssertionError("settings.PROXY must be string.")
         request.meta['proxy'] = proxy
