@@ -240,7 +240,7 @@ def booknews(request):
     C = {}
     TOTALPAGE = 20
     PREPAGE = 20
-    books = Book.objects.order_by("-last_update", "book_number")[:TOTALPAGE*PREPAGE]
+    books = Book.objects.order_by("-last_update").filter(last_update__isnull=False)[:TOTALPAGE*PREPAGE]
     p = Paginator(books, PREPAGE)
     try:
         page = p.page(int(request.GET.get('p', 1)))

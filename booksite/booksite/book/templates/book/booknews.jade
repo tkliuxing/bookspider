@@ -26,7 +26,7 @@
 							a(href="/?a={{book.author}}",title="{{book.author}}")
 								| {{book.author|truncatechars:"6"}}
 						td
-							| {{book.last_update|date:"m-d H:M"}}
+							| {{book.last_update|date:"m-d H:i"}}
 	if pagination.has_other_pages
 		.pagination
 			ul
