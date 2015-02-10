@@ -13,6 +13,7 @@ from django.core.cache import cache
 from django import forms
 
 from booksite.ajax import ajax_success, ajax_error
+from booksite.background.models import FengTui, JingTui
 from .models import Book, BookPage, BookRank
 from .tasks import update_page, update_book_pic_page
 
@@ -28,11 +29,19 @@ def home(request):
         C['author'] = request.GET['a']
         if not books:
             raise Http404
-    p = Paginator(books, 30)
+    p = Paginator(books, 42)
+    pn = int(request.GET.get('p', 1))
     try:
-        page = p.page(int(request.GET.get('p', 1)))
+        page = p.page(pn)
     except:
         page = p.page(1)
+    if pn == 1 and not request.GET.get('s', '') and not request.GET.get('a', ''):
+        ft_books = FengTui().books[:6]
+        ft_books += [None] * (6 - len(ft_books))
+        C['ft_books'] = ft_books
+        jt_books = JingTui().books[:15]
+        jt_books += [None] * (15 - len(jt_books))
+        C['jt_books'] = jt_books
     C['books'] = page.object_list
     C['pagination'] = page
     return render(request, 'book/index.jade', C)

@@ -1,9 +1,34 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django import forms
-from django.core.exceptions import ValidationError
 from booksite.book.models import BookPage, Book
-from .models import ReplaceRule
+from .models import ReplaceRule, FengTui, JingTui
+
+
+class TuiJianForm(forms.Form):
+    book_id = forms.CharField(label="书籍编号", max_length=10, required=True)
+
+    def __init__(self, model=FengTui, *args, **kwargs):
+        super(TuiJianForm, self).__init__(*args, **kwargs)
+        if model not in (FengTui, JingTui):
+            raise TypeError("model not in (FengTui, JingTui)!")
+        self.tuijian_model = model
+
+    def clean_book_id(self):
+        try:
+            book = Book.objects.get(id=self.cleaned_data['book_id'])
+        except Book.DoesNotExist:
+            raise forms.ValidationError("Book does not exist!")
+        self.book = book
+        return self.cleaned_data['book_id']
+
+    def save(self):
+        if self.is_valid():
+            tuijian = self.tuijian_model()
+            tuijian.add(self.book)
+            tuijian.save()
+        else:
+            raise forms.ValidationError()
 
 
 class ReplaceRuleCreateForm(forms.Form):
@@ -18,7 +43,7 @@ class ReplaceRuleCreateForm(forms.Form):
             )
             new_rule.save()
         else:
-            raise ValidationError()
+            raise forms.ValidationError()
 
 
 class ReplaceBookApplyForm(forms.Form):
@@ -38,13 +63,13 @@ class ReplaceBookApplyForm(forms.Form):
                 self.cleaned_data['replace_to'],
             )
         else:
-            raise ValidationError()
+            raise forms.ValidationError()
 
     def get_book(self):
         if self.is_valid():
             return Book.objects.get(pk=self.cleaned_data['book_id'])
         else:
-            raise ValidationError()
+            raise forms.ValidationError()
 
 
 class ReplacePageApplyForm(forms.Form):
@@ -64,10 +89,10 @@ class ReplacePageApplyForm(forms.Form):
                 self.cleaned_data['replace_to'],
             )
         else:
-            raise ValidationError()
+            raise forms.ValidationError()
 
     def get_page(self):
         if self.is_valid():
             return BookPage.objects.get(page_number=self.cleaned_data['page_number'])
         else:
-            raise ValidationError()
+            raise forms.ValidationError()

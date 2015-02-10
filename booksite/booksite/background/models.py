@@ -4,7 +4,7 @@ import hashlib
 import cPickle as pickle
 import time
 import itertools
-from booksite.book.models import KeyValueStorage
+from booksite.book.models import KeyValueStorage, Book
 
 
 class GetRuleError(Exception):
@@ -93,3 +93,47 @@ class ReplaceRule(object):
     def delete(self):
         if self.db_data.pk:
             self.db_data.delete()
+
+class FengTui(object):
+    KEY = "fengtui"
+
+    def __init__(self):
+        ft_data, created = KeyValueStorage.objects.get_or_create(key=self.KEY)
+        if created:
+            self.book_id_list = []
+        else:
+            self.book_id_list = ft_data.val or []
+        self.books = self._build_books()
+
+    def _build_books(self):
+        books = []
+        for book_id in self.book_id_list:
+            try:
+                books.append(Book.objects.get(id=book_id))
+            except Book.DoesNotExist:
+                pass
+        return books
+
+    def __str__(self):
+        return unicode(self).encode("utf-8")
+
+    def __unicode__(self):
+        return "|".join(self.books.objects.values_list("title", flat=True))
+
+    def add(self, book):
+        self.book_id_list.append(book.id)
+        self.books.append(book)
+
+    def remove(self, book):
+        if book.id in self.book_id_list:
+            self.book_id_list.remove(book.id)
+            self.books = self._build_books()
+
+    def save(self):
+        data = KeyValueStorage.objects.get_or_create(key=self.KEY)[0]
+        data.val = self.book_id_list
+        data.save()
+
+
+class JingTui(FengTui):
+    KEY = "jingtui"

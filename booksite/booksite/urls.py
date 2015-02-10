@@ -34,6 +34,10 @@ background_urls = patterns('booksite.background.views',
     url(r'^replace/apply/(?P<pk>\d+)/$', 'apply_rule', name="apply_rule"),
     url(r'^replace/page/$', 'replace_page', name="replace_page"),
     url(r'^replace/book/$', 'replace_book', name="replace_book"),
+    url(r'^tuijian/$', 'tuijian', name="tuijian"),
+    url(r'^tuijian/create/fengtui/$', 'fengtui_create', name="fengtui_create"),
+    url(r'^tuijian/create/jingtui/$', 'jingtui_create', name="jingtui_create"),
+    url(r'^tuijian/delete/(?P<model>ft|jt)/(?P<book_id>\d+)/$', 'del_tuijian', name="del_tuijian"),
 )
 
 password_reset_urls = patterns('',

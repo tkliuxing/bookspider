@@ -1,0 +1,93 @@
+| {% extends "background/base.html" %}
+- block content
+	#NAVID(data-nav="tuijian")
+	.row
+		.col-xs-6
+			.panel.panel-primary
+				.panel-heading 封面推荐列表（仅前六本被显示）
+					button.btn.btn-sm.btn-success.pull-right(data-target="#ftModal",data-toggle="modal") 创建
+				.panel-body
+					table.table
+						thead
+							tr
+								td 书名
+								td(style="width:150px;") 操作
+						tbody
+							- for book in ft_books
+								tr
+									td
+										a(href="{{book.get_absolute_url}}")!= book.title
+									td
+										a.btn.btn-xs.btn-danger(href="{% url 'bbg:del_tuijian' 'ft' book.id %}") 删除
+		.col-xs-6
+			.panel.panel-primary
+				.panel-heading 精品推荐列表（仅前15本被显示）
+					button.btn.btn-sm.btn-success.pull-right(data-target="#jtModal",data-toggle="modal") 创建
+				.panel-body
+					table.table
+						thead
+							tr
+								td 书名
+								td(style="width:150px;") 操作
+						tbody
+							- for book in jt_books
+								tr
+									td
+										a(href="{{book.get_absolute_url}}")!= book.title
+									td
+										a.btn.btn-xs.btn-danger(href="{% url 'bbg:del_tuijian' 'jt' book.id %}") 删除
+	form#ftModal.modal.fade.form-horizontal(method="POST",action="{% url 'bbg:fengtui_create' %}")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss="modal",type="button")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title 创建封面推荐
+				.modal-body
+					- with create_ft_form as CFF
+						| {% csrf_token %}
+						.form-group(class="{%if CFF.book_id.errors%}has-error{%endif%}")
+							label.col-lg-2.control-label(for="inputRe")!= CFF.book_id.label
+							.col-lg-10
+								input#inputRe.form-control(type="text",value="{{CFF.book_id.value|default:''}}",name="book_id")
+								span.help-block!= CFF.book_id.errors
+				.modal-footer
+					button.btn.btn-primary.btn-raised(type="submit") 保存
+	form#jtModal.modal.fade.form-horizontal(method="POST",action="{% url 'bbg:jingtui_create' %}")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(data-dismiss="modal",type="button")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title 创建精品推荐
+				.modal-body
+					- with create_jt_form as CJF
+						| {% csrf_token %}
+						.form-group(class="{%if CJF.book_id.errors%}has-error{%endif%}")
+							label.col-lg-2.control-label(for="inputRe")!= CJF.book_id.label
+							.col-lg-10
+								input#inputRe.form-control(type="text",value="{{CJF.book_id.value|default:''}}",name="book_id")
+								span.help-block!= CJF.book_id.errors
+				.modal-footer
+					button.btn.btn-primary.btn-raised(type="submit") 保存
+- block footerjs
+	if create_ft_form.errors or edit_rule
+		script
+			$(function(){
+				$("#ftModal").modal('show');
+			});
+	if create_jt_form.errors or edit_rule
+		script
+			$(function(){
+				$("#jtModal").modal('show');
+			});
+	//- script
+	//- 	$(function(){
+	//- 		$(".apply_rule").click(function(event){
+	//- 			var this_btn = $(event.currentTarget);
+	//- 			$("#replaceModal").attr("action",this_btn.data("url"));
+	//- 			$("#replaceModal").modal('show');
+	//- 		});
+	//- 	});

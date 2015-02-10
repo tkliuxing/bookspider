@@ -8,12 +8,63 @@ body.invert{
 	float: right;
 	display: block;
 }
+.caption>p{
+	line-height: 1.4em;
+	margin-bottom: 0;
+}
+.panel-title{
+	font-size: 14px;
+}
 .panel-body.bookinfo{
-	height: 260px;
+	height: 150px;
 	overflow-y: scroll;
 	text-indent:2em;
+	padding: 5px;
 }
-
+.panel-footer.admin{
+	padding:5px 5px;
+}
+.panel.panel-primary.jt{
+	margin-bottom:10px;
+}
+.jt.panel-body{
+	padding: 0;
+}
+ul.jt{
+	margin-bottom: 0;
+}
+.jt.list-group-item:last-child{
+	border-bottom: 0;
+	border-left: 0;
+	border-right: 0;
+}
+.jt.list-group-item:first-child{
+	border: 0;
+	border-left: 0;
+	border-right: 0;
+}
+.jt.list-group-item{
+	border-left: 0;
+	border-right: 0;
+	padding:7px 15px;
+}
+.col-xs-12.col-sm-6.col-md-4.jtl{
+	padding: 5px 5px;
+	padding-bottom: 0;
+}
+.panel.panel-primary.bl{
+	margin-bottom:10px;
+}
+.panel-body.bl{
+	padding-top: 0px;
+	padding-bottom: 6px;
+}
+.panel.panel-info.jtl{
+	margin-bottom:5px;
+}
+.panel-heading.jtl{
+	padding:5px 5px;
+}
 .pagelist .col-md-4{
 	padding-right: 0px;
 	padding-left: 1px;
@@ -42,6 +93,13 @@ body.invert{
 }
 .breadcrumb.invert{
 	background-color: #383838;
+}
+.pagination.bl{
+	margin-top:4px;
+	margin-bottom:4px;
+}
+li.btn.btn-sm.bl{
+	padding-top:6px;
 }
 .pagecontent{
 	text-indent: 2em;

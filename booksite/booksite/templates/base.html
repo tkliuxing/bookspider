@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-	<title>看小说,么?{% spaceless %}{% block pagetitle %}{% endblock pagetitle %}{% endspaceless %}</title>
+	<title>看小说么{% spaceless %}{% block pagetitle %}{% endblock pagetitle %}{% endspaceless %}</title>
 	<meta name="keywords" content="{% spaceless %}{% block keymeta %}看小说么{% endblock keymeta %}{% endspaceless %}">
 	<meta name="description" content="{% spaceless %}{% block keydesc %}看小说,么?最简洁的小说阅读网站,提供都市小说.玄幻小说.仙侠小说.历史小说.网游小说.免费小说等在线阅读.{% endblock keydesc %}{% endspaceless %}">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
@@ -93,7 +93,29 @@
 		</div>
 	</nav>
 {% endspaceless %}
-	<div class="container">{% block content %}{% endblock content %}</div>
+	<div class="container">
+	{% block content %}{% endblock content %}
+		<div class="col-md-12">
+			<div class="row">
+				<div class="panel panel-default">
+					<div class="panel-heading text-center">友情链接</div>
+					<div class="panel-body text-center">
+						<a href="http://www.86696.cc" target="_blank" class="btn btn-link">斗罗大陆</a>
+						<a href="http://www.xiaoshuomi.com" target="_blank" class="btn btn-link">小说迷</a>
+						<a href="http://www.86696.cc" target="_blank" class="btn btn-link">绝世唐门</a>
+						<a href="http://www.txt100.com" target="_blank" class="btn btn-link">TXT电子书免费下载</a>
+						<a href="http://www.52xiaoshuo.com" target="_blank" class="btn btn-link">52小说网</a>
+						<a href="http://www.23hh.com" target="_blank" class="btn btn-link">无弹窗小说</a>
+						<a href="http://www.xiaoshuomi.com" target="_blank" class="btn btn-link">将夜</a>
+						<a href="http://xiaoshuoku.com" target="_blank" class="btn btn-link">无弹窗小说库</a>
+						<a href="http://www.5055.cc" target="_blank" class="btn btn-link">running man</a>
+						<a href="http://www.dushiwenxue.com" target="_blank" class="btn btn-link">都市文学</a>
+						<a href="http://www.qzread.com" target="_blank" class="btn btn-link">Q猪文学站</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% block footerblock %}{% endblock footerblock %}
 	<footer class="bs-docs-footer inv">
 		<div class="container text-center">
@@ -114,5 +136,6 @@
 	{% endassets %}
 	{% block footerjs %}
 	{% endblock footerjs %}
+
 </body>
 </html>
