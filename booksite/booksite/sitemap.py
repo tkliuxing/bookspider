@@ -8,7 +8,7 @@ class BookSitemaps(BaiduSitemap):
     priority = 0.5
 
     def items(self):
-        return Book.objects.order_by("-last_update").filter(last_update__isnull=False)[:100]
+        return Book.objects.order_by("-last_update").filter(last_update__isnull=False)
 
     def lastmod(self , obj):
         return obj.last_update
