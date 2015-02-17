@@ -21,6 +21,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,6 +34,7 @@ INSTALLED_APPS = (
     'booksite.book',
     'booksite.usercenter',
     'booksite.background',
+    'booksite.baidusitemap',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,6 +63,8 @@ DATABASES = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
+
+SITE_ID = 1
 
 LANGUAGE_CODE = 'zh-cn'
 

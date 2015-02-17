@@ -5,6 +5,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from booksite.usercenter.views import ChangePWDView
+from booksite.sitemap import BookSitemaps
+
 admin.autodiscover()
 
 usercenter_urls = patterns('booksite.usercenter.views',
@@ -66,7 +68,12 @@ password_reset_urls = patterns('',
     ),
 )
 
+sitemaps = {
+    'books': BookSitemaps,
+}
+
 urlpatterns = patterns('',
+    url(r'^sitemap\.xml$', 'booksite.baidusitemap.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
     url(r'^$', 'booksite.book.views.home', name='home'),
     url(r'^fenlei/(?P<category>[a-g])/$', 'booksite.book.views.category', name='category'),
     url(r'^bookrank/$', 'booksite.book.views.bookrank', name='bookrank'),
