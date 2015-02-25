@@ -1,7 +1,17 @@
 | {% extends "background/base.html" %}
+| {% load static paragraphedit %}
 - block content
 	.panel.panel-primary
-		.panel-heading 书库共有{{book_count|floatformat}}本书籍
+		.panel-heading
+			| 书库共有
+			span.badge.badge-info {{book_count|numtocnnum}}
+			| 本书籍;
+			span.badge.badge-info {{bookpage_count|numtocnnum}}
+			| 个章节;
+			span.badge.badge-info {{bookrank_count|numtocnnum}}
+			| 条书籍评分;平均每本书有
+			span.badge.badge-info {{average_page_per_book|numtocnnum}}
+			| 个章节
 		.panel-body
 			#maincontainer
 

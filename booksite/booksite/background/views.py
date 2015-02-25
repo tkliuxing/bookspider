@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.contrib.auth.decorators import permission_required
-from booksite.book.models import Book, BookPage
+from booksite.book.models import Book, BookPage, BookRank
 from .models import ReplaceRule, FengTui, JingTui
 from .forms import (
     ReplaceRuleCreateForm,
@@ -26,11 +26,16 @@ def index(request):
         "g": "玄幻魔法",
     }.values()
     book_count = Book.objects.all().count()
+    bookpage_count = BookPage.objects.all().count()
+    bookrank_count = BookRank.objects.all().count()
     category_data = [
         [c, Book.objects.filter(category=c).count()] for c in CATEGORYS
     ]
     C['category_data'] = json.dumps(category_data)
     C['book_count'] = book_count
+    C['bookpage_count'] = bookpage_count
+    C['bookrank_count'] = bookrank_count
+    C['average_page_per_book'] = bookpage_count//book_count
     return render(request, "background/index.jade", C)
 
 @permission_required('usercenter.can_add_user')
