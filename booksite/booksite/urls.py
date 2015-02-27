@@ -4,6 +4,7 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from booksite.usercenter.views import ChangePWDView
 from booksite.sitemap import BookSitemaps
 
@@ -73,7 +74,8 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
-    url(r'^sitemap\.xml$', 'booksite.baidusitemap.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    # url(r'^sitemap\.xml$', 'booksite.baidusitemap.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
     url(r'^$', 'booksite.book.views.home', name='home'),
     url(r'^fenlei/(?P<category>[a-g])/$', 'booksite.book.views.category', name='category'),
     url(r'^bookrank/$', 'booksite.book.views.bookrank', name='bookrank'),
