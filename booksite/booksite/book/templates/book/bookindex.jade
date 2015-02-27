@@ -11,6 +11,8 @@
 			ol.breadcrumb
 				li: a(href="/") 书籍列表
 				li.active!= book.title
+				if user.is_superuser
+					li: a(target="_blank",href="/admin/book/book/{{book.pk}}/") 编辑信息
 		.col-md-12
 			h2.text-center!= book.title
 	#Pages.row.pagelist

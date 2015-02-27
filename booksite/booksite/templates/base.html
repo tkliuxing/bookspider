@@ -18,6 +18,9 @@
 	{% if BAIDUTONGJI_ID %}
 		{% include "baidutongji.html" %}
 	{% endif %}
+	{% if GA_ID %}
+		{% include "googleanalytics.html" %}
+	{% endif %}
 	{% block headercss %}
 	{% endblock headercss %}
 	{% block headerjs %}
