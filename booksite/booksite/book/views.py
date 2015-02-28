@@ -138,7 +138,7 @@ def category(request, category):
     C['categorynav'] = "nav%s" % category
     return render(request, 'book/index.jade', C)
 
-# @cache_page(60*60)
+@cache_page(60*60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
