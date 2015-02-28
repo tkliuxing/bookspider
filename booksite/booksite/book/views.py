@@ -20,12 +20,12 @@ from .tasks import update_page, update_book_pic_page
 
 def home(request):
     C = {}
-    books = Book.objects.all().order_by('book_number')
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
         books = books.filter(title__contains=request.GET['s'])
         C['search'] = True
     if request.GET.get('a', ''):
-        books = Book.objects.filter(author=request.GET['a'])
+        books = Book.objects.filter(is_deleted=False, author=request.GET['a'])
         C['author'] = request.GET['a']
         if not books:
             raise Http404
@@ -49,9 +49,9 @@ def home(request):
 
 def mb_index(request):
     C = {}
-    books = Book.objects.all().order_by('book_number')
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('a', ''):
-        books = Book.objects.filter(author=request.GET['a'])
+        books = Book.objects.filter(is_deleted=False, author=request.GET['a'])
         C['author'] = request.GET['a']
         if not books:
             raise Http404
@@ -64,7 +64,7 @@ def mb_index(request):
 
 def mb_search(request):
     C = {}
-    books = Book.objects.all().order_by('book_number')
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
         books = books.filter(title__contains=request.GET['s'])
         C['search'] = True
@@ -83,7 +83,7 @@ def mb_search(request):
 
 def mb_searchload(request):
     C = {}
-    books = Book.objects.all().order_by('book_number')
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
         books = books.filter(title__contains=request.GET['s'])
         C['search'] = True
@@ -102,7 +102,7 @@ def mb_searchload(request):
 
 def mb_load(request):
     C = {}
-    books = Book.objects.all().order_by('book_number')
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
     p = Paginator(books, 15)
     try:
         page = p.page(int(request.GET.get('p', 1)))
@@ -125,7 +125,7 @@ def category(request, category):
     }
     if category not in CATEGORYS:
         raise Http404
-    books = Book.objects.filter(category=CATEGORYS[category])
+    books = Book.objects.filter(is_deleted=False, category=CATEGORYS[category])
     C = {}
     p = Paginator(books, 30)
     try:
@@ -138,11 +138,11 @@ def category(request, category):
     C['categorynav'] = "nav%s" % category
     return render(request, 'book/index.jade', C)
 
-@cache_page(60*60)
+# @cache_page(60*60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
-    book = get_object_or_404(Book, pk=book_id)
+    book = get_object_or_404(Book, pk=book_id, is_deleted=False)
     bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
     C = {}
     C['book'] = book
@@ -153,7 +153,7 @@ def bookindex(request, book_id=0):
 def mb_bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
-    book = get_object_or_404(Book, pk=book_id)
+    book = get_object_or_404(Book, pk=book_id, is_deleted=False)
     bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
     C = {}
     C['book'] = book
@@ -165,7 +165,7 @@ def mb_bookindex(request, book_id=0):
 def bookindexajax(request, book_id=0):
     if book_id == 0:
         raise Http404
-    book = get_object_or_404(Book, pk=book_id)
+    book = get_object_or_404(Book, pk=book_id, is_deleted=False)
     bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
     C = {'bookpages': bookpages}
     data = render_to_string('book/bookindexajax.jade', C)
@@ -179,7 +179,7 @@ def bookpage(request, page_number=0):
     if page_number == 0:
         raise Http404
     bookpage = get_object_or_404(BookPage, page_number=page_number)
-    book = get_object_or_404(Book, book_number=bookpage.book_number)
+    book = get_object_or_404(Book, is_deleted=False, book_number=bookpage.book_number)
     # 注册用户的点击数据统计
     if request.user.is_authenticated():
         skey = 'time-book-%d' % book.pk
@@ -204,7 +204,7 @@ def mb_bookpage(request, page_number=0):
     if page_number == 0:
         raise Http404
     bookpage = get_object_or_404(BookPage, page_number=page_number)
-    book = get_object_or_404(Book, book_number=bookpage.book_number)
+    book = get_object_or_404(Book, is_deleted=False, book_number=bookpage.book_number)
     # 注册用户的点击数据统计
     if request.user.is_authenticated():
         skey = 'time-book-%d' % book.pk
@@ -249,7 +249,7 @@ def booknews(request):
     C = {}
     TOTALPAGE = 20
     PREPAGE = 20
-    books = Book.objects.order_by("-last_update").filter(last_update__isnull=False)[:TOTALPAGE*PREPAGE]
+    books = Book.objects.order_by("-last_update").filter(is_deleted=False, last_update__isnull=False)[:TOTALPAGE*PREPAGE]
     p = Paginator(books, PREPAGE)
     try:
         page = p.page(int(request.GET.get('p', 1)))
@@ -262,7 +262,7 @@ def booknews(request):
 
 def load_nall_page(request, page_id=0):
     bookpage = BookPage.objects.get(pk=page_id)
-    book = Book.objects.get(book_number=bookpage.book_number)
+    book = Book.objects.get(is_deleted=False, book_number=bookpage.book_number)
     bookpages = []
     next_page_number = bookpage.next_number
     # 使用链式获取比排序后截取快
@@ -315,7 +315,7 @@ def page_task_check(request, page_id=0):
 def book_fix_pic(request, book_id=0):
     if not request.user.is_superuser:
         raise Http404
-    book = get_object_or_404(Book, pk=book_id)
+    book = get_object_or_404(Book, pk=book_id, is_deleted=False)
     update_book_pic_page.delay(book.book_number, 200)
     return ajax_success()
 

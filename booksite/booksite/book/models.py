@@ -17,6 +17,7 @@ class Book(models.Model):
     book_number = models.IntegerField(db_index=True, unique=True)
     last_update = models.DateTimeField(auto_now=True, null=True, blank=True, default=None, db_index=True)
     last_page_number = models.IntegerField(default=0, null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['book_number']
@@ -25,6 +26,11 @@ class Book(models.Model):
     def info_html(self):
         s = u"\n\n".join(self.info.split("\n"))
         return s
+
+    def delete(self, *args, **kwargs):
+        BookPage.objects.filter(book_number=self.book_number).delete()
+        self.is_deleted = True
+        self.save()
 
     def last_page():
         doc = "The last_page property."
@@ -116,6 +122,14 @@ class BookPage(models.Model):
 
     def get_absolute_url(self):
         return reverse('bookpage', args=[str(self.page_number)])
+
+    def save(self, *args, **kwargs):
+        try:
+            Book.objects.get(book_number=self.book_number, is_deleted=False)
+        except Book.DoesNotExist:
+            return
+        else:
+            super(BookPage, self).save(*args, **kwargs)
 
 
 class BookRank(models.Model):
