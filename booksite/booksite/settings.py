@@ -111,6 +111,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'booksite/static'),
 )
+MEDIA_ROOT = os.path.join(BASE_DIR, 'bookstore')
+MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'usercenter.User'
 
