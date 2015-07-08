@@ -26,7 +26,7 @@ def ajax_success(data=None, **kwargs):
     if data is None:
         data = kwargs
     return_json = json.dumps({"data": data, "success": True})
-    response = HttpResponse(return_json, mimetype="text/json")
+    response = HttpResponse(return_json, content_type="text/json")
     response['Cache-Control'] = 'no-cache'
     return response
 
@@ -55,6 +55,6 @@ def ajax_error(error_message, data=None, **kwargs):
             "success": False,
             "error_message": error_message,
         })
-    response =  HttpResponse(return_json, mimetype="text/json")
+    response =  HttpResponse(return_json, content_type="text/json")
     response['Cache-Control'] = 'no-cache'
     return response

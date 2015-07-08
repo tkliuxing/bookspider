@@ -52,10 +52,9 @@
 				.alert.alert-danger(role="alert",id="TBMAERR{{bookpage.pk}}",style="display:none;")
 		.col-md-12.hidden-xs &nbsp;
 		.col-md-1.hidden-xs &nbsp;
-		.col-md-10.pagecontent.inv(data-pagenum="{{bookpage.pk}}",data-dellurl="{% url 'del_line' bookpage.pk %}")
+		.col-md-10.pagecontent.noload.inv(data-pageurl="{{bookpage.content_file.url}}",data-pagenum="{{bookpage.pk}}",data-dellurl="{% url 'del_line' bookpage.pk %}")
 			.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGDOWN
 			.col-md-5.hidden-lg.hidden-md.hidden-sm.transparent_class.PGUP
-			!= bookpage.content_html|paragraphlines
 		.col-md-1.hidden-xs &nbsp;
 		.col-md-12.text-center.pagebutton
 			.btn-group

@@ -29,7 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
-    'south',
+    # 'south',
     'django_assets',
     'captcha',
     'booksite.book',
@@ -78,7 +78,7 @@ USE_L10N = True
 USE_TZ = True
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'booksite/templates')
+    ('', os.path.join(BASE_DIR, 'booksite/templates'))
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

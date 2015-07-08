@@ -110,6 +110,18 @@
 		$.get("./?invert=1", function(data) {}, 'json');
 		return false;
 	});
+	// 加载gzip文件
+	var load_zip = function(elements){
+		elements.each(function(index){
+			var this_ele = $(this);
+			$.get(this_ele.data('pageurl'), function(data){
+				console.log(this_ele);
+				$(data).appendTo(this_ele);
+				this_ele.removeClass('noload');
+			});
+		});
+	}
+	load_zip($(".pagecontent.noload"));
 	// 加载后续章节
 	$(".readnall").die().live('click', function() {
 		var this_a = $(event.target);
@@ -132,6 +144,7 @@
 					$(".PGUP").click(function() {
 						window.scrollTo(0, window.scrollY - window.innerHeight + 20);
 					});
+					load_zip($(".pagecontent.noload"));
 				}
 			},
 			beforeSend: function() {
@@ -238,8 +251,12 @@
 						$("#Savelinedone").slideDown();
 						setTimeout(function() {
 							$("#Savelinedone").slideUp();
-						}, 2000);
-						this_p.text($("#Lineedit").find("textarea").val());
+							$(".modal").modal('toggle');
+							ALLOWKEY = true;
+						}, 1000);
+						var page_div = this_p.parent();
+						page_div.find('p').remove();
+						$(data.data).appendTo(page_div);
 					} else {
 						$("#Savelinedone").text(data.error_message);
 						$("#Savelinedone").slideDown();
@@ -263,16 +280,9 @@
 							$(".modal").modal('toggle');
 							ALLOWKEY = true;
 						}, 1000);
-						var this_ln = parseInt(this_p.data("parnum"));
-						$.each(this_p.parent().find("p"), function(i, elem) {
-							var line_num = parseInt($(elem).data("parnum"));
-							if (line_num > this_ln) {
-								var to_num = line_num - 1;
-								$(elem).data("parnum", to_num.toString());
-								$(elem).attr("data-parnum", to_num.toString());
-							}
-						});
-						this_p.remove();
+						var page_div = this_p.parent();
+						page_div.find('p').remove();
+						$(data.data).appendTo(page_div);
 					} else {
 						$("#Savelinedone").text(data.error_message);
 						$("#Savelinedone").slideDown();

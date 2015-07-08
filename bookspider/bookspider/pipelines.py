@@ -5,7 +5,7 @@ import redis
 
 from scrapy.exceptions import DropItem
 
-from bookspider.items import BookinfoItem, BookpageItem, QidianRankItem
+from bookspider.items import BookinfoItem, BookpageItem, QidianRankItem, BookPage
 
 RC = redis.Redis()
 
@@ -44,6 +44,13 @@ class BookpagePipeline(object):
         else:
             try:
                 item.save()
+            except:
+                import traceback
+                traceback.print_exc()
+                # RC.set(item['origin_url'], 'True')
+                raise DropItem("Item save error: %s" % item['page_number'])
+            try:
+                item.instance.save_content_zip_file(item['content'])
                 item.instance.update_news()
                 RC.set(item['origin_url'], 'True')
                 print str(item['book_number']).ljust(10), "-"*10,
@@ -51,8 +58,11 @@ class BookpagePipeline(object):
                 print ' '.join(item['title'].split()[1:])
                 return item
             except:
-                RC.set(item['origin_url'], 'True')
-                raise DropItem("Duplicate item found: %s" % item['page_number'])
+                item.instance.delete()
+                import traceback
+                traceback.print_exc()
+                # RC.set(item['origin_url'], 'True')
+                raise DropItem("Item save error: %s" % item['page_number'])
 
 
 class QidianRankPipeline(object):

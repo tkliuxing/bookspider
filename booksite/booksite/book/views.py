@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import time
-import difflib
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -11,6 +10,7 @@ from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django import forms
+from pyquery import PyQuery as PQ
 
 from booksite.ajax import ajax_success, ajax_error
 from booksite.background.models import FengTui, JingTui
@@ -197,6 +197,17 @@ def bookpage(request, page_number=0):
     return render(request, 'book/bookpage.jade', C)
 
 
+def bookpage_zip(request, path):
+    from django.conf import settings
+    import gzip, os
+    media_root = settings.MEDIA_ROOT
+    page_path = os.path.join(media_root, 'book/', path)
+    gzip_file = gzip.open(page_path, 'rb', 9)
+    page_content = gzip_file.read()
+    gzip_file.close()
+    return HttpResponse(page_content, content_type="text/html; charset=UTF-8")
+
+
 def mb_bookpage(request, page_number=0):
     if request.GET.get('invert', False):
         request.session['invert'] = not request.session.get('invert', False)
@@ -281,8 +292,7 @@ def load_nall_page(request, page_id=0):
             'bookpages': bookpages,
             'book': book,
             'invert': request.session.get('invert', False),
-        },
-        context_instance=RequestContext(request)
+        }
     )
     return ajax_success(data)
 
@@ -333,22 +343,24 @@ def edit_line(request):
         raise HttpResponse(status_code=405)
     form = CheckForm(request.POST)
     if form.is_valid():
+        import re
+        new_lines = re.sub(r"\n+", '\n', form.cleaned_data["pageline"], flags=re.S).split('\n')
         page = form.cleaned_data["pagenum"]
-        page_contents = page.content.split("\n")
+        page_contents = BookPage.content_text(page.get_content()).split('\n')
         line_number = form.cleaned_data["linenum"]
-        for i, e in enumerate(page_contents):
-            if i == line_number:
-                dif = difflib.Differ()
-                diffline = ("\n".join(
-                    list(dif.compare(e.splitlines(1), form.cleaned_data["pageline"].splitlines(1)))
-                )
-                ).replace(" ", "　").replace("-", "－").replace("?", "？").replace("+", "＋")
-                repr(diffline)
-                # print diffline
-                page_contents[i] = form.cleaned_data["pageline"]
-        page.content = "\n".join(page_contents)
-        page.save()
-        return ajax_success(form.cleaned_data["pageline"])
+        # # Diff信息
+        # import difflib
+        # content_line = page_contents[line_number]
+        # dif = difflib.Differ()
+        # diffline = ("\n".join(
+        #     list(dif.compare(content_line.splitlines(1), form.cleaned_data["pageline"].splitlines(1)))
+        # )).replace(" ", "　").replace("-", "－").replace("?", "？").replace("+", "＋")
+        # print diffline
+        page_contents[line_number] = form.cleaned_data["pageline"]
+        page_contents = page_contents[:line_number] + new_lines + page_contents[line_number+1:]
+        new_content = BookPage.content_html("\n".join(page_contents))
+        page.set_content(new_content)
+        return ajax_success(new_content)
     else:
         return ajax_error(form.errors.as_json())
 
@@ -360,11 +372,11 @@ def del_line(request, page_id=0):
     if not request.user.is_superuser:
         raise Http404
     page = get_object_or_404(BookPage, pk=page_id)
-    page_contents = page.content.split("\n")
+    page_contents = BookPage.content_text(page.get_content()).split('\n')
     try:
         page_contents.pop(int(request.POST["ln"]))
     except:
         return ajax_error("非法数据!")
-    page.content = "\n".join(page_contents)
-    page.save()
-    return ajax_success()
+    new_content = BookPage.content_html("\n".join(page_contents))
+    page.set_content(new_content)
+    return ajax_success(new_content)

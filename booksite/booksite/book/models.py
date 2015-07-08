@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import hashlib
+import gzip
+from StringIO import StringIO
 import cPickle as pickle
 from django.db import models
 from django.db import connection
 from django.core.urlresolvers import reverse
+from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
+from django_pgjson.fields import JsonField
+from pyquery import PyQuery as PQ
 
 
 class Book(models.Model):
@@ -18,6 +24,7 @@ class Book(models.Model):
     last_update = models.DateTimeField(auto_now=True, null=True, blank=True, default=None, db_index=True)
     last_page_number = models.IntegerField(default=0, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
+    pages = JsonField(default=[], null=True, blank=True)
 
     class Meta:
         ordering = ['book_number']
@@ -31,6 +38,18 @@ class Book(models.Model):
         BookPage.objects.filter(book_number=self.book_number).delete()
         self.is_deleted = True
         self.save()
+
+    def append_page(self, page_id):
+        if self.pages and isinstance(self.pages, list):
+            self.pages.append(page_id)
+        else:
+            self.pages = [page_id]
+
+    def replace_page(self, old_id, new_id):
+        self.pages[self.pages.index(old_id)] = new_id
+
+    def remove_page(self, page_id):
+        self.pages.pop(self.pages.index(page_id))
 
     def last_page():
         doc = "The last_page property."
@@ -70,11 +89,22 @@ class Book(models.Model):
         return reverse('category', args=[CATEGORYS.get(self.category, "g")])
 
 
+def bookpage_path(instance, filename):
+    import os, uuid
+    file_name = uuid.uuid4().hex
+    return os.path.join('book/%s/' % instance.book_number, file_name+'.html')
+
+
+def bookpage_path_zip(instance, filename):
+    filename = bookpage_path(instance, filename)
+    return filename+'.gz'
+
 
 class BookPage(models.Model):
     origin_url = models.TextField()
     title = models.CharField(max_length=100, blank=True)
-    content = models.TextField(blank=True)
+    # content = models.TextField(blank=True)
+    content_file = models.FileField(upload_to=bookpage_path_zip, null=True, blank=True)
     book_number = models.IntegerField(db_index=True)
     page_number = models.IntegerField(db_index=True, unique=True)
     next_number = models.IntegerField(default=0, null=True)
@@ -92,23 +122,55 @@ class BookPage(models.Model):
             title = title[len(book_title):]
         return title
 
-    @property
-    def content_html(self):
+    @staticmethod
+    def content_html(content):
+        """转换纯文本段落为html格式段落"""
+        # TODO: replace_list require store to database
         replace_list = [
-            ("&1t;", "<"),
-            ("大6", "大陆"),
-            ("&ldqo;", "“"),
-            ("&rdqo;", "”"),
+            ("&1t;", "<",),
+            ("&gt;", ">",),
+            ("大6", "大陆",),
+            ("&ldqo;", "“",),
+            ("&rdqo;", "”",),
         ]
-        changed = False
+        # changed = False
         for rep in replace_list:
-            if rep[0] in self.content:
-                self.content = self.content.replace(rep[0], rep[1])
-                changed = True
-        if changed:
-            self.save()
-        c = self.content.replace('\n', '\n\n')
-        return c
+            if rep[0] in content:
+                content = content.replace(rep[0], rep[1])
+        content = content.replace('\n', '\n\n')
+        return render_to_string('book/pagerender.html',{'content_html': content}).replace('\n', '')
+
+    @staticmethod
+    def content_text(content):
+        """转换html段落为纯文本段落"""
+        return "\n".join([PQ(p).text() for p in PQ(content).find('p')])
+
+    def get_content(self):
+        """获取章节压缩文件内html文本"""
+        content_gzip = gzip.GzipFile('', 'rb', 9, self.content_file.file)
+        content = content_gzip.read()
+        content_gzip.close()
+        self.content_file.file.seek(0)
+        return content.decode('utf-8')
+
+    def set_content(self, content):
+        """更新（删除并新建）章节压缩文件内html"""
+        self.save_content_zip_file(content, new=(not self.content_file))
+
+    def save_content_zip_file(self, content, new=True):
+        """保存章节压缩文件，new代表是否是新增章节。新增章节会新建文件，老章节会删除并新建。"""
+        if new:
+            content = "\n".join(filter(lambda x:x, BookPage.content_html(content).split("\n")))
+        else:
+            self.content_file.delete()
+        v_file = StringIO()
+        gzip_file = gzip.GzipFile('bookpage'.encode('utf-8'), 'wb', 9 ,v_file)
+        gzip_file.write(content.encode('utf-8'))
+        gzip_file.close()
+        v_file.seek(0)
+        content = v_file.read()
+        self.content_file.save('bookpage'.encode('utf-8'), ContentFile(content))
+        return self.save()
 
     @property
     def book(self):
@@ -116,9 +178,12 @@ class BookPage(models.Model):
 
     def update_news(self):
         """更新书籍的最后章节和最后更新时间"""
-        book = self.book
-        book.last_page = self
-        book.save()
+        try:
+            book = self.book
+            book.last_page = self
+            book.save()
+        except:
+            pass
 
     def get_absolute_url(self):
         return reverse('bookpage', args=[str(self.page_number)])

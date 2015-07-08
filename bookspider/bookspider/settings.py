@@ -10,10 +10,13 @@
 import os
 import sys
 import booksite
+from django.core.wsgi import get_wsgi_application
 
 sys.path.append(os.path.dirname(booksite.__file__))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'booksite.settings'
+
+application = get_wsgi_application()
 
 BOT_NAME = 'bookspider'
 

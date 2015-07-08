@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import urlparse
 
 from scrapy.item import Item, Field
-from scrapy.contrib.djangoitem import DjangoItem
+from scrapy_djangoitem import DjangoItem
 
 from booksite.book.models import Book, BookPage
 
@@ -14,6 +14,7 @@ class BookinfoItem(DjangoItem):
 
 class BookpageItem(DjangoItem):
     django_model = BookPage
+    content = Field()
 
 
 class QidianRankItem(Item):

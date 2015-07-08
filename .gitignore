@@ -10,3 +10,5 @@ dump.rdb
 booksite/node_modules
 .webassets-cache
 booksite/sroot/
+BookSiteApp
+booksite/bookstore
