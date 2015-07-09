@@ -199,13 +199,20 @@ def bookpage(request, page_number=0):
 
 def bookpage_zip(request, path):
     from django.conf import settings
-    import gzip, os
+    import os
     media_root = settings.MEDIA_ROOT
     page_path = os.path.join(media_root, 'book/', path)
-    gzip_file = gzip.open(page_path, 'rb', 9)
-    page_content = gzip_file.read()
-    gzip_file.close()
-    return HttpResponse(page_content, content_type="text/html; charset=UTF-8")
+    page_path = page_path.replace("../", "")
+    try:
+        content_file = open(page_path+'.gz','rb')
+        page_content = content_file.read()
+    except:
+        raise Http404
+    finally:
+        content_file.close()
+    response = HttpResponse(page_content, content_type="text/html; charset=UTF-8", )
+    response["Content-Encoding"] = 'gzip'
+    return response
 
 
 def mb_bookpage(request, page_number=0):
