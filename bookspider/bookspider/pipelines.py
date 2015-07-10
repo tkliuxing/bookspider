@@ -55,7 +55,9 @@ class BookpagePipeline(object):
                 RC.set(item['origin_url'], 'True')
                 print str(item['book_number']).ljust(10), "-"*10,
                 print str(item['page_number']).ljust(10), "-"*10,
-                print ' '.join(item['title'].split()[1:])
+                for i in item['title'].encode("utf-8").split()[1:]:
+                    print i,
+                print ''
                 return item
             except:
                 item.instance.delete()
