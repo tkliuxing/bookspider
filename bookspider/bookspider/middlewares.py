@@ -3,7 +3,7 @@
 
 import random
 from scrapy.conf import settings
-from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
+from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 
 
 class ProxyMiddleware(object):

@@ -27,6 +27,8 @@ class Book(models.Model):
     pages = JsonField(default=[], null=True, blank=True)
 
     class Meta:
+        verbose_name = _('书籍')
+        verbose_name_plural = _('书籍')
         ordering = ['book_number']
 
     @property
@@ -111,6 +113,8 @@ class BookPage(models.Model):
     prev_number = models.IntegerField(default=0, null=True)
 
     class Meta:
+        verbose_name = _('章节')
+        verbose_name_plural = _('章节')
         ordering = ['book_number', 'page_number']
 
     @property

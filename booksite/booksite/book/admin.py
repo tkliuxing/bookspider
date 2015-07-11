@@ -9,6 +9,7 @@ from booksite.book.models import Book, BookPage, KeyValueStorage, BookRank
 class BookForm(ModelForm):
     class Meta:
         model = Book
+        exclude = ('pages',)
         widgets = {
             'origin_url': TextInput(attrs={'class':"vTextField"})
         }
@@ -48,6 +49,7 @@ admin.site.register(Book, BookAdmin)
 class BookPageForm(ModelForm):
     class Meta:
         model = BookPage
+        exclude = []
         widgets = {
             'origin_url': TextInput(attrs={'class':"vTextField"})
         }

@@ -6,7 +6,7 @@ import redis
 
 from pyquery import PyQuery as PQ
 
-from scrapy.spider import Spider
+from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
 
