@@ -43,13 +43,9 @@
 						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">分类阅读{%if category%}:{{category}}{%endif%}<span class="caret"></span></a>
 						<span class="hidden-xs dropdown-arrow dropdown-arrow-inverse"></span>
 						<ul class="dropdown-menu dropdown-inverse" role="menu">
-							<li id="navg"><a href="{% url 'category' 'g' %}">玄幻魔法</a></li>
-							<li id="nava"><a href="{% url 'category' 'a' %}">侦探推理</a></li>
-							<li id="navb"><a href="{% url 'category' 'b' %}">武侠修真</a></li>
-							<li id="navc"><a href="{% url 'category' 'c' %}">网游动漫</a></li>
-							<li id="navd"><a href="{% url 'category' 'd' %}">历史军事</a></li>
-							<li id="nave"><a href="{% url 'category' 'e' %}">都市言情</a></li>
-							<li id="navf"><a href="{% url 'category' 'f' %}">散文诗词</a></li>
+							{% for ca in categorys %}
+								{% if ca.name %}<li id="nav{{ca.key}}"><a href="{% url 'category' ca.key %}">{{ca.name}}</a></li>{% endif %}
+							{% endfor %}
 						</ul>
 					</li>
 					<li id="navp">

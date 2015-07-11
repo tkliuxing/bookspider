@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from booksite.book.models import KeyValueStorage, Book
 
 def analystics(request):
     context_extras = {}
@@ -10,3 +11,16 @@ def analystics(request):
     # if hasattr(settings, 'ZHANZHANGTONGJI_ID'):
     #     context_extras['ZHANZHANGTONGJI_ID'] = settings.BAIDUTONGJI_ID
     return context_extras
+
+
+def categorys(request):
+    CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
+        key='CATEGORYS',
+        defaults={'value':'', 'long_value':''}
+        )
+    if created:
+        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category',flat=True)
+        CATEGORYS_KV.val = {chr(x[0]):x[1] for x in zip(range(97,123), real_categorys)}
+        CATEGORYS_KV.save()
+    CATEGORYS = [{'name':x[1], 'key':x[0]} for x in CATEGORYS_KV.val.items()]
+    return {'categorys': CATEGORYS}

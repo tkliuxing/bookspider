@@ -1,9 +1,7 @@
 {% extends "bookhtml5/base.html" %}
 
 {% block content %}
-<div
-data-role="page"
-data-theme="{%if invert%}b{%else%}a{%endif%}">
+<div data-role="page" data-theme="{%if invert%}b{%else%}a{%endif%}">
 	<div data-role="header">
 		<a
 		href="{% url 'mb' %}"
@@ -20,8 +18,8 @@ data-theme="{%if invert%}b{%else%}a{%endif%}">
 
 	<div class="pagecontent" data-role="content">
 		<h4 style="text-align:center;">{{bookpage.title_html}}</h4>
-		<div class="bookpage-content">
-			{{content_html|linebreaks}}
+		<div class="bookpage-content" data-pageurl="{{bookpage.content_file.url|slice:':-3'}}">
+			{# {{content_html|linebreaks}} #}
 			<p>&nbsp;</p>
 			<p>{{book.title}}－－{{book.author}}</p>
 			<p>{{bookpage.title_html}}</p>

@@ -79,16 +79,15 @@ class Book(models.Model):
         return BookRank.objects.get_or_create(book=self)[0]
 
     def get_category_url(self):
-        CATEGORYS = {
-            "侦探推理": "a",
-            "武侠修真": "b",
-            "网游动漫": "c",
-            "历史军事": "d",
-            "都市言情": "e",
-            "散文诗词": "f",
-            "玄幻魔法": "g",
-        }
-        return reverse('category', args=[CATEGORYS.get(self.category, "g")])
+        CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
+            key='CATEGORYS_REVERSE',
+            defaults={'value':'', 'long_value':''}
+            )
+        if created:
+            real_categorys = Book.objects.order_by('category').distinct('category').values_list('category',flat=True)
+            CATEGORYS_KV.val = {x[1]:chr(x[0]) for x in zip(range(97,123), real_categorys)}
+            CATEGORYS_KV.save()
+        return reverse('category', args=[CATEGORYS_KV.val.get(self.category, "g")])
 
 
 def bookpage_path(instance, filename):

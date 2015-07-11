@@ -14,7 +14,7 @@ from pyquery import PyQuery as PQ
 
 from booksite.ajax import ajax_success, ajax_error
 from booksite.background.models import FengTui, JingTui
-from .models import Book, BookPage, BookRank
+from .models import Book, BookPage, BookRank, KeyValueStorage
 from .tasks import update_page, update_book_pic_page
 
 
@@ -114,18 +114,17 @@ def mb_load(request):
 
 
 def category(request, category):
-    CATEGORYS = {
-        "a": "侦探推理",
-        "b": "武侠修真",
-        "c": "网游动漫",
-        "d": "历史军事",
-        "e": "都市言情",
-        "f": "散文诗词",
-        "g": "玄幻魔法",
-    }
-    if category not in CATEGORYS:
+    CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
+        key='CATEGORYS',
+        defaults={'value':'', 'long_value':''}
+        )
+    if created:
+        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category',flat=True)
+        CATEGORYS_KV.val = {chr(x[0]):x[1] for x in zip(range(97,123),real_categorys)}
+        CATEGORYS_KV.save()
+    if category not in CATEGORYS_KV.val:
         raise Http404
-    books = Book.objects.filter(is_deleted=False, category=CATEGORYS[category])
+    books = Book.objects.filter(is_deleted=False, category=CATEGORYS_KV.val[category])
     C = {}
     p = Paginator(books, 30)
     try:
@@ -134,7 +133,7 @@ def category(request, category):
         page = p.page(1)
     C['books'] = page.object_list
     C['pagination'] = page
-    C['category'] = CATEGORYS[category]
+    C['category'] = CATEGORYS_KV.val[category]
     C['categorynav'] = "nav%s" % category
     return render(request, 'book/index.jade', C)
 

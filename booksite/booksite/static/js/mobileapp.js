@@ -213,5 +213,16 @@
 			return false;
 		}
 	});
-
+	// 加载gzip文件
+	var load_zip = function(elements){
+		elements.each(function(index){
+			var this_ele = $(this);
+			$.get(this_ele.data('pageurl'), function(data){
+				console.log(this_ele);
+				$(data).prependTo(this_ele);
+				this_ele.removeClass('noload');
+			});
+		});
+	}
+	load_zip($(".bookpage-content"));
 })(jQuery);
