@@ -9,18 +9,20 @@ block content
 			table.table
 				tr
 					th 书籍
-					th 章节
-					th.hidden-xs 添加时间
+					th.hidden-xs 已读章节
+					th 最新章节
+					th.hidden-xs 最后更新时间
 					th
 				if bookmarks
 					for bookmark in bookmarks
 						tr
-							td: a(href="{% url 'bookmark_read' bookmark.id %}")= bookmark.book.title
+							td: a(href="{% url 'bookmark_read' bookmark.id bookmark.page.id %}")= bookmark.book.title
 								if bookmark.update
 									| &nbsp;
 									span.label.label-xs.label-danger 有更新
-							td: a(href="{% url 'bookmark_read' bookmark.id %}")= bookmark.page.title_html
-							td.hidden-xs= bookmark.create_time|date:"Y-m-d H:i"
+							td.hidden-xs: a(href="{% url 'bookmark_read' bookmark.id bookmark.page.id %}")= bookmark.page.title_html
+							td: a(href="{% url 'bookmark_read' bookmark.id bookmark.book.last_page.id %}")= bookmark.book.last_page.title_html
+							td.hidden-xs= bookmark.book.last_update|date:"Y-m-d H:i"
 							td: a.delbma.btn.btn-info.btn-xs(href="javascript:;",data-url="{% url 'del_bookmark' bookmark.pk %}") 删除
 				else
 					tr

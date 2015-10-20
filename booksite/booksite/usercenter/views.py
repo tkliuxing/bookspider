@@ -224,12 +224,15 @@ def del_bookmark(request, bookmark_id):
 
 
 @login_required
-def bookmark_read(request, bookmark_id):
+def bookmark_read(request, bookmark_id, page_number):
     """通过书签阅读时去掉更新提醒"""
     try:
         bookmark = BookMark.objects.get(pk=bookmark_id, user=request.user)
+        bookpage = BookPage.objects.get(pk=page_number)
     except BookMark.DoesNotExist:
+        return redirect('bookmark')
+    except BookPage.DoesNotExist:
         return redirect('bookmark')
     bookmark.update = False
     bookmark.save()
-    return redirect(bookmark.page.get_absolute_url())
+    return redirect(bookpage.get_absolute_url())
