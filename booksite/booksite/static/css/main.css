@@ -1,8 +1,20 @@
 body{
 	padding-top: 0px;
+	transition: color .25s linear,background-color .25s linear;
 }
 body.invert{
 	background-color: #000;
+	color: #9FA1B4;
+}
+body.invert .panel-heading{
+	background-color: #222;
+	color: #ccc;
+}
+body.invert .panel.panel-default{
+	background-color: #000;
+}
+.navbar,.breadcrumb{
+	transition: color .25s linear,background-color .25s linear;
 }
 .pull-right{
 	float: right;
@@ -118,7 +130,6 @@ li.btn.btn-sm.bl{
 }
 .pagecontent.invert{
 	color: #9FA1B4;
-	background-color: #000000;
 }
 @media (max-width: 768px) {
 	.pagecontent>p {

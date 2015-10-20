@@ -101,12 +101,14 @@
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
 		$('.btn').toggleClass('transparent_class');
+		$('.panel.panel-default .btn').removeClass('transparent_class');
 	}
 	// 切换夜间模式
 	$(".btn.invert").die().live('click', function() {
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
 		$('.btn').toggleClass('transparent_class');
+		$('.panel.panel-default .btn').removeClass('transparent_class');
 		$.get("./?invert=1", function(data) {}, 'json');
 		return false;
 	});
