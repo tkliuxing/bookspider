@@ -91,6 +91,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "booksite.context_processors.analystics",
     "booksite.context_processors.categorys",
+    "booksite.context_processors.bookmark_update_count",
 )
 
 TEMPLATE_LOADERS = (

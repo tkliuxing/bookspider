@@ -6,18 +6,23 @@ from django.contrib.auth.models import AbstractUser
 
 from booksite.book.models import Book, BookPage
 
+
 class User(AbstractUser):
+
     '''用户'''
+
     def __unicode__(self):
         return self.username
 
 
 class BookMark(models.Model):
+
     '''书签'''
 
     user = models.ForeignKey(User, verbose_name=_("用户"))
     book = models.ForeignKey(Book, verbose_name=_("书籍"))
     page = models.ForeignKey(BookPage, verbose_name=_("章节"))
+    update = models.BooleanField(verbose_name=_("有更新"), default=False)
     create_time = models.DateTimeField(auto_now_add=True, auto_now=True)
 
     class Meta:

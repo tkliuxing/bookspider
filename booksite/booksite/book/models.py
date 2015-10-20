@@ -55,18 +55,21 @@ class Book(models.Model):
 
     def last_page():
         doc = "The last_page property."
+
         def fget(self):
             if self.last_page_number:
                 return BookPage.objects.get(page_number=self.last_page_number)
             else:
                 last_page_number = BookPage.objects.filter(
                     book_number=self.book_number
-                    ).aggregate(
+                ).aggregate(
                     last=models.Max('page_number')
-                    )['last']
+                )['last']
                 return BookPage.objects.get(page_number=last_page_number)
+
         def fset(self, value):
             self.last_page_number = value.page_number
+
         def fdel(self):
             self.last_page_number = None
         return locals()
@@ -81,24 +84,29 @@ class Book(models.Model):
     def get_category_url(self):
         CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
             key='CATEGORYS_REVERSE',
-            defaults={'value':'', 'long_value':''}
-            )
+            defaults={'value': '', 'long_value': ''}
+        )
         if created:
-            real_categorys = Book.objects.order_by('category').distinct('category').values_list('category',flat=True)
-            CATEGORYS_KV.val = {x[1]:chr(x[0]) for x in zip(range(97,123), real_categorys)}
+            real_categorys = Book.objects.order_by('category').distinct('category').values_list('category', flat=True)
+            CATEGORYS_KV.val = {x[1]: chr(x[0]) for x in zip(range(97, 123), real_categorys)}
             CATEGORYS_KV.save()
         return reverse('category', args=[CATEGORYS_KV.val.get(self.category, "g")])
 
+    def bookmark_update(self):
+        from booksite.usercenter.models import BookMark
+        BookMark.objects.filter(book=self).update(update=True)
+
 
 def bookpage_path(instance, filename):
-    import os, uuid
+    import os
+    import uuid
     file_name = uuid.uuid4().hex
-    return os.path.join('book/%s/' % instance.book_number, file_name+'.html')
+    return os.path.join('book/%s/' % instance.book_number, file_name + '.html')
 
 
 def bookpage_path_zip(instance, filename):
     filename = bookpage_path(instance, filename)
-    return filename+'.gz'
+    return filename + '.gz'
 
 
 class BookPage(models.Model):
@@ -136,12 +144,11 @@ class BookPage(models.Model):
             ("&ldqo;", "“",),
             ("&rdqo;", "”",),
         ]
-        # changed = False
         for rep in replace_list:
             if rep[0] in content:
                 content = content.replace(rep[0], rep[1])
         content = content.replace('\n', '\n\n')
-        return render_to_string('book/pagerender.html',{'content_html': content}).replace('\n', '')
+        return render_to_string('book/pagerender.html', {'content_html': content}).replace('\n', '')
 
     @staticmethod
     def content_text(content):
@@ -163,11 +170,11 @@ class BookPage(models.Model):
     def save_content_zip_file(self, content, new=True):
         """保存章节压缩文件，new代表是否是新增章节。新增章节会新建文件，老章节会删除并新建。"""
         if new:
-            content = "\n".join(filter(lambda x:x, BookPage.content_html(content).split("\n")))
+            content = "\n".join(filter(lambda x: x, BookPage.content_html(content).split("\n")))
         else:
             self.content_file.delete()
         v_file = StringIO()
-        gzip_file = gzip.GzipFile('bookpage'.encode('utf-8'), 'wb', 9 ,v_file)
+        gzip_file = gzip.GzipFile('bookpage'.encode('utf-8'), 'wb', 9, v_file)
         gzip_file.write(content.encode('utf-8'))
         gzip_file.close()
         v_file.seek(0)
@@ -185,6 +192,7 @@ class BookPage(models.Model):
             book = self.book
             book.last_page = self
             book.save()
+            book.bookmark_update()
         except:
             pass
 

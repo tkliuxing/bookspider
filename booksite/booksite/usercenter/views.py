@@ -35,18 +35,18 @@ class MyUserCreationForm(UserCreationForm):
     }
     captcha = CaptchaField()
     username = forms.RegexField(label=_("Username"), max_length=30,
-        regex=r'^[\w.@+-]+$',
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                    "@/./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "@/./+/-/_ characters.")})
+                                regex=r'^[\w.@+-]+$',
+                                help_text=_("Required. 30 characters or fewer. Letters, digits and "
+                                            "@/./+/-/_ only."),
+                                error_messages={
+        'invalid': _("This value may contain only letters, numbers and "
+                     "@/./+/-/_ characters.")})
     email = forms.EmailField(label=_("Email"))
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput)
+                                widget=forms.PasswordInput)
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,
-        help_text=_("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput,
+                                help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
@@ -94,10 +94,10 @@ def login_view(request, html5=False):
             loging_url = reverse('login')
             if next_path.startswith(loging_url):
                 redirect("home")
-            return redirect(loging_url+"?next="+next_path)
+            return redirect(loging_url + "?next=" + next_path)
     return auth_loginview(
         request,
-        template_name="usercenter/login.html",
+        template_name="usercenter/login.jade",
         authentication_form=MyAuthenticationForm
     )
 
@@ -132,7 +132,7 @@ def mb_logout(request):
 
 def signup(request):
     if request.method == "GET":
-        return render(request, "usercenter/signup.html", {'form': MyUserCreationForm()})
+        return render(request, "usercenter/signup.jade", {'form': MyUserCreationForm()})
     if request.method == "POST":
         signup_form = MyUserCreationForm(data=request.POST)
         if signup_form.is_valid():
@@ -143,7 +143,7 @@ def signup(request):
             auth_login(request, user)
             return redirect("/")
         else:
-            return render(request, "usercenter/signup.html", {'form': signup_form})
+            return render(request, "usercenter/signup.jade", {'form': signup_form})
     return HttpResponseBadRequest()
 
 
@@ -155,7 +155,7 @@ def logout_view(request):
 class ChangePWDView(FormView):
 
     """ fields: old_password, new_password1, new_password2 """
-    template_name = "usercenter/changepwd.html"
+    template_name = "usercenter/changepwd.jade"
     form_class = PasswordChangeForm
 
     def get_form_kwargs(self):
@@ -172,7 +172,7 @@ class ChangePWDView(FormView):
 def bookmark(request):
     C = {}
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
-    return render(request, "usercenter/bookmark.html", C)
+    return render(request, "usercenter/bookmark.jade", C)
 
 
 @login_required(login_url='/mobile/login/')
@@ -221,3 +221,15 @@ def del_bookmark(request, bookmark_id):
         return ajax_success(data="删除成功!")
     else:
         raise Http404
+
+
+@login_required
+def bookmark_read(request, bookmark_id):
+    """通过书签阅读时去掉更新提醒"""
+    try:
+        bookmark = BookMark.objects.get(pk=bookmark_id, user=request.user)
+    except BookMark.DoesNotExist:
+        return redirect('bookmark')
+    bookmark.update = False
+    bookmark.save()
+    return redirect(bookmark.page.get_absolute_url())

@@ -24,7 +24,7 @@ class DouluoSpider(Spider):
     name = "douluo"
     allowed_domains = ["www.86696.cc"]
 
-    def __init__(self, starturl=None, frombookid=None, frombookidrange=None, *args, **kwargs):
+    def __init__(self, starturl=None, frombookid=None, frombookidrange=None, fromexistbooks=False, *args, **kwargs):
         super(DouluoSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             "http://www.86696.cc/booktoppostdate/0/1.html",
@@ -41,9 +41,13 @@ class DouluoSpider(Spider):
             except:
                 raise AttributeError("frombookidrange format error! Should like this: '10 20'.")
             self.start_urls = ["http://www.86696.cc/book/%s.html" % bid for bid in range(fr, to)]
-        print "-"*20
+        if fromexistbooks:
+            from bookspider.items import Book
+            book_number_list = Book.objects.all().values_list('book_number', flat=True)
+            self.start_urls = ["http://www.86696.cc/book/{0}.html".format(bid) for bid in book_number_list]
+        print "-" * 20
         print "Start from:\n", '\n'.join(self.start_urls)
-        print "-"*20, "\n"
+        print "-" * 20, "\n"
 
     def is_pass_url(self, url):
         for i in PASS_URL:
@@ -135,7 +139,7 @@ class DouluoSpider(Spider):
 
     def get_npage_url(self, response, page_a=2):
         sel = Selector(response)
-        next_href = sel.xpath('//div[@class="fanye"]/a[%d]/@href' % (page_a+1)).extract()
+        next_href = sel.xpath('//div[@class="fanye"]/a[%d]/@href' % (page_a + 1)).extract()
         if not next_href:
             rrr = re.compile(r'.*返回目录.*')
             fanye_line = rrr.findall(response.body_as_unicode())
