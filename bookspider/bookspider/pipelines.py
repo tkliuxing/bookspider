@@ -43,6 +43,10 @@ class BookinfoPipeline(object):
             print str(item['book_number']).ljust(10), "-" * 10, item['title']
             if len(item['images']) == 1:
                 old_path = os.path.join(settings.get("IMAGES_STORE"), item['images'][0]['path'])
+                if not os.path.exists(old_path):
+                    RC.hset('bookimgs', str(item['book_number']), 'True')
+                    RC.hset('books', str(item['book_number']), 'True')
+                    return DropItem("Duplicate item found: %s" % item['book_number'])
                 with open(old_path, 'rb') as f:
                     book_obj.front_image.save(os.path.split(old_path)[1], File(f))
                 book_obj.save()
