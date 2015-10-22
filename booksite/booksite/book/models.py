@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import hashlib
 import gzip
+import redis
 from StringIO import StringIO
 import cPickle as pickle
 from django.db import models
@@ -14,6 +15,13 @@ from django_pgjson.fields import JsonField
 from pyquery import PyQuery as PQ
 
 
+def front_image_path(instance, filename):
+    import os
+    import uuid
+    file_name = uuid.uuid4().hex
+    return os.path.join('bookimg/%s/' % instance.book_number, file_name + '.jpg')
+
+
 class Book(models.Model):
     origin_url = models.TextField()
     title = models.CharField(max_length=100, blank=True)
@@ -24,6 +32,7 @@ class Book(models.Model):
     last_update = models.DateTimeField(auto_now=True, null=True, blank=True, default=None, db_index=True)
     last_page_number = models.IntegerField(default=0, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
+    front_image = models.ImageField(upload_to=front_image_path, max_length=200, null=True, blank=True)
     pages = JsonField(default=[], null=True, blank=True)
 
     class Meta:
@@ -37,9 +46,14 @@ class Book(models.Model):
         return s
 
     def delete(self, *args, **kwargs):
+        RC = redis.Redis()
+        book_page_origin_urls = BookPage.objects.filter(
+            book_number=self.book_number).values_list("origin_url", flat=True)
+        RC.delete(*book_page_origin_urls)
         BookPage.objects.filter(book_number=self.book_number).delete()
         self.is_deleted = True
         self.save()
+        RC.hdel('books', str(self.book_number))
 
     def append_page(self, page_id):
         if self.pages and isinstance(self.pages, list):

@@ -24,8 +24,10 @@ class DouluoSpider(Spider):
     name = "douluo"
     allowed_domains = ["www.86696.cc"]
 
-    def __init__(self, starturl=None, frombookid=None, frombookidrange=None, fromexistbooks=False, *args, **kwargs):
+    def __init__(self, starturl=None, frombookid=None, frombookidrange=None, fromexistbooks=False, onlybookinfo=False,
+                 *args, **kwargs):
         super(DouluoSpider, self).__init__(*args, **kwargs)
+        self.onlybookinfo = bool(onlybookinfo)
         self.start_urls = [
             "http://www.86696.cc/booktoppostdate/0/1.html",
             "http://www.86696.cc/booktoplastupdate/0/1.html",
@@ -64,7 +66,7 @@ class DouluoSpider(Spider):
             book = BookinfoItem()
             book['book_number'] = BOOK_INFO_URL_RE.match(url).groupdict()['book_id']
             # 去重
-            if RC.hget('books', str(book['book_number'])):
+            if RC.hget('books', str(book['book_number'])) and RC.hget('bookimgs', str(book['book_number'])) and not self.onlybookinfo:
                 # 书籍重复则进入目录抓取章节
                 hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
                 for href in hrefs:
@@ -77,13 +79,14 @@ class DouluoSpider(Spider):
                 book['author'] = jQ("h2").eq(0).text().replace(u"作者：", "")
                 book['category'] = jQ("h2").eq(2).text().replace(u"所属：", "")
                 book['info'] = jQ(".msgarea>p").text().replace(" ", "\n")
+                book['image_urls'] = [jQ(".book_news_style img").attr("src")]
                 yield book
                 hrefs = sel.css(".button2.white").xpath('a[1]/@href').extract()
                 for href in hrefs:
                     rel_url = urlparse.urljoin(url, href)
                     yield Request(rel_url, callback=self.parse)
         # 书目
-        elif BOOK_INDEX_URL_RE.match(url):
+        elif BOOK_INDEX_URL_RE.match(url) and not self.onlybookinfo:
             hrefs = sel.xpath("//dl/dd/a/@href").extract()
             for href in hrefs:
                 rel_url = urlparse.urljoin(url, href)
@@ -92,7 +95,7 @@ class DouluoSpider(Spider):
                     continue
                 yield Request(rel_url, callback=self.parse)
         # 章节
-        elif BOOK_PAGE_URL_RE.match(url):
+        elif BOOK_PAGE_URL_RE.match(url) and not self.onlybookinfo:
             page = BookpageItem()
             page['origin_url'] = url
             next_href = self.get_next_page_url(response)
@@ -121,7 +124,7 @@ class DouluoSpider(Spider):
                     page['next_number'] = None
                 yield page
         # 继续爬行
-        else:
+        elif not self.onlybookinfo:
             for href in sel.xpath("//a/@href").extract():
                 if self.is_pass_url(href):
                     continue

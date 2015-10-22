@@ -20,6 +20,10 @@ body.invert .panel.panel-default{
 	float: right;
 	display: block;
 }
+.panel-heading a.visible-xs.btn.btn-xs.btn-primary.pull-right{
+	margin-top: -2px;
+	margin-left: 5px;
+}
 .caption>p{
 	line-height: 1.4em;
 	margin-bottom: 0;
@@ -28,10 +32,21 @@ body.invert .panel.panel-default{
 	font-size: 14px;
 }
 .panel-body.bookinfo{
-	height: 150px;
+	height: 160px;
 	overflow-y: scroll;
 	text-indent:2em;
 	padding: 5px;
+}
+@media (max-width: 768px) {
+	.panel-body.bookinfo{
+		height: auto;
+		min-height: 160px;
+	}
+}
+.frontimage img{
+	margin: 0 5px 5px 0;
+	height: 150px;
+	width: 120px;
 }
 .panel-footer.admin{
 	padding:5px 5px;

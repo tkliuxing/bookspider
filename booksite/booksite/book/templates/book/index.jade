@@ -1,4 +1,5 @@
-| {% extends "book/base.html" %}
+extends "book/base.html"
+| {% load static %}
 
 - block pagetitle
 	if author
@@ -18,7 +19,7 @@
 						.panel.panel-info
 							.panel-heading
 								if not user.is_superuser
-									a.visible-xs.btn.btn-primary.pull-right(href="{{book.get_absolute_url}}") 进入阅读
+									a.visible-xs.btn.btn-xs.btn-primary.pull-right(href="{{book.get_absolute_url}}") 进入阅读
 								h3.panel-title
 									a(href="{{book.get_absolute_url}}")!= book.title
 										| &nbsp;&nbsp;&nbsp;
@@ -30,6 +31,8 @@
 											a(href="/?a={{book.author}}",title="{{book.author}}")
 												| {{book.author|truncatechars:'7'}}
 							.bookinfo.panel-body
+								.frontimage
+									img.pull-left(src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}")
 								.caption
 									- with book.get_bookrank as bookrank
 										p

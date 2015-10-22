@@ -10,6 +10,9 @@ from booksite.book.models import Book, BookPage
 
 class BookinfoItem(DjangoItem):
     django_model = Book
+    image_urls = Field()
+    images = Field()
+    # front_image = Field()
 
 
 class BookpageItem(DjangoItem):
