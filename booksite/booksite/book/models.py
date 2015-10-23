@@ -90,6 +90,9 @@ class Book(models.Model):
     last_page = property(**last_page())
 
     def get_absolute_url(self):
+        return reverse('bookinfo', args=[str(self.id)])
+
+    def get_index_url(self):
         return reverse('bookindex', args=[str(self.id)])
 
     def get_bookrank(self):
@@ -168,6 +171,10 @@ class BookPage(models.Model):
     def content_text(content):
         """转换html段落为纯文本段落"""
         return "\n".join([PQ(p).text() for p in PQ(content).find('p')])
+
+    def get_raw_text_content(self):
+        content_html = self.get_content()
+        return BookPage.content_text(content_html)
 
     def get_content(self):
         """获取章节压缩文件内html文本"""

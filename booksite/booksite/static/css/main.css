@@ -48,6 +48,60 @@ body.invert .panel.panel-default{
 	height: 150px;
 	width: 120px;
 }
+.frontimage.pull-left{
+	width: 130px;
+}
+.frontimage.pull-left a.btn{
+	width: 120px;
+}
+.panel-body .title h3{
+	font-size: 120%;
+	margin-top: 0px;
+	border-bottom: 1px dotted #555;
+}
+.panel-body a.newpage{
+	cursor: pointer;
+	color:#333;
+}
+.panel-body a.newpage:hover{
+	color:#555;
+	text-decoration: underline;
+}
+.caption.bookinfo{
+	margin-left: 130px;
+}
+.caption.newpage{
+	text-indent: 2em;
+}
+span.weak{
+	color: #999;
+}
+.media.tuijian{
+	border-bottom: 1px dotted #aaa;
+}
+.media.tuijian .media-heading{
+	line-height: 24px;
+}
+.media.tuijian a{
+	color: #555;
+}
+.media.tuijian a:hover{
+	text-decoration: underline;
+}
+.media.tuijian h6.media-heading{
+	text-overflow: ellipsis;
+	word-break: keep-all;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.media.tuijian p a{
+	text-overflow: ellipsis;
+	word-break: keep-all;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 60%;
+	display: inline-block;
+}
 .panel-footer.admin{
 	padding:5px 5px;
 }

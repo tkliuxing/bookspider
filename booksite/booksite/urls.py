@@ -85,6 +85,7 @@ urlpatterns = patterns('',
                        url(r'^bookrank/$', 'booksite.book.views.bookrank', name='bookrank'),
                        url(r'^booknews/$', 'booksite.book.views.booknews', name='booknews'),
                        url(r'^book/(?P<book_id>\d+)/$', 'booksite.book.views.bookindex', name='bookindex'),
+                       url(r'^bookinfo/(?P<book_id>\d+)/$', 'booksite.book.views.bookinfo', name='bookinfo'),
                        url(r'^bookindex/(?P<book_id>\d+)/$', 'booksite.book.views.bookindexajax', name='bookindexajax'),
                        url(r'^page/(?P<page_number>\d+)/$', 'booksite.book.views.bookpage', name='bookpage'),
 

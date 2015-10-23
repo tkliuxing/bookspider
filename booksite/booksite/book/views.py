@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import time
+import random
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -116,11 +117,11 @@ def mb_load(request):
 def category(request, category):
     CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
         key='CATEGORYS',
-        defaults={'value':'', 'long_value':''}
-        )
+        defaults={'value': '', 'long_value': ''}
+    )
     if created:
-        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category',flat=True)
-        CATEGORYS_KV.val = {chr(x[0]):x[1] for x in zip(range(97,123),real_categorys)}
+        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category', flat=True)
+        CATEGORYS_KV.val = {chr(x[0]): x[1] for x in zip(range(97, 123), real_categorys)}
         CATEGORYS_KV.save()
     if category not in CATEGORYS_KV.val:
         raise Http404
@@ -137,7 +138,22 @@ def category(request, category):
     C['categorynav'] = "nav%s" % category
     return render(request, 'book/index.jade', C)
 
-@cache_page(60*60)
+
+@cache_page(60 * 60)
+def bookinfo(request, book_id=0):
+    if book_id == 0:
+        raise Http404
+    book = get_object_or_404(Book, pk=book_id, is_deleted=False)
+    tuijian = Book.objects.filter(category=book.category).values_list("id", flat=True)
+    tuijian = random.sample(tuijian, 5)
+    tuijian = Book.objects.filter(id__in=tuijian)
+    C = {}
+    C['book'] = book
+    C['tuijian'] = tuijian
+    return render(request, 'book/bookinfo.jade', C)
+
+
+@cache_page(60 * 60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
@@ -160,7 +176,7 @@ def mb_bookindex(request, book_id=0):
     return render(request, 'bookhtml5/bookindex.html', C)
 
 
-@cache_page(60*60)
+@cache_page(60 * 60)
 def bookindexajax(request, book_id=0):
     if book_id == 0:
         raise Http404
@@ -184,7 +200,7 @@ def bookpage(request, page_number=0):
         skey = 'time-book-%d' % book.pk
         now = int(time.time())
         timeold = request.session.setdefault(skey, now)
-        if (now-timeold) > 21600:
+        if (now - timeold) > 21600:
             request.session[skey] = now
             book.get_bookrank().add_point()
         elif now == timeold:
@@ -203,7 +219,7 @@ def bookpage_zip(request, path):
     page_path = os.path.join(media_root, 'book/', path)
     page_path = page_path.replace("../", "")
     try:
-        content_file = open(page_path+'.gz','rb')
+        content_file = open(page_path + '.gz', 'rb')
         page_content = content_file.read()
     except:
         raise Http404
@@ -227,7 +243,7 @@ def mb_bookpage(request, page_number=0):
         skey = 'time-book-%d' % book.pk
         now = int(time.time())
         timeold = request.session.setdefault(skey, now)
-        if (now-timeold) > 21600:
+        if (now - timeold) > 21600:
             request.session[skey] = now
             book.get_bookrank().add_point()
         elif now == timeold:
@@ -256,7 +272,7 @@ def bookrank(request):
         page = p.page(1)
     C['bookranks'] = page.object_list
     C['pagination'] = page
-    C['number_base'] = PREPAGE*(page.number-1)
+    C['number_base'] = PREPAGE * (page.number - 1)
     return render(request, 'book/bookrank.jade', C)
 
 
@@ -266,7 +282,8 @@ def booknews(request):
     C = {}
     TOTALPAGE = 20
     PREPAGE = 20
-    books = Book.objects.order_by("-last_update").filter(is_deleted=False, last_update__isnull=False)[:TOTALPAGE*PREPAGE]
+    books = Book.objects.order_by(
+        "-last_update").filter(is_deleted=False, last_update__isnull=False)[:TOTALPAGE * PREPAGE]
     p = Paginator(books, PREPAGE)
     try:
         page = p.page(int(request.GET.get('p', 1)))
@@ -363,7 +380,7 @@ def edit_line(request):
         # )).replace(" ", "　").replace("-", "－").replace("?", "？").replace("+", "＋")
         # print diffline
         page_contents[line_number] = form.cleaned_data["pageline"]
-        page_contents = page_contents[:line_number] + new_lines + page_contents[line_number+1:]
+        page_contents = page_contents[:line_number] + new_lines + page_contents[line_number + 1:]
         new_content = BookPage.content_html("\n".join(page_contents))
         page.set_content(new_content)
         return ajax_success(new_content)
