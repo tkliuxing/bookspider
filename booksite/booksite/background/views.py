@@ -176,12 +176,12 @@ def replace_book(request):
                     if this_is_save:
                         content = rule.replace(content)
                         page.set_content(content)
-                        page.content_file.close()
                         r_content_list.append(link_a)
                     else:
                         r_content_list.append(link_a)
                         for i in rule.findall(content):
                             r_content_list.append(i)
+                page.content_file.close()
             C['save'] = this_is_save
             C['r_content'] = "\n".join(r_content_list)
     C['create_rule_form'] = form
