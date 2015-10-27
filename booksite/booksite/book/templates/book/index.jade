@@ -3,12 +3,10 @@ extends "book/base.html"
 
 - block pagetitle
 	if author
-		| -- 作者-{{author}}
+		| 作者-{{author}}
 	else
 		if category
-			| -- {{category}}
-		else
-			| -无弹窗的免费小说网,天火大道,武动乾坤,遮天,绝世唐门阅读
+			| {{category}}
 
 - block content
 	#NAVID.row(data-nav="{% if categorynav %}{{categorynav}}{% else %}navallbook{% endif %}")

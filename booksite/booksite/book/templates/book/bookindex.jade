@@ -1,6 +1,6 @@
 | {% extends "book/base.html" %}
 - block pagetitle
-	| -- {{book.title}} 目录
+	| {{book.title}} 目录
 - block keymeta
 	| {{book.title}};{{book.author}}
 - block keydesc
@@ -20,16 +20,6 @@
 			p.text-center
 				- with book.get_bookrank as bookrank
 					| 总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}} 总收藏: {{bookrank.all_fav}}
-		.col-md-12
-			.panel.panel-info
-				.panel-heading
-					h3.panel-title 书籍简介
-				.panel-body
-					#content.caption!= book.info_html|linebreaks
-				if user.is_superuser
-					.panel-footer.admin
-						a.btn.btn-danger.btn-xs(target="_blank",href="/admin/book/book/{{book.pk}}/") 编辑信息
-						a.bookfixpic.btn.btn-danger.btn-xs(href="javascript:;",data-url="{% url 'bookfixpic' book.pk %}") 更新图章
 	#Pages.row.pagelist
 		for page in bookpages
 			.col-md-4

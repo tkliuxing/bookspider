@@ -1,7 +1,7 @@
 | {% extends "book/base.html" %}
 | {% load static paragraphedit %}
 - block pagetitle
-	| -- {{book.title}} {{bookpage.title_html}}
+	| 《{{book.title}}》 -- {{bookpage.title_html}}
 - block keymeta
 	| {{book.title}};{{book.author}}
 - block keydesc
