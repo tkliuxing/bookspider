@@ -103,6 +103,7 @@ def apply_rule(request, pk=None):
         if this_is_save:
             page_content = rule.replace(page_content)
             page.set_content(page_content)
+            page.content_file.close()
         C['save'] = this_is_save
         C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
         C['content'] = page_content.replace('\n', '\n\n')
@@ -121,6 +122,7 @@ def apply_rule(request, pk=None):
                 if this_is_save:
                     page_content = rule.replace(page_content)
                     page.set_content(page_content)
+                    page.content_file.close()
                     r_content_list.append(link_a)
                 else:
                     r_content_list.append(link_a)
@@ -145,6 +147,7 @@ def replace_page(request):
                 page_content = page.get_content()
                 page_content = rule.replace(page_content)
                 page.set_content(page_content)
+                page.content_file.close()
                 C['save'] = True
             C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
             C['content'] = page_content.replace('\n', '\n\n')
@@ -173,6 +176,7 @@ def replace_book(request):
                     if this_is_save:
                         content = rule.replace(content)
                         page.set_content(content)
+                        page.content_file.close()
                         r_content_list.append(link_a)
                     else:
                         r_content_list.append(link_a)
