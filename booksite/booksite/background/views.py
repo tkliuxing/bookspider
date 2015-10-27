@@ -35,6 +35,7 @@ def index(request):
     category_data = [
         [c, Book.objects.filter(category=c).count()] for c in CATEGORYS
     ]
+    category_data = sorted(category_data, key=lambda x: x[1])
     C['category_data'] = json.dumps(category_data)
     C['book_count'] = book_count
     C['bookpage_count'] = bookpage_count
