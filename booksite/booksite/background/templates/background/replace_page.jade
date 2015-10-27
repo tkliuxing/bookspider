@@ -1,10 +1,12 @@
 | {% extends "background/base.html" %}
+block pagetitle
+	| : 内容替换: 替换章节
 - block content
 	#NAVID(data-nav="replace")
 	.row
 		.col-xs-12
 			.panel.panel-primary
-				.panel-heading 替换规则
+				.panel-heading 替换章节
 				.panel-body
 					form.form-inline(action=".",method="POST")
 						| {% csrf_token %}

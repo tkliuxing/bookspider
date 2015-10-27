@@ -99,12 +99,13 @@ def apply_rule(request, pk=None):
     this_is_save = request.method == "POST" and request.POST.get('save', None)
     if not book_id and page_number:
         page = BookPage.objects.get(page_number=page_number)
+        page_content = page.get_content()
         if this_is_save:
-            page.content = rule.replace(page.content)
-            page.save()
+            page_content = rule.replace(page_content)
+            page.set_content(page_content)
         C['save'] = this_is_save
-        C['r_content'] = rule.replace(page.content).replace('\n', '\n\n')
-        C['content'] = page.content.replace('\n', '\n\n')
+        C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
+        C['content'] = page_content.replace('\n', '\n\n')
         C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
         return render(request, "background/replace_apply.jade", C)
     elif book_id:
@@ -113,16 +114,17 @@ def apply_rule(request, pk=None):
         r_content_list = []
         apply_rule_url = reverse("bbg:apply_rule", args=[pk])
         for page in book_pages:
-            if rule.match(page.content):
+            page_content = page.get_content()
+            if rule.match(page_content):
                 page_preview_link = apply_rule_url + "?pn=%s" % page.page_number
                 link_a = "<a href='%s' target='_blank'>%s</a>" % (page_preview_link, page.title)
                 if this_is_save:
-                    page.content = rule.replace(page.content)
-                    page.save()
+                    page_content = rule.replace(page_content)
+                    page.set_content(page_content)
                     r_content_list.append(link_a)
                 else:
                     r_content_list.append(link_a)
-                    for i in rule.findall(page.content):
+                    for i in rule.findall(page_content):
                         r_content_list.append(i)
         C['save'] = this_is_save
         C['r_content'] = "\n".join(r_content_list)
@@ -140,11 +142,12 @@ def replace_page(request):
             rule = form.get_rule()
             page = form.get_page()
             if form.cleaned_data['p_or_s'] == 'save':
-                page.content = rule.replace(page.content)
-                page.save()
+                page_content = page.get_content()
+                page_content = rule.replace(page_content)
+                page.set_content(page_content)
                 C['save'] = True
-            C['r_content'] = rule.replace(page.content).replace('\n', '\n\n')
-            C['content'] = page.content.replace('\n', '\n\n')
+            C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
+            C['content'] = page_content.replace('\n', '\n\n')
             C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
     C['create_rule_form'] = form
     return render(request, "background/replace_page.jade", C)
@@ -163,16 +166,17 @@ def replace_book(request):
             r_content_list = []
             this_is_save = form.cleaned_data['p_or_s'] == 'save'
             for page in book_pages:
-                if rule.match(page.content):
+                content = page.get_content()
+                if rule.match(content):
                     page_admin_link = "/admin/book/bookpage/%d/" % (page.pk)
                     link_a = "<a href='%s' target='_blank'>%s</a>" % (page_admin_link, page.title)
                     if this_is_save:
-                        page.content = rule.replace(page.content)
-                        page.save()
+                        content = rule.replace(content)
+                        page.set_content(content)
                         r_content_list.append(link_a)
                     else:
                         r_content_list.append(link_a)
-                        for i in rule.findall(page.content):
+                        for i in rule.findall(content):
                             r_content_list.append(i)
             C['save'] = this_is_save
             C['r_content'] = "\n".join(r_content_list)

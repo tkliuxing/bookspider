@@ -1,4 +1,6 @@
 | {% extends "background/base.html" %}
+block pagetitle
+	| : 内容替换
 - block content
 	#NAVID(data-nav="replace")
 	.row
@@ -46,4 +48,3 @@
 						if page_admin_url
 							a.btn.btn-info.btn-lg(href="{{page_admin_url}}",target="_blank") 编辑章节
 						button.btn.btn-warning.btn-lg(type="submit") 确认替换
-
