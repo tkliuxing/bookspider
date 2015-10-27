@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
-from booksite.book.models import Book, BookPage, BookRank
+from booksite.book.models import Book, BookPage, BookRank, KeyValueStorage
 from booksite.ajax import must_ajax, ajax_error, ajax_success, params_required
 from .models import ReplaceRule, FengTui, JingTui
 from .forms import (
@@ -20,15 +20,15 @@ from .forms import (
 @permission_required('usercenter.can_add_user')
 def index(request):
     C = {}
-    CATEGORYS = {
-        "a": "侦探推理",
-        "b": "武侠修真",
-        "c": "网游动漫",
-        "d": "历史军事",
-        "e": "都市言情",
-        "f": "散文诗词",
-        "g": "玄幻魔法",
-    }.values()
+    CATEGORYS_KV, created = KeyValueStorage.objects.get_or_create(
+        key='CATEGORYS',
+        defaults={'value': '', 'long_value': ''}
+    )
+    if created:
+        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category', flat=True)
+        CATEGORYS_KV.val = {chr(x[0]): x[1] for x in zip(range(97, 123), real_categorys)}
+        CATEGORYS_KV.save()
+    CATEGORYS = [x[1] for x in CATEGORYS_KV.val.items()]
     book_count = Book.objects.all().count()
     bookpage_count = BookPage.objects.all().count()
     bookrank_count = BookRank.objects.all().count()
