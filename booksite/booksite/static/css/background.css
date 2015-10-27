@@ -66,3 +66,6 @@
 		width: 160px;
 	}
 }
+.popover-title{
+	background-color: inherit !important;
+}

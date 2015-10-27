@@ -77,14 +77,14 @@
 		</div>
 	</nav>
 {% endspaceless %}
-	<div class="container">
+	<div class="container" style="min-height: 300px;">
 		<div class="col-xs-2">
 			<div class="lnav affix">
 				<ul class="nav nav-pills nav-stacked">
 					<li class="active"><a href="{% url 'bbg:home' %}">数据总览</a></li>
 					<li id="lnav-replace"><a href="{% url 'bbg:replace' %}">内容替换</a></li>
 					<li id="lnav-tuijian"><a href="{% url 'bbg:tuijian' %}">推荐书籍</a></li>
-					<li class="disabled"><a href="javascript:void(0)">Disabled</a></li>
+					<li id="lnav-booksearch"><a href="{% url 'bbg:book_search' %}">书籍搜索</a></li>
 				</ul>
 			</div>
 		</div>

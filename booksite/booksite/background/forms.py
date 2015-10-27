@@ -6,7 +6,7 @@ from .models import ReplaceRule, FengTui, JingTui
 
 
 class TuiJianForm(forms.Form):
-    book_id = forms.CharField(label="书籍编号", max_length=10, required=True)
+    book_id = forms.CharField(label="书名", max_length=50, required=True)
 
     def __init__(self, model=FengTui, *args, **kwargs):
         super(TuiJianForm, self).__init__(*args, **kwargs)
@@ -16,7 +16,7 @@ class TuiJianForm(forms.Form):
 
     def clean_book_id(self):
         try:
-            book = Book.objects.get(id=self.cleaned_data['book_id'])
+            book = Book.objects.get(title=self.cleaned_data['book_id'])
         except Book.DoesNotExist:
             raise forms.ValidationError("Book does not exist!")
         self.book = book

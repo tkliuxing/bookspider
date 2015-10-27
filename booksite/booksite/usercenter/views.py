@@ -21,7 +21,7 @@ from captcha.fields import CaptchaField
 
 from booksite.book.models import BookPage
 from booksite.usercenter.models import BookMark, User
-from booksite.ajax import ajax_success, ajax_error, must_ajax
+from booksite.ajax import ajax_success, ajax_error
 
 
 class MyAuthenticationForm(AuthenticationForm):

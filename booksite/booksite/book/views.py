@@ -78,7 +78,6 @@ def mb_search(request):
         page = p.page(1)
     C['books'] = page.object_list
     C['pagination'] = page
-    print page.paginator.num_pages
     return render(request, 'bookhtml5/search.html', C)
 
 
@@ -90,7 +89,6 @@ def mb_searchload(request):
         C['search'] = True
     else:
         books = []
-    print request.GET.get('s', '')
     p = Paginator(books, 15)
     try:
         page = p.page(int(request.GET.get('p', 1)))

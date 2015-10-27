@@ -4,15 +4,40 @@ AJAX返回值统一处理
 返回统一格式的JSON数据
 已封装为HttpResponse对象
 """
+from functools import wraps
 import simplejson as json
 from django.http import HttpResponse
 
-def must_ajax(func):
-    def view(request, *args, **kwargs):
-        if not request.is_ajax():
-            return HttpResponse(status=400)
-        return func(request, *args, **kwargs)
-    return view
+
+def must_ajax(method=None):
+    if method not in ['POST', 'GET', None]:
+        raise TypeError("method should in 'POST','GET',None.")
+    print(method)
+
+    def _must_ajax(func):
+        def view(request, *args, **kwargs):
+            if not request.is_ajax() and method and method != request.method:
+                return HttpResponse("must_ajax!", status=400)
+            return func(request, *args, **kwargs)
+        return view
+    return _must_ajax
+
+
+def params_required(*params):
+    def _params_required(func):
+        def view(request, *args, **kwargs):
+            has_all_params = True
+            print(request.REQUEST)
+            for k in params:
+                if not request.REQUEST.get(k, None):
+                    has_all_params = False
+                    break
+            if not has_all_params:
+                return HttpResponse("params_required!", status=400)
+            return func(request, *args, **kwargs)
+        return view
+    return _params_required
+
 
 def ajax_success(data=None, **kwargs):
     """
@@ -55,6 +80,6 @@ def ajax_error(error_message, data=None, **kwargs):
             "success": False,
             "error_message": error_message,
         })
-    response =  HttpResponse(return_json, content_type="text/json")
+    response = HttpResponse(return_json, content_type="text/json")
     response['Cache-Control'] = 'no-cache'
     return response

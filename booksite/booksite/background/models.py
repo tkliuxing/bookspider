@@ -94,10 +94,16 @@ class ReplaceRule(object):
         if self.db_data.pk:
             self.db_data.delete()
 
-class FengTui(object):
-    KEY = "fengtui"
+
+class ImplementError(BaseException):
+    pass
+
+
+class TuiJianObj(object):
 
     def __init__(self):
+        if not hasattr(self, 'KEY'):
+            raise ImplementError('TuiJianObj need inherit.')
         ft_data, created = KeyValueStorage.objects.get_or_create(key=self.KEY)
         if created:
             self.book_id_list = []
@@ -135,5 +141,9 @@ class FengTui(object):
         data.save()
 
 
-class JingTui(FengTui):
+class FengTui(TuiJianObj):
+    KEY = "fengtui"
+
+
+class JingTui(TuiJianObj):
     KEY = "jingtui"

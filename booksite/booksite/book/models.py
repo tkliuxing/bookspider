@@ -89,6 +89,9 @@ class Book(models.Model):
         return locals()
     last_page = property(**last_page())
 
+    def get_last_page(self):
+        return BookPage.objects.filter(book_number=self.book_number).order_by('page_number').last()
+
     def get_absolute_url(self):
         return reverse('bookinfo', args=[str(self.id)])
 

@@ -2,9 +2,12 @@
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.contrib.auth.decorators import permission_required
+from django.db.models import Q
 from booksite.book.models import Book, BookPage, BookRank
+from booksite.ajax import must_ajax, ajax_error, ajax_success, params_required
 from .models import ReplaceRule, FengTui, JingTui
 from .forms import (
     ReplaceRuleCreateForm,
@@ -12,6 +15,7 @@ from .forms import (
     ReplaceBookApplyForm,
     TuiJianForm,
 )
+
 
 @permission_required('usercenter.can_add_user')
 def index(request):
@@ -35,8 +39,9 @@ def index(request):
     C['book_count'] = book_count
     C['bookpage_count'] = bookpage_count
     C['bookrank_count'] = bookrank_count
-    C['average_page_per_book'] = bookpage_count//book_count
+    C['average_page_per_book'] = bookpage_count // book_count
     return render(request, "background/index.jade", C)
+
 
 @permission_required('usercenter.can_add_user')
 def replace(request):
@@ -50,6 +55,7 @@ def replace(request):
     C['replace_rule'] = replace_rule
     C['create_rule_form'] = form
     return render(request, "background/replace.jade", C)
+
 
 @permission_required('usercenter.can_add_user')
 def edit_rule(request, pk=None):
@@ -72,11 +78,13 @@ def edit_rule(request, pk=None):
     C['edit_rule'] = True
     return render(request, "background/replace_edit.jade", C)
 
+
 @permission_required('usercenter.can_add_user')
 def delete_rule(request, pk=None):
     rule = ReplaceRule.get(pk)
     rule.delete()
     return redirect(request.META['HTTP_REFERER'])
+
 
 @permission_required('usercenter.can_add_user')
 def apply_rule(request, pk=None):
@@ -120,6 +128,7 @@ def apply_rule(request, pk=None):
         return render(request, "background/replace_apply.jade", C)
     raise Http404
 
+
 @permission_required('usercenter.can_add_user')
 def replace_page(request):
     C = {}
@@ -138,6 +147,7 @@ def replace_page(request):
             C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
     C['create_rule_form'] = form
     return render(request, "background/replace_page.jade", C)
+
 
 @permission_required('usercenter.can_add_user')
 def replace_book(request):
@@ -168,6 +178,7 @@ def replace_book(request):
     C['create_rule_form'] = form
     return render(request, "background/replace_book.jade", C)
 
+
 @permission_required('usercenter.can_add_user')
 def tuijian(request):
     C = {}
@@ -176,6 +187,7 @@ def tuijian(request):
     C['create_ft_form'] = TuiJianForm(model=FengTui)
     C['create_jt_form'] = TuiJianForm(model=JingTui)
     return render(request, 'background/tuijian.jade', C)
+
 
 @permission_required('usercenter.can_add_user')
 def fengtui_create(request):
@@ -194,6 +206,7 @@ def fengtui_create(request):
     else:
         return redirect("bbg:tuijian")
 
+
 @permission_required('usercenter.can_add_user')
 def jingtui_create(request):
     C = {}
@@ -211,9 +224,10 @@ def jingtui_create(request):
     else:
         return redirect("bbg:tuijian")
 
+
 @permission_required('usercenter.can_add_user')
 def del_tuijian(request, model='ft', book_id=0):
-    if model not in ['ft','jt'] and not Book.objects.filter(id=book_id):
+    if model not in ['ft', 'jt'] and not Book.objects.filter(id=book_id):
         return redirect("bbg:tuijian")
     book = Book.objects.get(id=book_id)
     if model == 'ft':
@@ -227,6 +241,55 @@ def del_tuijian(request, model='ft', book_id=0):
     return redirect("bbg:tuijian")
 
 
+@permission_required('usercenter.can_add_user')
+def book_search(request):
+    C = {}
+    query_text = request.REQUEST.get('q')
+    if query_text:
+        books = Book.objects.filter(Q(title__contains=query_text) | Q(author__contains=query_text))
+    else:
+        books = Book.objects.all().order_by("book_number")
+    p = Paginator(books, 15)
+    try:
+        page = p.page(int(request.REQUEST.get('p', 1)))
+    except:
+        page = p.page(1)
+    C['books'] = page.object_list
+    C['query_text'] = query_text
+    C['pagination'] = page
+    return render(request, 'background/booksearch.jade', C)
 
 
+@must_ajax(method='POST')
+@params_required('book_id')
+@permission_required('usercenter.can_add_user')
+def book_jx(request):
+    bookid = request.REQUEST['book_id']
+    book = get_object_or_404(Book, id=bookid)
+    book.last_page = book.get_last_page()
+    book.save()
+    return ajax_success()
 
+
+@must_ajax(method='POST')
+@params_required('book_id')
+@permission_required('usercenter.can_add_user')
+def book_ft(request):
+    bookid = request.REQUEST['book_id']
+    book = get_object_or_404(Book, id=bookid)
+    ft = FengTui()
+    ft.add(book)
+    ft.save()
+    return ajax_success()
+
+
+@must_ajax(method='POST')
+@params_required('book_id')
+@permission_required('usercenter.can_add_user')
+def book_jt(request):
+    bookid = request.REQUEST['book_id']
+    book = get_object_or_404(Book, id=bookid)
+    jt = JingTui()
+    jt.add(book)
+    jt.save()
+    return ajax_success()
