@@ -142,8 +142,9 @@ def bookinfo(request, book_id=0):
     if book_id == 0:
         raise Http404
     book = get_object_or_404(Book, pk=book_id, is_deleted=False)
-    tuijian = Book.objects.filter(category=book.category).values_list("id", flat=True)
-    tuijian = random.sample(tuijian, 5)
+    tuijian = Book.objects.filter(category=book.category)
+    tuijian = random.sample(tuijian.values_list("id", flat=True), 5) if tuijian.count() >= 5 else random.sample(
+        tuijian.values_list("id", flat=True), tuijian.count())
     tuijian = Book.objects.filter(id__in=tuijian)
     C = {}
     C['book'] = book

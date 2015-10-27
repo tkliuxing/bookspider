@@ -246,11 +246,13 @@ def book_search(request):
     C = {}
     query_text = request.REQUEST.get('q')
     if query_text:
-        books = Book.objects.filter(
-            Q(title__contains=query_text) |
-            Q(author__contains=query_text) |
-            Q(book_number__in=query_text.split(" "))
-        )
+        query = Q(title__contains=query_text) | Q(author__contains=query_text)
+        for q in query_text.split():
+            if q.isdigit():
+                query = query | Q(book_number=q)
+            else:
+                query = query | Q(title__contains=q) | Q(author__contains=q)
+        books = Book.objects.filter(query)
     else:
         books = Book.objects.all().order_by("book_number")
     p = Paginator(books, 15)
