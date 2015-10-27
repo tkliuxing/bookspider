@@ -246,7 +246,10 @@ def book_search(request):
     C = {}
     query_text = request.REQUEST.get('q')
     if query_text:
-        books = Book.objects.filter(Q(title__contains=query_text) | Q(author__contains=query_text))
+        books = Book.objects.filter(
+            Q(title__contains=query_text) |
+            Q(author__contains=query_text) |
+            Q(book_number=query_text))
     else:
         books = Book.objects.all().order_by("book_number")
     p = Paginator(books, 15)
