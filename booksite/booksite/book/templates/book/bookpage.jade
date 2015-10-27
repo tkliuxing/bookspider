@@ -47,7 +47,7 @@
 				else
 					a.btn.btn-info(href="{% url 'login' %}",data-pn="{{bookpage.pk}}") 加入书签
 				a.btn.btn-primary.invert(href="javascript:;") 昼／夜
-			.col-md-10.col-md-offset-1.text-center.pagebutton
+			.text-center.pagebookmarkalert
 				.alert.alert-info(role="alert",id="TBMA{{bookpage.pk}}",style="display:none;") 书签已添加, 请到<strong>书架</strong>查看
 				.alert.alert-danger(role="alert",id="TBMAERR{{bookpage.pk}}",style="display:none;")
 		.col-md-12.hidden-xs &nbsp;
