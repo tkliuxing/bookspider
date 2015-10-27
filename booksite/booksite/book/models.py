@@ -204,7 +204,7 @@ class BookPage(models.Model):
         v_file.seek(0)
         content = v_file.read()
         self.content_file.save('bookpage'.encode('utf-8'), ContentFile(content))
-        self.content_file.clode()
+        self.content_file.close()
         v_file.close()
         return self.save()
 
