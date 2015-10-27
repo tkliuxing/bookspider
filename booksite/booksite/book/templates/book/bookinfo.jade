@@ -43,7 +43,7 @@ block content
 					.title
 						h3
 							a(href="{{book.last_page.get_absolute_url}}",target="_blank"): font(style="color:red"): strong= book.last_page.title_html
-							span （更新于: <span>{{book.last_update|date}}</span>）
+							span （更新于: <span>{{book.last_update|date:"Y-m-d"}}</span>）
 					a.newpage(href="{{book.last_page.get_absolute_url}}",style="color:#333;cursor: pointer;")
 						.caption.newpage!= book.last_page.get_content|truncatechars_html:300|safe
 		.col-md-3.hidden-xs.hidden-sm
