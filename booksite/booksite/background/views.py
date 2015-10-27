@@ -103,11 +103,11 @@ def apply_rule(request, pk=None):
         if this_is_save:
             page_content = rule.replace(page_content)
             page.set_content(page_content)
-            page.content_file.close()
+        page.content_file.close()
         C['save'] = this_is_save
         C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
         C['content'] = page_content.replace('\n', '\n\n')
-        C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
+        C['page_admin_url'] = page.get_absolute_url()
         return render(request, "background/replace_apply.jade", C)
     elif book_id:
         book = get_object_or_404(Book, pk=book_id)
@@ -122,12 +122,12 @@ def apply_rule(request, pk=None):
                 if this_is_save:
                     page_content = rule.replace(page_content)
                     page.set_content(page_content)
-                    page.content_file.close()
                     r_content_list.append(link_a)
                 else:
                     r_content_list.append(link_a)
                     for i in rule.findall(page_content):
                         r_content_list.append(i)
+            page.content_file.close()
         C['save'] = this_is_save
         C['r_content'] = "\n".join(r_content_list)
         return render(request, "background/replace_apply.jade", C)
@@ -143,12 +143,12 @@ def replace_page(request):
         if form.is_valid():
             rule = form.get_rule()
             page = form.get_page()
+            page_content = page.get_content()
             if form.cleaned_data['p_or_s'] == 'save':
-                page_content = page.get_content()
                 page_content = rule.replace(page_content)
                 page.set_content(page_content)
-                page.content_file.close()
                 C['save'] = True
+            page.content_file.close()
             C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
             C['content'] = page_content.replace('\n', '\n\n')
             C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
@@ -171,8 +171,7 @@ def replace_book(request):
             for page in book_pages:
                 content = page.get_content()
                 if rule.match(content):
-                    page_admin_link = "/admin/book/bookpage/%d/" % (page.pk)
-                    link_a = "<a href='%s' target='_blank'>%s</a>" % (page_admin_link, page.title)
+                    link_a = "<a href='%s' target='_blank'>%s</a>" % (page.get_absolute_url(), page.title)
                     if this_is_save:
                         content = rule.replace(content)
                         page.set_content(content)
