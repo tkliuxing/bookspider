@@ -28,7 +28,7 @@ def index(request):
         real_categorys = Book.objects.order_by('category').distinct('category').values_list('category', flat=True)
         CATEGORYS_KV.val = {chr(x[0]): x[1] for x in zip(range(97, 123), real_categorys)}
         CATEGORYS_KV.save()
-    CATEGORYS = [x[1] for x in CATEGORYS_KV.val.items()]
+    CATEGORYS = [x[1] for x in CATEGORYS_KV.val.items() if x[1]]
     book_count = Book.objects.all().count()
     bookpage_count = BookPage.objects.all().count()
     bookrank_count = BookRank.objects.all().count()
@@ -246,6 +246,7 @@ def del_tuijian(request, model='ft', book_id=0):
 def book_search(request):
     C = {}
     query_text = request.REQUEST.get('q')
+    category_query = request.REQUEST.get('cq')
     if query_text:
         query = Q(title__contains=query_text) | Q(author__contains=query_text)
         for q in query_text.split():
@@ -256,6 +257,11 @@ def book_search(request):
         books = Book.objects.filter(query)
     else:
         books = Book.objects.all().order_by("book_number")
+    if category_query and category_query != "all":
+        books = books.filter(category=category_query)
+        C['cq'] = category_query
+    else:
+        C['cq'] = 'all'
     p = Paginator(books, 15)
     try:
         page = p.page(int(request.REQUEST.get('p', 1)))

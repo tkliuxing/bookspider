@@ -8,8 +8,20 @@
 				.panel-body
 					form.form-inline(action=".",method="GET")
 							.form-group
-								label.sr-only.control-label(for="search")!= CRF.rule_res.label
+								label.sr-only.control-label(for="search") 关键词
 								input#search.form-control(placeholder="关键词",type="text",value="{{query_text|default_if_none:''}}",name="q")
+							.form-group
+								label.sr-only.control-label(for="category") 分类
+								select#category.form-control(type="text",name="cq")
+									if cq == 'all'
+										option(value="all",selected) 所有分类
+									else
+										option(value="all") 所有分类
+									for c in categorys
+										if cq == c.name
+											option(value="{{c.name}}",selected) {{c.name}}
+										else
+											option(value="{{c.name}}") {{c.name}}
 							button.btn.btn-success.btn-sm.btn-raised(type="submit") 提交
 					if books
 						table.table
