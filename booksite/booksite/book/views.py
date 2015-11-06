@@ -23,7 +23,7 @@ def home(request):
     C = {}
     books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     if request.GET.get('a', ''):
         books = Book.objects.filter(is_deleted=False, author=request.GET['a'])
@@ -67,7 +67,7 @@ def mb_search(request):
     C = {}
     books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     else:
         books = []
@@ -85,7 +85,7 @@ def mb_searchload(request):
     C = {}
     books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
-        books = books.filter(title__contains=request.GET['s'])
+        books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     else:
         books = []
