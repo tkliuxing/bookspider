@@ -152,7 +152,7 @@ def bookinfo(request, book_id=0):
     return render(request, 'book/bookinfo.jade', C)
 
 
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404

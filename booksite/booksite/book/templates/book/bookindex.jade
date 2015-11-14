@@ -21,9 +21,6 @@
 				- with book.get_bookrank as bookrank
 					| 总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}} 总收藏: {{bookrank.all_fav}}
 	#Pages.row.pagelist
-		for page in bookpages
-			.col-md-4
-				a.palette.palette-emerald.page-title(href="{{page.get_absolute_url}}")!= page.title_html
 		//- #Alert.alert.alert-warning.alert-dismissible.hide(role="alert")
 		//- 	button.close(type="button",data-dismiss="alert")
 		//- 		span(aria-hidden="true") &times;

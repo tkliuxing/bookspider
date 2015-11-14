@@ -9,22 +9,39 @@ block pagetitle
 				.panel-heading 书籍搜索
 				.panel-body
 					form.form-inline(action=".",method="GET")
-							.form-group
-								label.sr-only.control-label(for="search") 关键词
-								input#search.form-control(placeholder="关键词",type="text",value="{{query_text|default_if_none:''}}",name="q")
-							.form-group
-								label.sr-only.control-label(for="category") 分类
-								select#category.form-control(type="text",name="cq")
-									if cq == 'all'
-										option(value="all",selected) 所有分类
+						.form-group
+							label.sr-only.control-label(for="search") 关键词
+							input#search.form-control(placeholder="关键词",type="text",value="{{query_text|default_if_none:''}}",name="q")
+						.form-group
+							label.sr-only.control-label(for="category") 分类
+							select#category.form-control(type="text",name="cq")
+								if cq == 'all'
+									option(value="all",selected) 所有分类
+								else
+									option(value="all") 所有分类
+								for c in categorys
+									if cq == c.name
+										option(value="{{c.name}}",selected) {{c.name}}
 									else
-										option(value="all") 所有分类
-									for c in categorys
-										if cq == c.name
-											option(value="{{c.name}}",selected) {{c.name}}
-										else
-											option(value="{{c.name}}") {{c.name}}
-							button.btn.btn-success.btn-sm.btn-raised(type="submit") 提交
+										option(value="{{c.name}}") {{c.name}}
+						.form-group
+							label.sr-only.control-label(for="order") 排序
+							select#order.form-control(type="text",name="od")
+								for k in orderkey
+									if ordered == k.val
+										option(value="{{k.val}}",selected) {{k.name}}
+									else
+										option(value="{{k.val}}") {{k.name}}
+						button.btn.btn-success.btn-sm(type="submit") 提交
+						.btn-group.pull-right.btn-flat(style="margin:0;")
+							a.btn.btn-primary.btn-sm.withripple(href="javascript:;") 批量操作
+								.ripple-wrapper
+							a.btn.btn-primary.btn-sm.dropdown-toggle.withripple(href="javascript:;",data-toggle="dropdown")
+								span.caret
+								.ripple-wrapper
+							ul.dropdown-menu
+								li
+									a(href="{% url 'bbg:book_jiuzhenggengxin' %}") 自动纠新
 					if books
 						table.table
 							thead
@@ -38,17 +55,17 @@ block pagetitle
 							tbody
 								for book in books
 									tr
-										td {{book.title}}
+										td(title=book.book_number)= book.title
 											br
 											a.btn.btn-xs.btn-success(title=book.title,tabindex="0",role="button",data-toggle="popover",data-trigger="focus",data-content="{{book.info}}") 简介
 										td= book.author
 										td= book.category
 										td
 											span 最新：
-											span.new= book.last_page.title_html
+											a.new(href="{{book.last_page.get_absolute_url}}",target="_blank")= book.last_page.title_html
 											br
 											span 最后：
-											span.last= book.get_last_page.title_html
+											a.last(href="{{book.get_last_page.get_absolute_url}}",target="_blank")= book.get_last_page.title_html
 										td= book.last_update|date:"y-m-d"
 										td
 											a.btn.btn-xs.btn-info.bookjx(href="javascript:;",data-bookid=book.id,title="纠正最新章节",data-toggle="tooltip",data-placement="top") 纠新
@@ -71,6 +88,7 @@ block pagetitle
 										a(href="#",data-num="{{pagination.next_page_number}}") &gt;
 									li
 										a.fui-arrow-right(href="#",data-num="{{pagination.paginator.num_pages}}") &gt;&gt;
+								li.disabled: a(href="javascript:;") 共（{{pagination.paginator.num_pages}}）页，{{pagination.paginator.count}}条数据
 block footerjs
 	script
 		$(function () {

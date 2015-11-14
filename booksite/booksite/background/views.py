@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
+from django.db.models import Max
 from booksite.book.models import Book, BookPage, BookRank, KeyValueStorage
 from booksite.ajax import must_ajax, ajax_error, ajax_success, params_required
 from .models import ReplaceRule, FengTui, JingTui
@@ -252,8 +253,18 @@ def del_tuijian(request, model='ft', book_id=0):
 @permission_required('usercenter.can_add_user')
 def book_search(request):
     C = {}
+    C['cq'] = 'all'
     query_text = request.REQUEST.get('q')
     category_query = request.REQUEST.get('cq')
+    ordered_field = request.REQUEST.get('od', 'default')
+    order_select = [
+        {'val': 'default', 'name': "默认排序"},
+        {'val': 'title', 'name': "按名称"},
+        {'val': 'author', 'name': "按作者"},
+        {'val': '-last_update', 'name': "按最后更新时间"}
+    ]
+    if ordered_field not in [x['val'] for x in order_select]:
+        ordered_field = "default"
     if query_text:
         query = Q(title__contains=query_text) | Q(author__contains=query_text)
         for q in query_text.split():
@@ -264,11 +275,14 @@ def book_search(request):
         books = Book.objects.filter(query)
     else:
         books = Book.objects.all().order_by("book_number")
+    # 分类过滤
     if category_query and category_query != "all":
         books = books.filter(category=category_query)
         C['cq'] = category_query
-    else:
-        C['cq'] = 'all'
+    # 字段排序
+    if ordered_field != 'default':
+        books = books.order_by(ordered_field)
+    # books 分页
     p = Paginator(books, 15)
     try:
         page = p.page(int(request.REQUEST.get('p', 1)))
@@ -276,10 +290,40 @@ def book_search(request):
         page = p.page(1)
     C['books'] = page.object_list
     C['query_text'] = query_text
+    C['ordered'] = ordered_field
     C['pagination'] = page
+    C['orderkey'] = order_select
     return render(request, 'background/booksearch.jade', C)
 
 
+@permission_required('usercenter.can_add_user')
+def book_jiuzhenggengxin(request):
+    C = {}
+    books = Book.objects.exclude(last_page_number=0).exclude(
+        last_page_number__in=BookPage.objects.order_by().values('book_number').annotate(last_page=Max('page_number')
+    ).values('last_page'))
+    if request.REQUEST.get('showall',0) == '1':
+        page = None
+    else:
+        # books 分页
+        p = Paginator(books, 15)
+        try:
+            page = p.page(int(request.REQUEST.get('p', 1)))
+        except:
+            page = p.page(1)
+        books = page.object_list
+    if request.method == "POST":
+        for book in books:
+            book.last_page = book.get_last_page()
+            book.save()
+        books = []
+        page = None
+        C['success'] = True
+    C['books'] = books
+    C['pagination'] = page
+    return render(request, 'background/jiuzhenglastpage.jade', C)
+
+# 纠正新章节
 @must_ajax(method='POST')
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
@@ -291,6 +335,7 @@ def book_jx(request):
     return ajax_success()
 
 
+# 封推
 @must_ajax(method='POST')
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
@@ -303,6 +348,7 @@ def book_ft(request):
     return ajax_success()
 
 
+# 精推
 @must_ajax(method='POST')
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
