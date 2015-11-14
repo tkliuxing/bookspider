@@ -299,9 +299,13 @@ def book_search(request):
 @permission_required('usercenter.can_add_user')
 def book_jiuzhenggengxin(request):
     C = {}
-    books = Book.objects.exclude(last_page_number=0).exclude(
-        last_page_number__in=BookPage.objects.order_by().values('book_number').annotate(last_page=Max('page_number')
+    books = Book.objects.filter(
+        is_deleted=False,
+        book_number__in=BookPage.objects.order_by().distinct('book_number').values_list('book_number',flat=True)
+    ).exclude(last_page_number=0
+    ).exclude(last_page_number__in=BookPage.objects.order_by().values('book_number').annotate(last_page=Max('page_number')
     ).values('last_page'))
+    # 是否分页
     if request.REQUEST.get('showall',0) == '1':
         page = None
     else:
@@ -311,7 +315,7 @@ def book_jiuzhenggengxin(request):
             page = p.page(int(request.REQUEST.get('p', 1)))
         except:
             page = p.page(1)
-        books = page.object_list
+        page_books = page.object_list
     if request.method == "POST":
         for book in books:
             book.last_page = book.get_last_page()

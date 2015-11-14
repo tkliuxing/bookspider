@@ -42,8 +42,10 @@ block pagetitle
 										td
 											a.btn.btn-xs.btn-info.bookjx(href="javascript:;",data-bookid=book.id,title="纠正最新章节",data-toggle="tooltip",data-placement="top") 纠新
 					.col-md-12.col-xs-12.text-center
-						a.btn.btn-danger.btn-flat(href="?showall=1") 显示全部
-						a.btn.btn-success.btn-flat(href="javascript:;") 全部纠正！
+						form(action=".",method="POST")
+							| {% csrf_token %}
+							a.btn.btn-danger.btn-flat(href="?showall=1") 显示全部
+							button.btn.btn-success.btn-flat(type="submit") 全部纠正！
 					if pagination.has_other_pages
 						.col-md-12.col-xs-12.col-sm-12.text-center
 							ul.pagination
