@@ -7,6 +7,7 @@ from django.http import Http404
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.db.models import Max
+from django.db.models import Count
 from booksite.book.models import Book, BookPage, BookRank, KeyValueStorage
 from booksite.ajax import must_ajax, ajax_error, ajax_success, params_required
 from .models import ReplaceRule, FengTui, JingTui
@@ -295,7 +296,7 @@ def book_search(request):
     C['orderkey'] = order_select
     return render(request, 'background/booksearch.jade', C)
 
-
+# 批量纠正新章节
 @permission_required('usercenter.can_add_user')
 def book_jiuzhenggengxin(request):
     C = {}
@@ -326,6 +327,60 @@ def book_jiuzhenggengxin(request):
     C['books'] = books
     C['pagination'] = page
     return render(request, 'background/jiuzhenglastpage.jade', C)
+
+
+
+def page_next_walk(book_number):
+    zero_pages = BookPage.objects.filter(next_number__isnull=True,book_number=book_number)
+    if zero_pages.count() == 1:
+        print '{0:8}False: count = 1'.format(book_number)
+        return False
+    if zero_pages.count() < 1:
+        print '{0:8}False: count < 1'.format(book_number)
+        return False
+    for p in zero_pages:
+        next_pages = BookPage.objects.order_by('page_number').filter(book_number=book_number,page_number__gt=p.page_number)
+        if next_pages:
+            p.next_number = next_pages.first().page_number
+            p.save()
+            print "{0:8}Fix page: {1}".format(book_number,p.page_number)
+        else:
+            print "{0:8}Last page found: {1}".format(book_number,p.page_number)
+    return True
+
+
+# 批量修复“下一章”错误
+@permission_required('usercenter.can_add_user')
+def book_page_next_zipper(request):
+    C = {}
+    lastpage_gt1 = BookPage.objects.order_by(
+        ).filter(next_number__isnull=True
+        ).values('book_number'
+        ).annotate(zeropage=Count('book_number')
+        ).filter(zeropage__gt=1)
+    if request.method == "GET":
+        bookpages = BookPage.objects.filter(next_number__isnull=True,book_number__in=[x['book_number'] for x in lastpage_gt1])
+    if request.method == "POST":
+        for b in lastpage_gt1:
+            page_next_walk(b['book_number'])
+        bookpages = []
+        C['success'] = True
+    # 是否分页
+    if request.REQUEST.get('showall',0) == '1':
+        bookpages = None
+        page = None
+    else:
+        # books 分页
+        p = Paginator(bookpages, 15)
+        try:
+            page = p.page(int(request.REQUEST.get('p', 1)))
+        except:
+            page = p.page(1)
+        bookpages = page.object_list
+    C['bookpages'] = bookpages
+    C['pagination'] = page
+    return render(request, 'background/pagenextzipper.jade', C)
+
 
 # 纠正新章节
 @must_ajax(method='POST')

@@ -45,7 +45,8 @@ block pagetitle
 						form(action=".",method="POST")
 							| {% csrf_token %}
 							a.btn.btn-danger.btn-flat(href="?showall=1") 显示全部
-							button.btn.btn-success.btn-flat(type="submit") 全部纠正！
+							button.btn.btn-success.btn-flat(type="submit") 全部纠正
+							a.btn.btn-link(href="{% url 'bbg:book_search' %}") 返回搜索
 					if pagination.has_other_pages
 						.col-md-12.col-xs-12.col-sm-12.text-center
 							ul.pagination
