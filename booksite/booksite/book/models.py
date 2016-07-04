@@ -33,7 +33,6 @@ class Book(models.Model):
     last_page_number = models.IntegerField(default=0, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     front_image = models.ImageField(upload_to=front_image_path, max_length=200, null=True, blank=True)
-    pages = JsonField(default=[], null=True, blank=True)
 
     class Meta:
         verbose_name = _('书籍')
@@ -54,18 +53,6 @@ class Book(models.Model):
         self.is_deleted = True
         self.save()
         RC.hdel('books', str(self.book_number))
-
-    def append_page(self, page_id):
-        if self.pages and isinstance(self.pages, list):
-            self.pages.append(page_id)
-        else:
-            self.pages = [page_id]
-
-    def replace_page(self, old_id, new_id):
-        self.pages[self.pages.index(old_id)] = new_id
-
-    def remove_page(self, page_id):
-        self.pages.pop(self.pages.index(page_id))
 
     def last_page():
         doc = "The last_page property."
