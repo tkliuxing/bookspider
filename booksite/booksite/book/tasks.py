@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# import subprocess
+from __future__ import print_function
 import re
 import os
 import site
@@ -138,13 +138,13 @@ def get_new_book_with_book_name(book_name):
         '-a',
         'starturl=%s' % book_url
     ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=scrapy_project_path)
-    stdout, stderr = spider.communicate()
+    stdout, stderr = (spider.stdin, spider.stdout)
     start_time = time.time()
     while spider.returncode == None:
+        print(stdout.read(), end="")
         time.sleep(1)
         if time.time() - start_time > 600.00:
-            print("Timeout!")
+            print("\nTimeout!")
             spider.kill()
             print("Killed!")
             break
-    print(stdout)
