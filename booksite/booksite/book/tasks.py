@@ -137,11 +137,9 @@ def get_new_book_with_book_name(book_name):
         'douluo',
         '-a',
         'starturl=%s' % book_url
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=scrapy_project_path)
-    stdout, stderr = (spider.stdin, spider.stdout)
+    ], cwd=scrapy_project_path)
     start_time = time.time()
     while spider.returncode == None:
-        print(stdout.read(), end="")
         time.sleep(1)
         if time.time() - start_time > 600.00:
             print("\nTimeout!")
