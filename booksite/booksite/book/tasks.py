@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 # import subprocess
 import re
+import os
+import site
+import time
 import difflib
 import requests
 import urlparse
+import subprocess
 from pyquery import PyQuery as PQ
 
 from celery import shared_task
 from django.core.cache import cache
+from django.conf import settings
 
 from booksite.book.models import BookPage, Book
 
@@ -105,3 +110,41 @@ def update_book_pic_page(book_number, page_min_length):
     return list(pages.values_list("pk", flat=True))
 
 
+# @shared_task
+def get_new_book_with_book_name(book_name):
+    """根据书名获取新书内容"""
+    # Base env
+    scrapy_project_path = getattr(settings, 'SCRAPY_PROJECT', None)
+    if scrapy_project_path is None:
+        raise UserWarning("SCRAPY_PROJECT not configured!")
+    if not os.path.exists(os.path.join(scrapy_project_path, 'scrapy.cfg')):
+        raise UserWarning("SCRAPY_PROJECT not exists!")
+    # GET book_url from 86696, if has many book then raise error.
+    params = {"searchkey": book_name.encode("GBK"),
+            "searchtype": "articlename"}
+    res = requests.get("http://www.86696.cc/modules/article/search.php", params=params, allow_redirects=False)
+    if res.status_code != 302:
+        raise UserWarning("Search result is not one book! %s" % book_name)
+    book_url = res.headers['location']
+
+    # Start scrapy
+    scrapy_bin = os.path.join(site.PREFIXES[0], "bin/scrapy")
+    spider = subprocess.Popen([
+        scrapy_bin,
+        'crawl',
+        '-L',
+        'ERROR',
+        'douluo',
+        '-a',
+        'starturl=%s' % book_url
+    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=scrapy_project_path)
+    stdout, stderr = spider.communicate()
+    start_time = time.time()
+    while spider.returncode == None:
+        time.sleep(1)
+        if time.time() - start_time > 600.00:
+            print("Timeout!")
+            spider.kill()
+            print("Killed!")
+            break
+    print(stdout)

@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     # 'south',
+    'raven.contrib.django.raven_compat',
     'django_assets',
     'captcha',
     'booksite.book',
