@@ -3,14 +3,15 @@ import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.db.models import Max
 from django.db.models import Count
 from booksite.book.models import Book, BookPage, BookRank, KeyValueStorage
+from booksite.book.tasks import get_new_book_with_book_name
 from booksite.ajax import must_ajax, ajax_error, ajax_success, params_required
-from .models import ReplaceRule, FengTui, JingTui
+from .models import ReplaceRule, FengTui, JingTui, NewBookLog
 from .forms import (
     ReplaceRuleCreateForm,
     ReplacePageApplyForm,
@@ -27,8 +28,10 @@ def index(request):
         defaults={'value': '', 'long_value': ''}
     )
     if created:
-        real_categorys = Book.objects.order_by('category').distinct('category').values_list('category', flat=True)
-        CATEGORYS_KV.val = {chr(x[0]): x[1] for x in zip(range(97, 123), real_categorys)}
+        real_categorys = Book.objects.order_by('category').distinct(
+            'category').values_list('category', flat=True)
+        CATEGORYS_KV.val = {chr(x[0]): x[1]
+                            for x in zip(range(97, 123), real_categorys)}
         CATEGORYS_KV.save()
     CATEGORYS = [x[1] for x in CATEGORYS_KV.val.items() if x[1]]
     book_count = Book.objects.all().count()
@@ -119,8 +122,10 @@ def apply_rule(request, pk=None):
         for page in book_pages:
             page_content = page.get_content()
             if rule.match(page_content):
-                page_preview_link = apply_rule_url + "?pn=%s" % page.page_number
-                link_a = "<a href='%s' target='_blank'>%s</a>" % (page_preview_link, page.title)
+                page_preview_link = apply_rule_url + \
+                    "?pn=%s" % page.page_number
+                link_a = "<a href='%s' target='_blank'>%s</a>" % (
+                    page_preview_link, page.title)
                 if this_is_save:
                     page_content = rule.replace(page_content)
                     page.set_content(page_content)
@@ -173,7 +178,8 @@ def replace_book(request):
             for page in book_pages:
                 content = page.get_content()
                 if rule.match(content):
-                    link_a = "<a href='%s' target='_blank'>%s</a>" % (page.get_absolute_url(), page.title)
+                    link_a = "<a href='%s' target='_blank'>%s</a>" % (
+                        page.get_absolute_url(), page.title)
                     if this_is_save:
                         content = rule.replace(content)
                         page.set_content(content)
@@ -297,17 +303,23 @@ def book_search(request):
     return render(request, 'background/booksearch.jade', C)
 
 # 批量纠正新章节
+
+
 @permission_required('usercenter.can_add_user')
 def book_jiuzhenggengxin(request):
     C = {}
     books = Book.objects.filter(
         is_deleted=False,
-        book_number__in=BookPage.objects.order_by().distinct('book_number').values_list('book_number',flat=True)
+        book_number__in=BookPage.objects.order_by(
+                                       ).distinct('book_number'
+                                       ).values_list('book_number', flat=True)
     ).exclude(last_page_number=0
-    ).exclude(last_page_number__in=BookPage.objects.order_by().values('book_number').annotate(last_page=Max('page_number')
-    ).values('last_page'))
+    ).exclude(last_page_number__in=BookPage.objects.order_by(
+                                                  ).values('book_number'
+                                                  ).annotate(last_page=Max('page_number')
+                                                  ).values('last_page'))
     # 是否分页
-    if request.REQUEST.get('showall',0) == '1':
+    if request.REQUEST.get('showall', 0) == '1':
         page = None
     else:
         # books 分页
@@ -329,9 +341,9 @@ def book_jiuzhenggengxin(request):
     return render(request, 'background/jiuzhenglastpage.jade', C)
 
 
-
 def page_next_walk(book_number):
-    zero_pages = BookPage.objects.filter(next_number__isnull=True,book_number=book_number)
+    zero_pages = BookPage.objects.filter(
+        next_number__isnull=True, book_number=book_number)
     if zero_pages.count() == 1:
         print '{0:8}False: count = 1'.format(book_number)
         return False
@@ -339,13 +351,14 @@ def page_next_walk(book_number):
         print '{0:8}False: count < 1'.format(book_number)
         return False
     for p in zero_pages:
-        next_pages = BookPage.objects.order_by('page_number').filter(book_number=book_number,page_number__gt=p.page_number)
+        next_pages = BookPage.objects.order_by('page_number').filter(
+            book_number=book_number, page_number__gt=p.page_number)
         if next_pages:
             p.next_number = next_pages.first().page_number
             p.save()
-            print "{0:8}Fix page: {1}".format(book_number,p.page_number)
+            print "{0:8}Fix page: {1}".format(book_number, p.page_number)
         else:
-            print "{0:8}Last page found: {1}".format(book_number,p.page_number)
+            print "{0:8}Last page found: {1}".format(book_number, p.page_number)
     return True
 
 
@@ -354,19 +367,22 @@ def page_next_walk(book_number):
 def book_page_next_zipper(request):
     C = {}
     lastpage_gt1 = BookPage.objects.order_by(
-        ).filter(next_number__isnull=True
-        ).values('book_number'
-        ).annotate(zeropage=Count('book_number')
-        ).filter(zeropage__gt=1)
+                                  ).filter(next_number__isnull=True
+                                  ).values('book_number'
+                                  ).annotate(zeropage=Count('book_number')
+                                  ).filter(zeropage__gt=1)
     if request.method == "GET":
-        bookpages = BookPage.objects.filter(next_number__isnull=True,book_number__in=[x['book_number'] for x in lastpage_gt1])
+        bookpages = BookPage.objects.filter(
+            next_number__isnull=True,
+            book_number__in=[x['book_number'] for x in lastpage_gt1]
+        )
     if request.method == "POST":
         for b in lastpage_gt1:
             page_next_walk(b['book_number'])
         bookpages = []
         C['success'] = True
     # 是否分页
-    if request.REQUEST.get('showall',0) == '1':
+    if request.REQUEST.get('showall', 0) == '1':
         bookpages = None
         page = None
     else:
@@ -418,3 +434,40 @@ def book_jt(request):
     jt.add(book)
     jt.save()
     return ajax_success()
+
+
+@permission_required('usercenter.can_add_user')
+def get_new_book(request):
+    C = {}
+    if request.method == 'GET':
+        new_book_log = NewBookLog.objects.all()
+        # books 分页
+        p = Paginator(new_book_log, 15)
+        try:
+            page = p.page(int(request.REQUEST.get('p', 1)))
+        except:
+            page = p.page(1)
+        object_list = page.object_list
+        C['object_list'] = object_list
+        C['pagination'] = page
+        return render(request, 'background/get_new_book.jade', C)
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+    book_title = request.REQUEST.get('book_title')
+    if not book_title:
+        return render(request, 'background/get_new_book.jade', {'no_title': True})
+    try:
+        book_log = NewBookLog.objects.get(book_title=book_title)
+    except NewBookLog.DoesNotExist:
+        pass
+    else:
+        return render(request, 'background/get_new_book.jade', {'error': u'已经获取过了'})
+    exists_book = Book.objects.filter(title=book_title)
+    if exists_book:
+        return render(request, 'background/get_new_book.jade', {'error': u'书籍已存在！', 'books': exists_book})
+    try:
+        task_result = get_new_book_with_book_name.delay(book_title)
+    except UserWarning as e:
+        return render(request, 'background/get_new_book.jade', {'error': e})
+    NewBookLog.objects.create(book_title=book_title, task_id=str(task_result.id))
+    return render(request, 'background/get_new_book.jade', {'success': True, 'book_title': book_title})

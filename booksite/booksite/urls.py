@@ -50,6 +50,7 @@ background_urls = patterns('booksite.background.views',
                            url(r'^booksearch/jt/$', 'book_jt', name="book_jt"),
                            url(r'^booksearch/jxall/$', 'book_jiuzhenggengxin', name="book_jiuzhenggengxin"),
                            url(r'^booksearch/pagezipper/$', 'book_page_next_zipper', name="book_page_next_zipper"),
+                           url(r'^newbook/$', 'get_new_book', name="newbook"),
                            )
 
 password_reset_urls = patterns('',

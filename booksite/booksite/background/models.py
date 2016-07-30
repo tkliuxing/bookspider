@@ -4,6 +4,8 @@ import hashlib
 import cPickle as pickle
 import time
 import itertools
+import uuid
+from django.db import models
 from booksite.book.models import KeyValueStorage, Book
 
 
@@ -147,3 +149,17 @@ class FengTui(TuiJianObj):
 
 class JingTui(TuiJianObj):
     KEY = "jingtui"
+
+class NewBookLog(models.Model):
+    """获取新书的记录信息"""
+    create_time = models.DateTimeField(auto_now_add=True)
+    book_title = models.CharField('Book Title', max_length=30)
+    task_id = models.CharField('Task UID', max_length=36)
+
+    def get_task_uuid(self):
+        if self.task_id:
+            try:
+                return uuid.UUID(str(self.task_id))
+            except ValueError as e:
+                return None
+        return None

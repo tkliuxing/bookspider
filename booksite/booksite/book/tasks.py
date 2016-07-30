@@ -110,7 +110,7 @@ def update_book_pic_page(book_number, page_min_length):
     return list(pages.values_list("pk", flat=True))
 
 
-# @shared_task
+@shared_task
 def get_new_book_with_book_name(book_name):
     """根据书名获取新书内容"""
     # Base env
@@ -141,7 +141,7 @@ def get_new_book_with_book_name(book_name):
     start_time = time.time()
     while spider.returncode == None:
         time.sleep(1)
-        if time.time() - start_time > 600.00:
+        if time.time() - start_time > 200.00:
             print("\nTimeout!")
             spider.kill()
             print("Killed!")

@@ -69,3 +69,16 @@
 .popover-title{
 	background-color: inherit !important;
 }
+
+.form-group.has-error input::-webkit-input-placeholder{
+	color: #f44;
+}
+.form-group.has-error input::-moz-placeholder{
+	color: #f44;
+}
+.form-group.has-error input::-ms-input-placeholder{
+	color: #f44;
+}
+.form-group.has-error input{
+	border-bottom-color: #f44;
+}
