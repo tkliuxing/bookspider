@@ -31,6 +31,7 @@ class Book(models.Model):
     book_number = models.IntegerField(db_index=True, unique=True)
     last_update = models.DateTimeField(auto_now=True, null=True, blank=True, default=None, db_index=True)
     last_page_number = models.IntegerField(default=0, null=True, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True, db_index=True)
     is_deleted = models.BooleanField(default=False)
     front_image = models.ImageField(upload_to=front_image_path, max_length=200, null=True, blank=True)
 
