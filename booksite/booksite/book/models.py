@@ -18,7 +18,7 @@ def front_image_path(instance, filename):
     import os
     import uuid
     file_name = uuid.uuid4().hex
-    return os.path.join('bookimg/%s/' % instance.book_number[-1], instance.book_number + '.jpg')
+    return os.path.join('bookimg/%s/' % str(instance.book_number)[-1], str(instance.book_number) + '.jpg')
 
 
 class Book(models.Model):
