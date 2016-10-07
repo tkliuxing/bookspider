@@ -67,7 +67,7 @@ DATABASES = {
 
 SITE_ID = 1
 
-LANGUAGE_CODE = 'zh_Hans'
+LANGUAGE_CODE = 'zh-Hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
