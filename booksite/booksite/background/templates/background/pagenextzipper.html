@@ -1,0 +1,84 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 书籍搜索 - 断章修复{% endblock %}
+{% block content %}
+  <div data-nav="booksearch" id="NAVID"></div>
+  <div class="row">
+    {% if success %}
+      <div class="col-xs-12">
+        <div class="alert alert-dismissable alert-success">
+          <button class="close" data-dismiss="alert" type="button">×</button>
+          <strong>修复成功！<a href="{% url 'bbg:book_search' %}">[返回书籍搜索]</a>
+          </strong>
+        </div>
+      </div>
+    {% endif %}
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">索引中断章节修复</div>
+        <div class="panel-body">
+          {% if bookpages %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>书号</th>
+                  <th style="width:450px;">章节</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for page in bookpages %}
+                  <tr>
+                    <td title="{{page.book_number}}">{{page.book_number|force_escape}}</td>
+                    <td title="{{page.title}}">{{page.title|force_escape}}</td>
+                    <td>
+                      <a class="btn btn-xs btn-info" href="javascript:;">查找下一章</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+          <div class="col-md-12 col-xs-12 text-center">
+            <form action="." method="POST">
+              {% csrf_token %}
+              <a class="btn btn-danger btn-flat" href="?showall=1">显示全部</a>
+              <button class="btn btn-success btn-flat" type="submit">全部纠正</button>
+              <a class="btn btn-link" href="{% url 'bbg:book_search' %}">返回搜索</a>
+            </form>
+          </div>
+          {% if pagination.has_other_pages %}
+            <div class="col-md-12 col-xs-12 col-sm-12 text-center">
+              <ul class="pagination">
+                {% if pagination.has_previous %}
+                  <li>
+                    <a data-num="1" href="#">&lt;&lt;</a>
+                  </li>
+                  <li>
+                    <a data-num="{{pagination.previous_page_number}}" href="#">&lt;</a>
+                  </li>
+                {% endif %}
+                <li class="active">
+                  <span>{{pagination.number|force_escape}}</span>
+                </li>
+                {% if pagination.has_next %}
+                  <li>
+                    <a data-num="{{pagination.next_page_number}}" href="#">&gt;</a>
+                  </li>
+                  <li>
+                    <a
+                      class="fui-arrow-right"
+                      data-num="{{pagination.paginator.num_pages}}"
+                      href="#">&gt;&gt;</a>
+                  </li>
+                {% endif %}
+                <li class="disabled">
+                  <a href="javascript:;">共（{{pagination.paginator.num_pages}}）页，{{pagination.paginator.count}}条数据</a>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

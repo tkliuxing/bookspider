@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'kr71xy'
@@ -31,7 +31,6 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'django_assets',
     'captcha',
-    'pyjade.ext.django',
     'booksite.book',
     'booksite.usercenter',
     'booksite.background',
@@ -54,7 +53,7 @@ WSGI_APPLICATION = 'booksite.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -64,7 +63,7 @@ DATABASES = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+# https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 SITE_ID = 1
 
@@ -81,7 +80,7 @@ USE_TZ = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'APP_DIRS': True,
+        'APP_DIRS': True,
         'DIRS': [
             os.path.join(BASE_DIR, 'booksite/templates'),
         ],
@@ -96,21 +95,12 @@ TEMPLATES = [
                 "booksite.context_processors.categorys",
                 "booksite.context_processors.bookmark_update_count",
             ],
-            'loaders': [
-                ('pyjade.ext.django.Loader', (
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ))
-            ],
-            'builtins': [
-                'pyjade.ext.django.templatetags'
-            ]
         },
     },
 ]
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (

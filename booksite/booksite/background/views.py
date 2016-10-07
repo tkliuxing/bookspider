@@ -338,7 +338,7 @@ def book_jiuzhenggengxin(request):
         C['success'] = True
     C['books'] = books
     C['pagination'] = page
-    return render(request, 'background/jiuzhenglastpage.jade', C)
+    return render(request, 'background/jiuzhenglastpage.html', C)
 
 
 def page_next_walk(book_number):
@@ -395,7 +395,7 @@ def book_page_next_zipper(request):
         bookpages = page.object_list
     C['bookpages'] = bookpages
     C['pagination'] = page
-    return render(request, 'background/pagenextzipper.jade', C)
+    return render(request, 'background/pagenextzipper.html', C)
 
 
 # 纠正新章节
