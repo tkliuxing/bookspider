@@ -1,0 +1,118 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 获取新书{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="newbook"></div>
+  <div class="row">
+    {% if success %}
+      <div class="col-xs-12">
+        <div class="alert alert-dismissable alert-success">
+          <button data-dismiss="alert" type="button" class="close">×</button>
+          <strong>获取成功！<a href="javascript:history.go(-1);">[返回]</a>
+          </strong>
+        </div>
+      </div>
+    {% elif error %}
+      <div class="col-xs-12">
+        <div class="alert alert-dismissable alert-success">
+          <button data-dismiss="alert" type="button" class="close">×</button>
+          <strong>获取错误！{{error}}
+            <a href="javascript:history.go(-1);">[返回]</a>
+            {% for b in books %}
+              {{book.title}}
+            {% endfor %}
+          </strong>
+        </div>
+      </div>
+    {% else %}
+
+      <div class="col-xs-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">索引中断章节修复</div>
+          <div class="panel-body">
+            <form method="POST" action="." class="form-inline">{% csrf_token %}
+              {% if not no_title %}
+                <div class="form-group">
+                  <input
+                    name="book_title"
+                    placeholder="书名"
+                    style="height: 36px;font-size: 30px;"
+                    class="form-control empty"/>
+                </div>
+              {% else %}
+                <div class="form-group has-error">
+                  <input
+                    name="book_title"
+                    placeholder="请填写书名！"
+                    style="height: 36px;font-size: 30px;"
+                    class="form-control empty"/>
+                </div>
+              {% endif %}
+              <button type="submit" class="btn btn-success">获取！</button>
+            </form>
+            {% if object_list %}
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>书名</th>
+                    <th>TaskID</th>
+                    <th>获取时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for book in object_list %}
+                    <tr>
+                      <td>{{book.book_title|force_escape}}</td>
+                      <td>{{book.task_id|force_escape}}</td>
+                      <td>{{book.create_time|date:"Y-m-d H:i"|force_escape}}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% endif %}
+            {% if pagination.has_other_pages %}
+              <div class="col-md-12 col-xs-12 col-sm-12 text-center">
+                <ul class="pagination">
+                  {% if pagination.has_previous %}
+                    <li>
+                      <a href="#" data-num="1">&lt;&lt;</a>
+                    </li>
+                    <li>
+                      <a href="#" data-num="{{pagination.previous_page_number}}">&lt;</a>
+                    </li>
+                  {% endif %}
+                  <li class="active">
+                    <span>{{pagination.number|force_escape}}</span>
+                  </li>
+                  {% if pagination.has_next %}
+                    <li>
+                      <a href="#" data-num="{{pagination.next_page_number}}">&gt;</a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        data-num="{{pagination.paginator.num_pages}}"
+                        class="fui-arrow-right">&gt;&gt;</a>
+                    </li>
+                  {% endif %}
+                  <li class="disabled">
+                    <a href="javascript:;">共（{{pagination.paginator.num_pages}}）页，{{pagination.paginator.count}}条数据</a>
+                  </li>
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+{% block footerjs %}
+  <script>
+    $(function () {
+      $('button[type="submit"]')
+        .click(function () {
+          $('button[type="submit"]').addClass('disabled')
+        });
+    })
+  </script>
+{% endblock %}

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django_pgjson.fields
+import django.contrib.postgres.fields
 import booksite.book.models
 
 
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('last_update', models.DateTimeField(default=None, auto_now=True, null=True, db_index=True)),
                 ('last_page_number', models.IntegerField(default=0, null=True, blank=True)),
                 ('is_deleted', models.BooleanField(default=False)),
-                ('pages', django_pgjson.fields.JsonField(default=[], null=True, blank=True)),
+                ('pages', django.contrib.postgres.fields.JSONField(default=[], null=True, blank=True)),
             ],
             options={
                 'ordering': ['book_number'],

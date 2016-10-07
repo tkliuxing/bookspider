@@ -46,7 +46,7 @@ def index(request):
     C['bookpage_count'] = bookpage_count
     C['bookrank_count'] = bookrank_count
     C['average_page_per_book'] = bookpage_count // book_count
-    return render(request, "background/index.jade", C)
+    return render(request, "background/index.html", C)
 
 
 @permission_required('usercenter.can_add_user')
@@ -60,7 +60,7 @@ def replace(request):
     replace_rule = ReplaceRule.all()
     C['replace_rule'] = replace_rule
     C['create_rule_form'] = form
-    return render(request, "background/replace.jade", C)
+    return render(request, "background/replace.html", C)
 
 
 @permission_required('usercenter.can_add_user')
@@ -82,7 +82,7 @@ def edit_rule(request, pk=None):
     C['replace_rule'] = replace_rule
     C['create_rule_form'] = form
     C['edit_rule'] = True
-    return render(request, "background/replace_edit.jade", C)
+    return render(request, "background/replace_edit.html", C)
 
 
 @permission_required('usercenter.can_add_user')
@@ -97,8 +97,8 @@ def apply_rule(request, pk=None):
     C = {}
     rule = ReplaceRule.get(pk)
     C['rule'] = rule
-    book_id = request.REQUEST.get('bi', '')
-    page_number = request.REQUEST.get('pn', '')
+    book_id = request.GET.get('bi', '')
+    page_number = request.GET.get('pn', '')
     C['book_id'] = book_id
     C['page_number'] = page_number
     this_is_save = request.method == "POST" and request.POST.get('save', None)
@@ -113,7 +113,7 @@ def apply_rule(request, pk=None):
         C['r_content'] = rule.replace(page_content).replace('\n', '\n\n')
         C['content'] = page_content.replace('\n', '\n\n')
         C['page_admin_url'] = page.get_absolute_url()
-        return render(request, "background/replace_apply.jade", C)
+        return render(request, "background/replace_apply.html", C)
     elif book_id:
         book = get_object_or_404(Book, pk=book_id)
         book_pages = BookPage.objects.filter(book_number=book.book_number)
@@ -137,14 +137,14 @@ def apply_rule(request, pk=None):
             page.content_file.close()
         C['save'] = this_is_save
         C['r_content'] = "\n".join(r_content_list)
-        return render(request, "background/replace_apply.jade", C)
+        return render(request, "background/replace_apply.html", C)
     raise Http404
 
 
 @permission_required('usercenter.can_add_user')
 def replace_page(request):
     C = {}
-    form = ReplacePageApplyForm(initial=request.REQUEST)
+    form = ReplacePageApplyForm(initial=request.GET)
     if request.method == "POST":
         form = ReplacePageApplyForm(request.POST)
         if form.is_valid():
@@ -160,13 +160,13 @@ def replace_page(request):
             C['content'] = page_content.replace('\n', '\n\n')
             C['page_admin_url'] = "/admin/book/bookpage/%d/" % (page.pk)
     C['create_rule_form'] = form
-    return render(request, "background/replace_page.jade", C)
+    return render(request, "background/replace_page.html", C)
 
 
 @permission_required('usercenter.can_add_user')
 def replace_book(request):
     C = {}
-    form = ReplaceBookApplyForm(initial=request.REQUEST)
+    form = ReplaceBookApplyForm(initial=request.GET)
     if request.method == "POST":
         form = ReplaceBookApplyForm(request.POST)
         if form.is_valid():
@@ -192,7 +192,7 @@ def replace_book(request):
             C['save'] = this_is_save
             C['r_content'] = "\n".join(r_content_list)
     C['create_rule_form'] = form
-    return render(request, "background/replace_book.jade", C)
+    return render(request, "background/replace_book.html", C)
 
 
 @permission_required('usercenter.can_add_user')
@@ -202,7 +202,7 @@ def tuijian(request):
     C['jt_books'] = JingTui().books or []
     C['create_ft_form'] = TuiJianForm(model=FengTui)
     C['create_jt_form'] = TuiJianForm(model=JingTui)
-    return render(request, 'background/tuijian.jade', C)
+    return render(request, 'background/tuijian.html', C)
 
 
 @permission_required('usercenter.can_add_user')
@@ -218,7 +218,7 @@ def fengtui_create(request):
             C['jt_books'] = JingTui().books
             C['create_jt_form'] = TuiJianForm(model=JingTui)
             C['create_ft_form'] = form
-            return render(request, 'background/tuijian.jade', C)
+            return render(request, 'background/tuijian.html', C)
     else:
         return redirect("bbg:tuijian")
 
@@ -236,7 +236,7 @@ def jingtui_create(request):
             C['jt_books'] = JingTui().books
             C['create_jt_form'] = form
             C['create_ft_form'] = TuiJianForm(model=FengTui)
-            return render(request, 'background/tuijian.jade', C)
+            return render(request, 'background/tuijian.html', C)
     else:
         return redirect("bbg:tuijian")
 
@@ -261,9 +261,9 @@ def del_tuijian(request, model='ft', book_id=0):
 def book_search(request):
     C = {}
     C['cq'] = 'all'
-    query_text = request.REQUEST.get('q')
-    category_query = request.REQUEST.get('cq')
-    ordered_field = request.REQUEST.get('od', 'default')
+    query_text = request.GET.get('q')
+    category_query = request.GET.get('cq')
+    ordered_field = request.GET.get('od', 'default')
     order_select = [
         {'val': 'default', 'name': "默认排序"},
         {'val': 'title', 'name': "按名称"},
@@ -292,7 +292,7 @@ def book_search(request):
     # books 分页
     p = Paginator(books, 15)
     try:
-        page = p.page(int(request.REQUEST.get('p', 1)))
+        page = p.page(int(request.GET.get('p', 1)))
     except:
         page = p.page(1)
     C['books'] = page.object_list
@@ -300,7 +300,7 @@ def book_search(request):
     C['ordered'] = ordered_field
     C['pagination'] = page
     C['orderkey'] = order_select
-    return render(request, 'background/booksearch.jade', C)
+    return render(request, 'background/booksearch.html', C)
 
 # 批量纠正新章节
 
@@ -319,13 +319,13 @@ def book_jiuzhenggengxin(request):
                                                   ).annotate(last_page=Max('page_number')
                                                   ).values('last_page'))
     # 是否分页
-    if request.REQUEST.get('showall', 0) == '1':
+    if request.GET.get('showall', 0) == '1':
         page = None
     else:
         # books 分页
         p = Paginator(books, 15)
         try:
-            page = p.page(int(request.REQUEST.get('p', 1)))
+            page = p.page(int(request.GET.get('p', 1)))
         except:
             page = p.page(1)
         page_books = page.object_list
@@ -382,14 +382,14 @@ def book_page_next_zipper(request):
         bookpages = []
         C['success'] = True
     # 是否分页
-    if request.REQUEST.get('showall', 0) == '1':
+    if request.GET.get('showall', 0) == '1':
         bookpages = None
         page = None
     else:
         # books 分页
         p = Paginator(bookpages, 15)
         try:
-            page = p.page(int(request.REQUEST.get('p', 1)))
+            page = p.page(int(request.GET.get('p', 1)))
         except:
             page = p.page(1)
         bookpages = page.object_list
@@ -403,7 +403,7 @@ def book_page_next_zipper(request):
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
 def book_jx(request):
-    bookid = request.REQUEST['book_id']
+    bookid = request.GET['book_id']
     book = get_object_or_404(Book, id=bookid)
     book.last_page = book.get_last_page()
     book.save()
@@ -415,7 +415,7 @@ def book_jx(request):
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
 def book_ft(request):
-    bookid = request.REQUEST['book_id']
+    bookid = request.GET['book_id']
     book = get_object_or_404(Book, id=bookid)
     ft = FengTui()
     ft.add(book)
@@ -428,7 +428,7 @@ def book_ft(request):
 @params_required('book_id')
 @permission_required('usercenter.can_add_user')
 def book_jt(request):
-    bookid = request.REQUEST['book_id']
+    bookid = request.GET['book_id']
     book = get_object_or_404(Book, id=bookid)
     jt = JingTui()
     jt.add(book)
@@ -444,30 +444,30 @@ def get_new_book(request):
         # books 分页
         p = Paginator(new_book_log, 15)
         try:
-            page = p.page(int(request.REQUEST.get('p', 1)))
+            page = p.page(int(request.GET.get('p', 1)))
         except:
             page = p.page(1)
         object_list = page.object_list
         C['object_list'] = object_list
         C['pagination'] = page
-        return render(request, 'background/get_new_book.jade', C)
+        return render(request, 'background/get_new_book.html', C)
     if request.method != 'POST':
         return HttpResponseBadRequest()
-    book_title = request.REQUEST.get('book_title')
+    book_title = request.GET.get('book_title')
     if not book_title:
-        return render(request, 'background/get_new_book.jade', {'no_title': True})
+        return render(request, 'background/get_new_book.html', {'no_title': True})
     try:
         book_log = NewBookLog.objects.get(book_title=book_title)
     except NewBookLog.DoesNotExist:
         pass
     else:
-        return render(request, 'background/get_new_book.jade', {'error': u'已经获取过了'})
+        return render(request, 'background/get_new_book.html', {'error': u'已经获取过了'})
     exists_book = Book.objects.filter(title=book_title)
     if exists_book:
-        return render(request, 'background/get_new_book.jade', {'error': u'书籍已存在！', 'books': exists_book})
+        return render(request, 'background/get_new_book.html', {'error': u'书籍已存在！', 'books': exists_book})
     try:
         task_result = get_new_book_with_book_name.delay(book_title)
     except UserWarning as e:
-        return render(request, 'background/get_new_book.jade', {'error': e})
+        return render(request, 'background/get_new_book.html', {'error': e})
     NewBookLog.objects.create(book_title=book_title, task_id=str(task_result.id))
-    return render(request, 'background/get_new_book.jade', {'success': True, 'book_title': book_title})
+    return render(request, 'background/get_new_book.html', {'success': True, 'book_title': book_title})

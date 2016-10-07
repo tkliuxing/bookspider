@@ -1,0 +1,76 @@
+{% extends "usercenter/base.html" %}
+{% block content %}
+  <div class="col-md-3">&nbsp;</div>
+  <div class="col-md-6">
+    <div class="hidden-xs alert alert-success text-center">
+      <p>
+        <h3 style="font-weight:100;">注&nbsp;&nbsp;&nbsp;&nbsp;册</h3>
+        <span>"呦!今天你来看小说么?"</span><br/>
+        <span>"填完了赶进去收藏一些吧!"</span>
+      </p>
+    </div>
+    <div class="well">
+      <form action="." class="form-horizontal" id="login-form" method="post" role="form">
+        {% csrf_token %}
+        <div class="form-group {% if form.errors %}error{% endif %}">
+          <label class="share-label col-sm-2" for="id_captcha">验证码</label>
+          <div class="col-sm-10" data-url="{% url 'captcha-refresh' %}" id="CAPTCHA">{{form.captcha}}
+          </div>
+        </div>
+        <div class="form-group {% if form.errors %}error{% endif %}">
+          <label class="share-label col-sm-2" for="id_username">用户名</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="id_username" maxlength="30" name="username" type="text" value="{{form.username.value|default:''}}"/>
+          </div>
+        </div>
+        <div class="form-group {% if form.errors %}error{% endif %}">
+          <label class="share-label col-sm-2" for="id_email">Email</label>
+          <div class="col-sm-10">
+            <input
+              class="form-control"
+              id="id_email"
+              maxlength="30"
+              name="email"
+              type="text"
+              value="{{form.email.value|default:''}}"/>
+          </div>
+        </div>
+        <div class="form-group {% if form.errors %}error{% endif %}">
+          <label class="share-label col-sm-2" for="id_password1">密码</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="id_password1" name="password1" type="password"/>
+          </div>
+        </div>
+        <div class="form-group {% if form.errors %}error{% endif %}">
+          <label class="share-label col-sm-2" for="id_password2">校验密码</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="id_password2" name="password2" type="password"/>
+          </div>
+        </div>
+        <input name="this_is_the_signup_form" type="hidden" value="1"/>
+        <input name="next" type="hidden" value="{{ next }}"/>
+        <button class="btn btn-large btn-primary btn-block" id="signup" type="submit">注册</button>
+        {% if form.errors %}
+          <div class="alert alert-danger text-center">
+            {% if form.captcha.errors %}
+              <p>验证码错误</p>
+            {% endif %}
+            {% if form.username.errors %}
+              <p>用户名已存在</p>
+            {% endif %}
+            {% if form.email.errors %}
+              <p>Email已存在</p>
+            {% endif %}
+            {% if form.password1.errors %}
+              <p>请填写密码</p>
+            {% endif %}
+            {% if form.password2.errors %}
+              <p>密码不一致</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  <div class="col-md-3">&nbsp;</div>
+{% endblock %}

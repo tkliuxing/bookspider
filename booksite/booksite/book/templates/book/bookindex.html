@@ -1,0 +1,50 @@
+{% extends "book/base.html" %}
+{% block pagetitle %}{{book.title}}
+  目录{% endblock %}
+{% block keymeta %}{{book.title}};{{book.author}}
+{% endblock %}
+{% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock %}
+{% block content %}
+  <div class="row pagelist">
+    <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li>
+          <a href="/">书籍列表</a>
+        </li>
+        <li>
+          <a href="{{book.get_category_url}}">{{book.category}}</a>
+        </li>
+        <li>
+          <a href="{% url 'bookinfo' book.pk %}">{{book.title}}</a>
+        </li>
+        <li class="active">书目</li>
+      </ol>
+    </div>
+    <div class="col-md-12">
+      <h2 class="text-center">{{book.title}}
+        <small>
+          <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author}}</a>
+        </small>
+      </h2>
+      <p class="text-center">{% with book.get_bookrank as bookrank %}总点击:
+        {{bookrank.all_point}}
+        总推荐:
+        {{bookrank.all_push}}
+        总收藏:
+        {{bookrank.all_fav}}{% endwith %}
+      </p>
+    </div>
+  </div>
+  <div id="Pages" class="row pagelist"></div>
+{% endblock %}
+{% block footerjs %}
+  <script>
+    $(function () {
+      $("#Pages").load('{% url "bookindexajax" book.pk %}', function (resp, status, xhr) {
+          if (status == "error") {
+            $("#Alert").show();
+          }
+        })
+    });
+  </script>
+{% endblock %}

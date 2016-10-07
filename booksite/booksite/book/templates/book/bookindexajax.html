@@ -1,0 +1,3 @@
+{% for page in bookpages %}
+<div class="col-md-4"><a href="{{page.get_absolute_url}}" class="palette palette-emerald page-title">{{page.title_html}}</a></div>
+{% endfor %}

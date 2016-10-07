@@ -25,7 +25,7 @@ def categorys(request):
         CATEGORYS_KV.val = {chr(x[0]): x[1] for x in zip(range(97, 123), real_categorys)}
         CATEGORYS_KV.save()
     CATEGORYS = [{'name': x[1], 'key':x[0]} for x in CATEGORYS_KV.val.items() if x[1]]
-    return {'categorys': CATEGORYS}
+    return {'categorys': CATEGORYS, 'invert': request.session.get('invert', False)}
 
 
 def bookmark_update_count(request):

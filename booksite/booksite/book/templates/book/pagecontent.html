@@ -1,0 +1,62 @@
+{%load static paragraphedit%}
+{% for bookpage in bookpages %}
+  <div class="col-md-12 text-center">
+    <h2 class="text-center hidden-xs">{{bookpage.title_html}}</h2>
+    <h5 class="text-center visible-xs">{{bookpage.title_html}}</h5>
+    {% if user.is_superuser %}
+      <div style="margin-bottom:5px;" class="col-md-12">
+        <a
+          href="{{bookpage.get_absolute_url}}"
+          class="btn btn-success btn-sm {%if invert%}transparent_class{%endif%}">单独阅读本章</a>
+      </div>
+    {% endif %}
+    <div class="btn-group">
+      <a
+        href="{%url 'bookindex' book.pk%}"
+        class="btn btn-primary {%if invert%}transparent_class{%endif%}">回目录</a>
+      <a
+        href="javascript:;"
+        data-pn="{{bookpage.pk}}"
+        class="btn btn-info TBMABtn {%if invert%}transparent_class{%endif%}">加入书签</a>
+      <a
+        href="javascript:;"
+        class="btn btn-primary invert {%if invert%}transparent_class{%endif%}">昼／夜</a>
+    </div>
+    <div class="col-md-10 col-md-offset-1 text-center pagebutton">
+      <div
+        role="alert"
+        id="TBMA{{bookpage.pk}}"
+        style="display:none;"
+        class="alert alert-info">书签已添加, 请到<strong>书架</strong>查看</div>
+      <div
+        role="alert"
+        id="TBMAERR{{bookpage.pk}}"
+        style="display:none;"
+        class="alert alert-danger"></div>
+    </div>
+  </div>
+  <div class="col-md-12 hidden-xs">&nbsp;</div>
+  <div class="col-md-1 hidden-xs">&nbsp;</div>
+  <div
+    data-pageurl="{{bookpage.content_file.url|slice:':-3'}}"
+    data-pagenum="{{bookpage.pk}}"
+    data-dellurl="{%url 'del_line' bookpage.pk%}"
+    class="col-md-10 pagecontent noload inv {%if invert%} invert{%endif%}">
+    <div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGDOWN"></div>
+    <div class="col-md-5 hidden-lg hidden-md hidden-sm transparent_class PGUP"></div>
+  </div>
+  <div class="col-md-1 hidden-xs">&nbsp;</div>
+  {% if user.is_superuser %}
+    <div class="col-md-12 text-center bottombtn">
+      <a target="_blank" href="/admin/book/bookpage/{{bookpage.pk}}/">编辑本章</a>
+    </div>
+  {% endif %}
+  <div class="col-md-12">
+    <hr/>
+  </div>
+  {% if forloop.last %}
+    <div class="col-md-12 text-center bottombtn nextbox">
+      <a data-pn="{{bookpage.pk}}" href="javascript:;" class="readnall text-center">阅读后续10章</a>
+    </div>
+  {% endif %}
+{% endfor %}

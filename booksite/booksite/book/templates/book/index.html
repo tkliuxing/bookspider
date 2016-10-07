@@ -1,0 +1,281 @@
+{% extends "book/base.html" %}
+{% load static %}
+{% block pagetitle %}
+  {% if author %}作者-{{author}}
+  {% else %}
+    {% if category %}{{category}}
+    {% else %}
+      你想要
+    {% endif %}
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12 ft">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          {% for book in ft_books %}
+          {% if book %}
+          <div class="swiper-slide">
+            <div class="row">
+              <div class="col-md-3 hidden-xs">
+                <div class="book-cover pull-right">
+                  <a href="{{book.get_absolute_url}}">
+                    <img src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}"/>
+                  </a>
+                </div>
+              </div>
+              <div class="col-xs-12 hidden-lg hidden-sm hidden-md">
+                <div class="book-cover center">
+                  <a href="{{book.get_absolute_url}}">
+                    <img src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}"/>
+                  </a>
+                </div>
+              </div>
+              <div class="col-md-8 hidden-xs">
+                <h3 class="book-title">
+                  <a href="{{book.get_absolute_url}}">{{book.title}}</a>
+                  <small>&nbsp;&nbsp;&nbsp;</small>
+                  <small>
+                    <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author|truncatechars:'7'}}</a>
+                    <span>&nbsp;&nbsp;&nbsp;</span>
+                    <small>
+                      <a href="{{book.get_category_url}}">[{{book.category}}]</a>
+                    </small>
+                  </small>
+                </h3>
+                <div class="book-discription">
+                  <p>{{book.info_html|linebreaks}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+    {% if jt_books %}
+    <div class="col-md-9 col-xs-12 jt">
+      <div class="panel panel-primary">
+        <div class="icon-main panel-heading">热门推荐</div>
+        <div class="panel-body">
+          <div class="row">
+            {% for book in jt_books|slice:':12' %}
+            {% if book %}
+            <div class="col-md-2 col-xs-6">
+              <a href="{{book.get_absolute_url}}">
+                <div class="thumbnail">
+                  <img src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}" alt="{{book.title}}">
+                  <div class="caption">
+                    <span>{{book.title}}</span>
+                    <div class="caption-info">
+                      {{book.category}} | 23万字
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if paihang %}
+      <div class="col-md-3 col-xs-12 toplist">
+        <div class="panel panel-primary">
+          <div class="icon-main panel-heading">推荐榜</div>
+          <div class="panel-body">
+            <div class="top-list">
+            {% for pai in paihang %}
+              {% if forloop.counter == 1 or forloop.counter == 2 %}
+              <a href="{{pai.book.get_absolute_url}}" class="top-item">
+                <span class="top-no">{{forloop.counter}}</span>
+                <span class="top-cover">
+                  <img src="{%if pai.book.front_image%}{{pai.book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}" alt="">
+                </span>
+                <h4 class="top-title">{{pai.book.title}}</h4>
+                <span class="top-info">作者: {{pai.book.author}}</span>
+                <span class="top-info">类别: {{pai.book.category}}</span>
+              </a>
+              {% else %}
+              <a href="{{pai.book.get_absolute_url}}" class="top-item">
+                <span class="top-no">{{forloop.counter}}</span>
+                <h4 class="top-title">{{pai.book.title}}</h4>
+              </a>
+            {% endif %}
+            {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+  <div id="NAVID" data-nav="{% if categorynav %}{{categorynav}}{% else %}navallbook{% endif %}" class="row">
+    {% if books %}
+      {% if jt_books %}
+        <div class="col-md-12 col-xs-12 col-sm-8">
+          <div class="row">
+            <div class="col-md-12 col-xs-12 col-sm-12 jtl">
+              <div class="panel panel-primary bl">
+                <div class="icon-main panel-heading">最近更新</div>
+                <div class="panel-body">
+                  <div class="row">
+                    {% for book in books %}
+                      <div class="col-xs-12 col-sm-6 col-md-4 jtl">
+                        <div class="gx-cell">
+                          <h4>
+                            <small class="hidden-md hidden-sm"><a class="category" href="{{book.get_category_url}}">[{{book.category}}]</a></small>
+                            <a href="{{book.get_absolute_url}}" title="{{book.title}}">{{book.title}}</a>
+                            <span class="pull-right">
+                              <small>
+                                <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author}}</a>
+                              </small>
+                            </span>
+                          </h4>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% if pagination.has_other_pages %}
+                      <div class="col-md-12 col-xs-12 col-sm-12 text-center">
+                        <div class="pagination bl">
+                          <ul>
+                            <a href="{% url 'booknews' %}" class="fui-arrow-left">更多<span class="fui-arrow-right"></span></a>
+                          </ul>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-md-12 col-xs-12 col-sm-12">
+          <div class="row">
+            <div class="col-md-12 col-xs-12 col-sm-12">
+              <div class="panel panel-primary">
+                <div class="panel-heading">书库索引</div>
+              </div>
+            </div>
+            {% for book in books %}
+              <div class="col-xs-12 col-sm-12 col-md-6">
+                <div class="panel panel-info">
+                  <div class="hidden-xs bookinfo panel-body">
+                    <div class="cover pull-left">
+                      <img src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}" alt="{{book.title}}">
+                    </div>
+                    <h3>
+                      <a href="{{book.get_absolute_url}}" title="{{book.title}}">{{book.title}}</a>
+                      <span>--</span>
+                      <small>
+                        <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author}}</a>
+                      </small>
+                    </h3>
+                    <div class="rank">{% with book.get_bookrank as bookrank %}总点击: {{bookrank.all_point}} 总推荐: {{bookrank.all_push}} 总收藏: {{bookrank.all_fav}}{% endwith %}</div>
+                    <div class="caption">
+                      {{book.info_html|linebreaks}}
+                    </div>
+                    {% if user.is_superuser %}
+                      <div class="admin">
+                        <a
+                          target="_blank"
+                          href="/admin/book/book/{{book.pk}}/"
+                          class="btn btn-primary btn-xs">编辑信息</a>
+                        <a
+                          href="javascript:;"
+                          data-url="{% url 'bookfixpic' book.pk %}"
+                          class="btn btn-info btn-xs bookfixpic">更新图章</a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            {% if pagination.has_other_pages %}
+              <div class="col-md-12 center">
+                <ul class="pagination pagination-sm">
+                  {% if pagination.has_previous %}
+                    <li>
+                      <a href="#" data-num="1" class="fui-arrow-left">
+                        <span class="glyphicon glyphicon-fast-backward"></span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#" data-num="{{pagination.previous_page_number}}">
+                        <span class="glyphicon glyphicon-backward"></span>
+                      </a>
+                    </li>
+                  {% endif %}
+                  <li class="active">
+                    <a href="javascript:;">{{pagination.number}}</a>
+                  </li>
+                  {% if pagination.has_next %}
+                    <li>
+                      <a href="#" data-num="{{pagination.next_page_number}}">
+                        <span class="glyphicon glyphicon-forward"></span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#" data-num="{{pagination.paginator.num_pages}}">
+                        <span class="glyphicon glyphicon-fast-forward"></span>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% else %}
+      {% if search %}
+        <div class="jumbotron">
+          <h1>真遗憾, 没找到诶!</h1>
+          <p>要不要去别的网站试一试?</p>
+        </div>
+      {% else %}
+        <div class="jumbotron">
+          <h1>Hello, world!</h1>
+          <p>...</p>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}
+{% block footerjs %}
+    <script>
+      (function ($) {
+        {% if user.is_authenticated %}
+        $(".bookfixpic").die().live('click', function (event) {
+          var this_a = $(event.target);
+          $.post(this_a.data('url'), {}, function (data) {
+            if (data.success) {
+              alert("正在更新本书");
+            } else {
+              alert(data.error_message);
+            }
+          }, 'json');
+          return false;
+        });
+        {% endif %}
+        var mySwiper = new Swiper ('.swiper-container', {
+          // Optional parameters
+          pagination: '.swiper-pagination',
+          paginationClickable: true,
+          nextButton: '.swiper-button-next',
+          prevButton: '.swiper-button-prev',
+          spaceBetween: 30,
+          // effect: 'fade',
+          loop: true
+        })
+      })(jQuery);
+    </script>
+{% endblock %}

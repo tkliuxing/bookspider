@@ -13,8 +13,6 @@ SECRET_KEY = 'kr71xy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -33,10 +31,10 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'django_assets',
     'captcha',
+    'pyjade.ext.django',
     'booksite.book',
     'booksite.usercenter',
     'booksite.background',
-    'booksite.baidusitemap',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -44,8 +42,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'booksite.urls'
@@ -68,7 +68,7 @@ DATABASES = {
 
 SITE_ID = 1
 
-LANGUAGE_CODE = 'zh-cn'
+LANGUAGE_CODE = 'zh_Hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -78,41 +78,48 @@ USE_L10N = True
 
 USE_TZ = True
 
-TEMPLATE_DIRS = (
-    ('', os.path.join(BASE_DIR, 'booksite/templates'))
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "booksite.context_processors.analystics",
-    "booksite.context_processors.categorys",
-    "booksite.context_processors.bookmark_update_count",
-)
-
-TEMPLATE_LOADERS = (
-    ('pyjade.ext.django.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # 'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'booksite/templates'),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
+                "booksite.context_processors.analystics",
+                "booksite.context_processors.categorys",
+                "booksite.context_processors.bookmark_update_count",
+            ],
+            'loaders': [
+                ('pyjade.ext.django.Loader', (
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ))
+            ],
+            'builtins': [
+                'pyjade.ext.django.templatetags'
+            ]
+        },
+    },
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATICFILES_FINDERS = (
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "django_assets.finders.AssetsFinder"
-)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'booksite/static'),
+)
+STATICFILES_FINDERS = (
+   "django.contrib.staticfiles.finders.FileSystemFinder",
+   "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+   "django_assets.finders.AssetsFinder"
 )
 MEDIA_ROOT = os.path.join(BASE_DIR, 'bookstore')
 MEDIA_URL = '/media/'
@@ -124,11 +131,11 @@ LOGIN_REDIRECT_URL = '/'
 
 CACHES = {
     'default': {
-        'BACKEND': 'redis_cache.cache.RedisCache',
+        'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': '127.0.0.1:6379:1',
         'KEY_PREFIX': 'booksite',
         'OPTIONS': {
-            'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': '',
         }
     }

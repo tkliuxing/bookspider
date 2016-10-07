@@ -1,0 +1,81 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 内容替换{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="replace"></div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">替换规则</div>
+        <div class="panel-body">
+          <div class="col-xs-6 text-center b-right">'{{rule.rule_res|escape}}'
+
+          </div>
+          <div class="col-xs-6 text-center">'{{rule.replace_to|escape}}'
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if save %}
+      <div class="col-xs-12">
+        <div class="alert alert-warning text-center">
+          <h2>保存成功!</h2>
+        </div>
+      </div>
+    {% endif %}
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">预览</h3>
+        </div>
+        <div class="panel-body">
+          <form
+            method="POST"
+            action="./?pn={{page_number}}&bi={{book_id}}"
+            style="margin-bottom:12px;"
+            class="text-center">{% csrf_token %}
+            <input type="hidden" name="save" value="True"/>
+            {% if page_admin_url %}
+              <a href="{{page_admin_url}}" target="_blank" class="btn btn-info btn-lg">编辑章节</a>
+            {% endif %}
+            <button type="submit" class="btn btn-warning btn-lg">确认替换</button>
+          </form>
+          <div class="row">
+            {% if content %}
+              <div class="col-xs-6">
+                <div class="panel panel-primary">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">原文</h3>
+                  </div>
+                  <div class="panel-body">{{content|safe|linebreaks}}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            <div class="{%if content%}col-xs-6{%else%}col-xs-12{%endif%}">
+              <div class="panel panel-primary">
+                {% if content %}
+                  <div class="panel-heading">
+                    <h3 class="panel-title">替换后</h3>
+                  </div>
+                {% endif %}
+                <div class="panel-body">{{r_content|safe|linebreaks}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <form
+            method="POST"
+            action="./?pn={{page_number}}&bi={{book_id}}"
+            class="text-center">{% csrf_token %}
+            <input type="hidden" name="save" value="True"/>
+            {% if page_admin_url %}
+              <a href="{{page_admin_url}}" target="_blank" class="btn btn-info btn-lg">编辑章节</a>
+            {% endif %}
+            <button type="submit" class="btn btn-warning btn-lg">确认替换</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -27,9 +27,8 @@ def params_required(*params):
     def _params_required(func):
         def view(request, *args, **kwargs):
             has_all_params = True
-            print(request.REQUEST)
             for k in params:
-                if not request.REQUEST.get(k, None):
+                if not request.GET.get(k, request.POST.get(k, None)):
                     has_all_params = False
                     break
             if not has_all_params:

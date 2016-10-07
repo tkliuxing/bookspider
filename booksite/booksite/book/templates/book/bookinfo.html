@@ -1,0 +1,102 @@
+{% extends "book/base.html" %}{% load static %}
+{% block pagetitle %}《{{book.title}}》-{{book.author}}
+  著-
+  {{book.category}}
+{% endblock %}
+{% block keymeta %}{{book.title}};{{book.author}}
+{% endblock %}
+{% block keydesc %}{{book.title}}VIP章节,{{book.title}}无弹窗最新章节,{{book.title}}小说是一部非常好的{{book.category}}类小说,本站还提供玄幻,武侠,网游,都市,军事等类别的小说免费阅读,好小说尽在看小说么{% endblock %}
+{% block content %}
+  <div class="row pagelist">
+    <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li>
+          <a href="/">书籍列表</a>
+        </li>
+        <li>
+          <a href="{{book.get_category_url}}">{{book.category}}</a>
+        </li>
+        <li class="active">{{book.title}}</li>
+      </ol>
+    </div>
+    <div class="col-md-12">
+      <h2 class="text-center">{{book.title}}
+        <small>
+          <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author}}</a>
+        </small>
+      </h2>
+    </div>
+    <div class="col-md-9 col-xs-12 col-sm-12 bookinfo">
+      <div class="panel panel-primary">
+        <div class="panel-heading">书籍简介</div>
+        <div class="panel-body">
+          <div class="frontimage pull-left"><img
+            src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}"/>
+            <a href="{{book.get_index_url}}" class="btn btn-sm btn-primary">进入阅读</a>
+          </div>
+          <ol style="margin: 0 0 5px 130px;" class="breadcrumb text-right">{% with book.get_bookrank as bookrank %}
+            <li>总点击:
+              {{bookrank.all_point}}</li>
+            <li>总推荐:
+              {{bookrank.all_push}}</li>
+            <li>总收藏:
+              {{bookrank.all_fav}}</li>{% endwith %}
+          </ol>
+          <div class="caption bookinfo">{{book.info_html|linebreaks}}</div>
+        </div>
+        {% if user.is_superuser %}
+          <div class="panel-footer admin">
+            <a
+              target="_blank"
+              href="/admin/book/book/{{book.pk}}/"
+              class="btn btn-danger btn-xs">编辑信息</a>
+            <a
+              href="javascript:;"
+              data-url="{% url 'bookfixpic' book.pk %}"
+              class="bookfixpic btn btn-danger btn-xs">更新图章</a>
+          </div>
+        {% endif %}
+      </div>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">最新章节</h3>
+        </div>
+        <div class="panel-body">
+          <div class="title">
+            <h3>
+              <a href="{{book.last_page.get_absolute_url}}" target="_blank">
+                <font style="color:red">
+                  <strong>{{book.last_page.title_html|force_escape}}</strong>
+                </font>
+              </a>
+              <span>（更新于:
+                <span>{{book.last_update|date:"Y-m-d"}}</span>）</span>
+            </h3>
+          </div>
+          <a href="{{book.last_page.get_absolute_url}}" style="color:#333;cursor: pointer;" class="newpage">
+            <div class="caption newpage">{{book.last_page.get_content|truncatechars_html:300|safe}}</div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 hidden-xs hidden-sm bookinfo">
+      <div class="panel panel-primary">
+        <div class="panel-heading">同类推荐</div>
+        <div class="panel-body">
+          <div class="top-list">
+          {% for book in tuijian %}
+            <a href="{{book.get_absolute_url}}" class="top-item">
+              <span class="top-cover">
+                <img src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}" alt="">
+              </span>
+              <h4 class="top-title">{{book.title}}</h4>
+              <span class="top-info">作者: {{book.author}}</span>
+              <span class="top-info">类别: {{book.category}}</span>
+            </a>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

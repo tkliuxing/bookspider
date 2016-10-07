@@ -1,0 +1,159 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 书籍推荐{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="tuijian"></div>
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">封面推荐列表（仅前六本被显示）
+          <button
+            data-target="#ftModal"
+            data-toggle="modal"
+            class="btn btn-sm btn-success pull-right">创建</button>
+        </div>
+        <div class="panel-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <td>书名</td>
+                <td style="width:150px;">操作</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in ft_books %}
+                <tr>
+                  <td>
+                    <a href="{{book.get_absolute_url}}">{{book.title}}</a>
+                  </td>
+                  <td>
+                    <a
+                      href="{% url 'bbg:del_tuijian' 'ft' book.id %}"
+                      class="btn btn-xs btn-danger">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">精品推荐列表（仅前15本被显示）
+          <button
+            data-target="#jtModal"
+            data-toggle="modal"
+            class="btn btn-sm btn-success pull-right">创建</button>
+        </div>
+        <div class="panel-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <td>书名</td>
+                <td style="width:150px;">操作</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in jt_books %}
+                <tr>
+                  <td>
+                    <a href="{{book.get_absolute_url}}">{{book.title}}</a>
+                  </td>
+                  <td>
+                    <a
+                      href="{% url 'bbg:del_tuijian' 'jt' book.id %}"
+                      class="btn btn-xs btn-danger">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form
+    id="ftModal"
+    method="POST"
+    action="{% url 'bbg:fengtui_create' %}"
+    class="modal fade form-horizontal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button data-dismiss="modal" type="button" class="close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title">创建封面推荐</h4>
+        </div>
+        <div class="modal-body">{% with create_ft_form as CFF %}{% csrf_token %}
+          <div class="form-group {%if CFF.book_id.errors%}has-error{%endif%}">
+            <label for="inputRe" class="col-lg-2 control-label">{{CFF.book_id.label}}</label>
+            <div class="col-lg-10">
+              <input
+                id="inputRe"
+                type="text"
+                value="{{CFF.book_id.value|default:''}}"
+                name="book_id"
+                class="form-control"/>
+              <span class="help-block">{{CFF.book_id.errors}}</span>
+            </div>
+          </div>{% endwith %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-raised">保存</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form
+    id="jtModal"
+    method="POST"
+    action="{% url 'bbg:jingtui_create' %}"
+    class="modal fade form-horizontal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button data-dismiss="modal" type="button" class="close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title">创建精品推荐</h4>
+        </div>
+        <div class="modal-body">{% with create_jt_form as CJF %}{% csrf_token %}
+          <div class="form-group {%if CJF.book_id.errors%}has-error{%endif%}">
+            <label for="inputRe" class="col-lg-2 control-label">{{CJF.book_id.label}}</label>
+            <div class="col-lg-10">
+              <input
+                id="inputRe"
+                type="text"
+                value="{{CJF.book_id.value|default:''}}"
+                name="book_id"
+                class="form-control"/>
+              <span class="help-block">{{CJF.book_id.errors}}</span>
+            </div>
+          </div>{% endwith %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-raised">保存</button>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+{% block footerjs %}
+  {% if create_ft_form.errors or edit_rule %}
+    <script type="text/javascript">
+      $(function () {
+        $("#ftModal").modal('show');
+      });
+    </script>
+  {% endif %}
+  {% if create_jt_form.errors or edit_rule %}
+    <script type="text/javascript">
+      $(function () {
+        $("#jtModal").modal('show');
+      });
+    </script>
+  {% endif %}
+{% endblock %}

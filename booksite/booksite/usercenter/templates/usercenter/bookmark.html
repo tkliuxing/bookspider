@@ -1,0 +1,45 @@
+{% extends "usercenter/base.html" %}
+{% block pagetitle %}我的书签 -- 个人中心{% endblock %}
+{% block content %}
+  <div class="row" data-nav="navbma" id="NAVID">
+    <div class="col-md-12">
+      <table class="table">
+        <tr>
+          <th>书籍</th>
+          <th class="hidden-xs">已读章节</th>
+          <th>最新章节</th>
+          <th class="hidden-xs">最后更新时间</th>
+          <th></th>
+        </tr>
+        {% if bookmarks %}
+          {% for bookmark in bookmarks %}
+            <tr>
+              <td>
+                <a href="{% url 'bookmark_read' bookmark.id bookmark.page.id %}">
+                  {{bookmark.book.title|force_escape}}
+                  {% if bookmark.update %}&nbsp;<span class="label label-xs label-danger">有更新</span>{% endif %}
+                </a>
+              </td>
+              <td class="hidden-xs">
+                <a href="{% url 'bookmark_read' bookmark.id bookmark.page.id %}">{{bookmark.page.title_html|force_escape}}</a>
+              </td>
+              <td>
+                <a href="{% url 'bookmark_read' bookmark.id bookmark.book.last_page.id %}">{{bookmark.book.last_page.title_html|force_escape}}</a>
+              </td>
+              <td class="hidden-xs">{{bookmark.book.last_update|date:"Y-m-d H:i"|force_escape}}</td>
+              <td>
+                <a class="delbma btn btn-xs" data-url="{% url 'del_bookmark' bookmark.pk %}" href="javascript:;">删除</a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td>未添加任何书签!</td>
+            <td>不是要看小说么?</td>
+            <td>快去找本书看吧!</td>
+          </tr>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

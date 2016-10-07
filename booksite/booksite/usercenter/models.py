@@ -23,7 +23,7 @@ class BookMark(models.Model):
     book = models.ForeignKey(Book, verbose_name=_("书籍"))
     page = models.ForeignKey(BookPage, verbose_name=_("章节"))
     update = models.BooleanField(verbose_name=_("有更新"), default=False)
-    create_time = models.DateTimeField(auto_now_add=True, auto_now=True)
+    create_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         # 一个用户对于一本书只能有一个书签

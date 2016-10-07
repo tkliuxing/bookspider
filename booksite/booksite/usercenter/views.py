@@ -86,7 +86,7 @@ class MyUserCreationForm(UserCreationForm):
 def login_view(request, html5=False):
     if request.user.is_authenticated():
         return redirect("home")
-    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '')
     if not redirect_to:
         referer = request.META.get("HTTP_REFERER")
         if is_safe_url(url=referer, host=request.get_host()):
@@ -97,7 +97,7 @@ def login_view(request, html5=False):
             return redirect(loging_url + "?next=" + next_path)
     return auth_loginview(
         request,
-        template_name="usercenter/login.jade",
+        template_name="usercenter/login.html",
         authentication_form=MyAuthenticationForm
     )
 
@@ -132,7 +132,7 @@ def mb_logout(request):
 
 def signup(request):
     if request.method == "GET":
-        return render(request, "usercenter/signup.jade", {'form': MyUserCreationForm()})
+        return render(request, "usercenter/signup.html", {'form': MyUserCreationForm()})
     if request.method == "POST":
         signup_form = MyUserCreationForm(data=request.POST)
         if signup_form.is_valid():
@@ -143,7 +143,7 @@ def signup(request):
             auth_login(request, user)
             return redirect("/")
         else:
-            return render(request, "usercenter/signup.jade", {'form': signup_form})
+            return render(request, "usercenter/signup.html", {'form': signup_form})
     return HttpResponseBadRequest()
 
 
@@ -155,7 +155,7 @@ def logout_view(request):
 class ChangePWDView(FormView):
 
     """ fields: old_password, new_password1, new_password2 """
-    template_name = "usercenter/changepwd.jade"
+    template_name = "usercenter/changepwd.html"
     form_class = PasswordChangeForm
 
     def get_form_kwargs(self):
@@ -172,7 +172,7 @@ class ChangePWDView(FormView):
 def bookmark(request):
     C = {}
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
-    return render(request, "usercenter/bookmark.jade", C)
+    return render(request, "usercenter/bookmark.html", C)
 
 
 @login_required(login_url='/mobile/login/')

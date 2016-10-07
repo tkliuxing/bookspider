@@ -1,0 +1,101 @@
+{% extends "book/base.html" %}
+{% block pagetitle %}排行榜{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="navbp" class="row" style="background-color:#FFF;border-radius:5px;">
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+            <tr>
+              <th>排名</th>
+              <th>书籍</th>
+              <th class="hidden-xs hidden-sm">
+                <span data-skey="all_point">总点击</span>
+              </th>
+              <th class="hidden-xs">
+                <span data-skey="mon_point">月点击</span>
+              </th>
+              <th>
+                <span data-skey="wek_point">周点击</span>
+              </th>
+              <th class="hidden-xs hidden-sm">
+                <span data-skey="all_push">总推荐</span>
+              </th>
+              <th class="hidden-xs">
+                <span data-skey="mon_push">月推荐</span>
+              </th>
+              <th>
+                <span data-skey="wek_push">周推荐</span>
+              </th>
+              <th>
+                <span data-skey="all_fav">总收藏</span>
+              </th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for bookrank in bookranks %}
+            <tr>
+              <td>
+                {{forloop.counter|add:number_base}}
+              </td>
+              <td>
+                <a href="{{bookrank.book.get_absolute_url}}">{{bookrank.book.title}}</a>
+              </td>
+              <td class="hidden-xs hidden-sm">{{bookrank.all_point}}</td>
+              <td class="hidden-xs">{{bookrank.mon_point}}</td>
+              <td>{{bookrank.wek_point}}</td>
+              <td class="hidden-xs hidden-sm">{{bookrank.all_push}}</td>
+              <td class="hidden-xs">{{bookrank.mon_push}}</td>
+              <td>{{bookrank.wek_push}}</td>
+              <td>{{bookrank.all_fav}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-12 center">
+      {% if pagination.has_other_pages %}
+        <ul class="pagination pagination-sm">
+          {% if pagination.has_previous %}
+            <li>
+              <a href="#" data-num="1" class="fui-arrow-left">
+                <span class="glyphicon glyphicon-fast-backward"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-num="{{pagination.previous_page_number}}">
+                <span class="glyphicon glyphicon-backward"></span>
+              </a>
+            </li>
+          {% endif %}
+          <li class="active">
+            <a href="javascript:;">{{pagination.number}}</a>
+          </li>
+          {% if pagination.has_next %}
+            <li>
+              <a href="#" data-num="{{pagination.next_page_number}}">
+                <span class="glyphicon glyphicon-forward"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-num="{{pagination.paginator.num_pages}}">
+                <span class="glyphicon glyphicon-fast-forward"></span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <style>
+      .table.table-fixed {
+        table-layout: fixed;
+      }
+      .range {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100%;
+      }
+    </style>
+  </div>
+{% endblock %}

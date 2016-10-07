@@ -1,0 +1,239 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 书籍搜索{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="booksearch"></div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">书籍搜索</div>
+        <div class="panel-body">
+          <form action="." method="GET" class="form-inline">
+            <div class="form-group">
+              <label for="search" class="sr-only control-label">关键词</label>
+              <input
+                id="search"
+                placeholder="关键词"
+                type="text"
+                value="{{query_text|default_if_none:''}}"
+                name="q"
+                class="form-control"/>
+            </div>
+            <div class="form-group">
+              <label for="category" class="sr-only control-label">分类</label>
+              <select id="category" type="text" name="cq" class="form-control">
+                {% if cq == 'all' %}
+                  <option value="all" selected="selected">所有分类</option>
+                {% else %}
+                  <option value="all">所有分类</option>
+                {% endif %}
+                {% for c in categorys %}
+                  {% if cq == c.name %}
+                    <option value="{{c.name}}" selected="selected">{{c.name}}</option>
+                  {% else %}
+                    <option value="{{c.name}}">{{c.name}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="order" class="sr-only control-label">排序</label>
+              <select id="order" type="text" name="od" class="form-control">
+                {% for k in orderkey %}
+                  {% if ordered == k.val %}
+                    <option value="{{k.val}}" selected="selected">{{k.name}}</option>
+                  {% else %}
+                    <option value="{{k.val}}">{{k.name}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">提交</button>
+            <div style="margin:0;" class="btn-group pull-right btn-flat">
+              <a href="javascript:;" class="btn btn-primary btn-sm withripple">批量操作
+                <div class="ripple-wrapper"></div>
+              </a>
+              <a
+                href="javascript:;"
+                data-toggle="dropdown"
+                class="btn btn-primary btn-sm dropdown-toggle withripple">
+                <span class="caret"></span>
+                <div class="ripple-wrapper"></div>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="{% url 'bbg:book_jiuzhenggengxin' %}">自动纠新</a>
+                </li>
+                <li>
+                  <a href="{% url 'bbg:book_page_next_zipper' %}">修复中断章节</a>
+                </li>
+              </ul>
+            </div>
+          </form>
+          {% if books %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>书名</th>
+                  <th>作者</th>
+                  <th style="width:73px;">分类</th>
+                  <th style="width:450px;">章节</th>
+                  <th style="width:75px;">更新时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for book in books %}
+                  <tr>
+                    <td title="{{book.book_number}}">{{book.title|force_escape}}<br/>
+                      <a{%
+                        tabindex="0"
+                        role="button"
+                        data-toggle="popover"
+                        data-trigger="focus"
+                        data-content="{{book.info}}"
+                        class="btn btn-xs btn-success" title="{{book.title}}" >简介</a>
+                    </td>
+                    <td>{{book.author|force_escape}}</td>
+                    <td>{{book.category|force_escape}}</td>
+                    <td>
+                      <span>最新：</span>
+                      <a href="{{book.last_page.get_absolute_url}}" target="_blank" class="new">{{book.last_page.title_html|force_escape}}</a><br/>
+                      <span>最后：</span>
+                      <a href="{{book.get_last_page.get_absolute_url}}" target="_blank" class="last">{{book.get_last_page.title_html|force_escape}}</a>
+                    </td>
+                    <td>{{book.last_update|date:"y-m-d"|force_escape}}</td>
+                    <td>
+                      <a
+                        href="javascript:;"
+                        data-bookid="{{book.id}}"
+                        title="纠正最新章节"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        class="btn btn-xs btn-info bookjx">纠新</a><br/>
+                      <a
+                        href="javascript:;"
+                        data-bookid="{{book.id}}"
+                        title="封面推荐本书"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        class="btn btn-xs btn-info bookft">封推</a><br/>
+                      <a
+                        href="javascript:;"
+                        data-bookid="{{book.id}}"
+                        title="精品推荐本书"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        class="btn btn-xs btn-info bookjt">精推</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+          {% if pagination.has_other_pages %}
+            <div class="col-md-12 col-xs-12 col-sm-12 text-center">
+              <ul class="pagination">
+                {% if pagination.has_previous %}
+                  <li>
+                    <a href="#" data-num="1">&lt;&lt;</a>
+                  </li>
+                  <li>
+                    <a href="#" data-num="{{pagination.previous_page_number}}">&lt;</a>
+                  </li>
+                {% endif %}
+                <li class="active">
+                  <span>{{pagination.number|force_escape}}</span>
+                </li>
+                {% if pagination.has_next %}
+                  <li>
+                    <a href="#" data-num="{{pagination.next_page_number}}">&gt;</a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      data-num="{{pagination.paginator.num_pages}}"
+                      class="fui-arrow-right">&gt;&gt;</a>
+                  </li>
+                {% endif %}
+                <li class="disabled">
+                  <a href="javascript:;">共（{{pagination.paginator.num_pages}}）页，{{pagination.paginator.count}}条数据</a>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block footerjs %}
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover();
+      $('.bookjx').click(function () {
+        var bookid = $(this).data('bookid');
+        var last_page = $(this)
+          .parents('tr')
+          .find("span.last")
+          .eq(0);
+        var new_page = $(this)
+          .parents('tr')
+          .find("span.new")
+          .eq(0);
+        $.ajax({
+          data    : {
+            book_id: bookid
+          },
+          dataType: 'json',
+          error   : function (xhr, status, error) {
+            alert("请求失败！Status: " + status + " Content: " + xhr.responseText);
+          },
+          method  : "POST",
+          success : function (data) {
+            new_page.text(last_page.text());
+            alert("纠正新章节成功！");
+          },
+          url     : "{% url 'bbg:book_jx' %}"
+        });
+        return false;
+      });
+      $('.bookft').click(function () {
+        var bookid = $(this).data('bookid');
+        $.ajax({
+          data    : {
+            book_id: bookid
+          },
+          dataType: 'json',
+          error   : function (xhr, status, error) {
+            alert("请求失败！Status: " + status + " Content: " + xhr.responseText);
+          },
+          method  : "POST",
+          success : function (data) {
+            alert("封推成功！");
+          },
+          url     : "{% url 'bbg:book_ft' %}"
+        });
+        return false;
+      });
+      $('.bookjt').click(function () {
+        var bookid = $(this).data('bookid');
+        $.ajax({
+          data    : {
+            book_id: bookid
+          },
+          dataType: 'json',
+          error   : function (xhr, status, error) {
+            alert("请求失败！Status: " + status + " Content: " + xhr.responseText);
+          },
+          method  : "POST",
+          success : function (data) {
+            alert("精推成功！");
+          },
+          url     : "{% url 'bbg:book_jt' %}"
+        });
+        return false;
+      });
+    })
+  </script>
+{% endblock %}

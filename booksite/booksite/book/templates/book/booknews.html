@@ -1,0 +1,92 @@
+{% extends "book/base.html" %}
+{% block pagetitle %}最近更新{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="navnews" class="row" style="background-color:#FFF;border-radius:5px;">
+    <div class="col-md-12">
+      <table class="table table-fixed">
+        <thead>
+          <tr>
+            <th width="100" class="hidden-xs">类别</th>
+            <th width="150">小说书名</th>
+            <th>最新章节</th>
+            <th width="150" class="hidden-xs">作者</th>
+            <th width="100" class="hidden-xs">更新时间</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+          <tr>
+            <td class="hidden-xs">
+              <a href="{{book.get_category_url}}">[{{book.category}}]</a>
+            </td>
+            <td>
+              <div class="range">
+                <a href="{{book.get_absolute_url}}" title="{{book.title}}">{{book.title}}</a>
+              </div>
+            </td>
+            <td>
+              <div class="range">
+                <a href="{{book.last_page.get_absolute_url}}" title="{{book.last_page.title_html}}">
+                  {{book.last_page.title_html|truncatechars:"50"}}
+                </a>
+              </div>
+            </td>
+            <td class="hidden-xs">
+              <div class="range">
+                <a href="/?a={{book.author}}" title="{{book.author}}">{{book.author}}</a>
+              </div>
+            </td>
+            <td class="hidden-xs">
+              {{book.last_update|date:"m-d H:i"}}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <style>
+        .table.table-fixed {
+          table-layout: fixed;
+        }
+        .range {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          width: 100%;
+        }
+      </style>
+    </div>
+    {% if pagination.has_other_pages %}
+      <div class="col-md-12 center">
+        <ul class="pagination pagination-sm">
+          {% if pagination.has_previous %}
+            <li>
+              <a href="#" data-num="1" class="fui-arrow-left">
+                <span class="glyphicon glyphicon-fast-backward"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-num="{{pagination.previous_page_number}}">
+                <span class="glyphicon glyphicon-backward"></span>
+              </a>
+            </li>
+          {% endif %}
+          <li class="active">
+            <a href="javascript:;">{{pagination.number}}</a>
+          </li>
+          {% if pagination.has_next %}
+            <li>
+              <a href="#" data-num="{{pagination.next_page_number}}">
+                <span class="glyphicon glyphicon-forward"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-num="{{pagination.paginator.num_pages}}">
+                <span class="glyphicon glyphicon-fast-forward"></span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

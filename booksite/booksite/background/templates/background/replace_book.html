@@ -1,0 +1,76 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 内容替换: 替换书籍{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="replace"></div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">替换书籍</div>
+        <div class="panel-body">
+          <form action="." method="POST" class="form-inline">{% csrf_token %}
+            {% with create_rule_form as CRF %}
+            <div class="form-group {%if CRF.rule_res.errors%}has-error{%endif%}">
+              <label for="inputRe" class="sr-only control-label">{{CRF.rule_res.label}}</label>
+              <input
+                style="width:400px;"
+                placeholder="{{CRF.rule_res.label}}"
+                type="text"
+                value="{{CRF.rule_res.value|default:''}}"
+                name="rule_res"
+                class="form-control"/>
+            </div>
+            <div class="form-group {%if CRF.replace_to.errors%}has-error{%endif%}">
+              <label for="inputReplace" class="sr-only control-label">{{CRF.replace_to.label}}</label>
+              <input
+                placeholder="{{CRF.replace_to.label}}"
+                type="text"
+                value="{{CRF.replace_to.value|default:''}}"
+                name="replace_to"
+                class="form-control"/>
+            </div>
+            <div class="form-group {%if CRF.book_id.errors%}has-error{%endif%}">
+              <label for="inputReplace" class="sr-only control-label">{{CRF.book_id.label}}</label>
+              <input
+                placeholder="{{CRF.book_id.label}}"
+                type="text"
+                value="{{CRF.book_id.value|default:''}}"
+                name="book_id"
+                class="form-control"/>
+            </div>
+            <div style="display: inline;" class="radio radio-primary page-radio">
+              {% for radio in CRF.p_or_s %}{{radio}}
+              {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-success btn-sm btn-raised">提交</button>{% endwith %}
+          </form>
+        </div>
+      </div>
+    </div>
+    {% if save %}
+      <div class="col-xs-12">
+        <div class="alert alert-warning text-center">
+          <h2>保存成功!</h2>
+        </div>
+      </div>
+    {% endif %}
+    {% if r_content %}
+      <div class="col-xs-12">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">预览</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="panel panel-primary">
+                  <div class="panel-body">{{r_content|safe|linebreaks}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

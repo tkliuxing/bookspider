@@ -1,0 +1,155 @@
+{% extends "background/base.html" %}
+{% block pagetitle %}: 内容替换{% endblock %}
+{% block content %}
+  <div id="NAVID" data-nav="replace"></div>
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">替换规则
+          <button
+            data-target="#myModal"
+            data-toggle="modal"
+            class="btn btn-sm btn-success pull-right">创建</button>
+        </div>
+        <div class="panel-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <td>规则</td>
+                <td style="width:150px;">操作</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rep in replace_rule %}
+                <tr>
+                  <td>{{rep}}</td>
+                  <td>
+                    <button
+                      data-url="{%url 'bbg:apply_rule' rep.db_data.pk%}"
+                      class="btn btn-xs btn-primary apply_rule">应用</button>
+                    <a href="{%url 'bbg:edit_rule' rep.db_data.pk%}" class="btn btn-xs btn-success">编辑</a>
+                    <a
+                      href="{%url 'bbg:delete_rule' rep.db_data.pk%}"
+                      class="btn btn-xs btn-danger">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">快速替换</div>
+        <div class="panel-body">
+          <div style="border-right:1px solid #ddd;" class="col-xs-6 text-center">
+            <a
+              href="{% url 'bbg:replace_page' %}"
+              class="btn btn-primary btn-lg btn-raised">替换章节</a>
+          </div>
+          <div class="col-xs-6 text-center">
+            <a
+              href="{% url 'bbg:replace_book' %}"
+              class="btn btn-success btn-lg btn-raised">替换书籍</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id="myModal" method="POST" action="." class="modal fade form-horizontal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button data-dismiss="modal" type="button" class="close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title">创建替换规则</h4>
+        </div>
+        <div class="modal-body">{% with create_rule_form as CRF %}{% csrf_token %}
+          <div class="form-group {%if CRF.rule_res.errors%}has-error{%endif%}">
+            <label for="inputRe" class="col-lg-2 control-label">{{CRF.rule_res.label}}</label>
+            <div class="col-lg-10">
+              <input
+                id="inputRe"
+                type="text"
+                value="{{CRF.rule_res.value|default:''}}"
+                name="rule_res"
+                class="form-control"/>
+              <span class="help-block">{{CRF.rule_res.errors}}</span>
+            </div>
+          </div>
+          <div class="form-group {%if CRF.replace_to.errors%}has-error{%endif%}">
+            <label for="inputReplace" class="col-lg-2 control-label">{{CRF.replace_to.label}}</label>
+            <div class="col-lg-10">
+              <input
+                id="inputReplace"
+                type="text"
+                value="{{CRF.replace_to.value|default:''}}"
+                name="replace_to"
+                class="form-control"/>
+              <span class="help-block">{{CRF.replace_to.errors}}</span>
+            </div>
+          </div>{% endwith %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-raised">保存</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form
+    id="replaceModal"
+    method="GET"
+    action="."
+    class="modal fade form-horizontal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button data-dismiss="modal" type="button" class="close">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title">创建替换规则</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="Bi" class="col-lg-2 control-label">书籍编号</label>
+            <div class="col-lg-10">
+              <input id="Bi" type="text" name="bi" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Pn" class="col-lg-2 control-label">章节号码</label>
+            <div class="col-lg-10">
+              <input id="Pn" type="text" name="pn" class="form-control"/>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-primary btn-raised"/>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+{% block footerjs %}
+  {% if create_rule_form.errors or edit_rule %}
+    <script>
+      $(function () {
+        $("#myModal").modal('show');
+      });
+    </script>
+  {% endif %}
+  <script>
+    $(function () {
+      $(".apply_rule")
+        .click(function (event) {
+          var this_btn = $(event.currentTarget);
+          $("#replaceModal").attr("action", this_btn.data("url"));
+          $("#replaceModal").modal('show');
+        });
+    });
+  </script>
+{% endblock %}

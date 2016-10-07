@@ -21,15 +21,19 @@ from .tasks import update_page, update_book_pic_page
 
 def home(request):
     C = {}
-    books = Book.objects.filter(is_deleted=False).order_by('book_number')
+    # books = Book.objects.filter(is_deleted=False).order_by('book_number')
     if request.GET.get('s', ''):
         books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
-    if request.GET.get('a', ''):
+    elif request.GET.get('a', ''):
         books = Book.objects.filter(is_deleted=False, author=request.GET['a'])
         C['author'] = request.GET['a']
         if not books:
             raise Http404
+    else:
+        books = Book.objects.order_by(
+            "-last_update").filter(is_deleted=False, last_update__isnull=False)[:43]
+        C['paihang'] = BookRank.objects.order_by('-mon_push', 'book__pk')[:10]
     p = Paginator(books, 42)
     pn = int(request.GET.get('p', 1))
     try:
@@ -45,7 +49,7 @@ def home(request):
         C['jt_books'] = jt_books
     C['books'] = page.object_list
     C['pagination'] = page
-    return render(request, 'book/index.jade', C)
+    return render(request, 'book/index.html', C)
 
 
 def mb_index(request):
@@ -134,7 +138,7 @@ def category(request, category):
     C['pagination'] = page
     C['category'] = CATEGORYS_KV.val[category]
     C['categorynav'] = "nav%s" % category
-    return render(request, 'book/index.jade', C)
+    return render(request, 'book/index.html', C)
 
 
 @cache_page(60 * 60)
@@ -149,10 +153,10 @@ def bookinfo(request, book_id=0):
     C = {}
     C['book'] = book
     C['tuijian'] = tuijian
-    return render(request, 'book/bookinfo.jade', C)
+    return render(request, 'book/bookinfo.html', C)
 
 
-# @cache_page(60 * 60)
+@cache_page(60 * 60)
 def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
@@ -161,7 +165,7 @@ def bookindex(request, book_id=0):
     C = {}
     C['book'] = book
     C['bookpages'] = bookpages
-    return render(request, 'book/bookindex.jade', C)
+    return render(request, 'book/bookindex.html', C)
 
 
 def mb_bookindex(request, book_id=0):
@@ -182,7 +186,7 @@ def bookindexajax(request, book_id=0):
     book = get_object_or_404(Book, pk=book_id, is_deleted=False)
     bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
     C = {'bookpages': bookpages}
-    data = render_to_string('book/bookindexajax.jade', C)
+    data = render_to_string('book/bookindexajax.html', C)
     return HttpResponse(data)
 
 
@@ -204,11 +208,12 @@ def bookpage(request, page_number=0):
             book.get_bookrank().add_point()
         elif now == timeold:
             book.get_bookrank().add_point()
+    print(bookpage.content_file.url)
     C = {}
     C['book'] = book
     C['bookpage'] = bookpage
     C['invert'] = request.session.get('invert', False)
-    return render(request, 'book/bookpage.jade', C)
+    return render(request, 'book/bookpage.html', C)
 
 
 def bookpage_zip(request, path):
@@ -257,7 +262,7 @@ def mb_bookpage(request, page_number=0):
 def bookrank(request):
     C = {}
     PREPAGE = 50
-    model_fields_dict = dict(map(lambda x: (x.name, x), BookRank._meta._field_name_cache))
+    model_fields_dict = dict(map(lambda x: (x.name, x), BookRank._meta.fields))
     model_fields_dict.pop('book')
     sort_key = request.GET.get("s", None)
     if model_fields_dict.has_key(sort_key):
@@ -272,10 +277,10 @@ def bookrank(request):
     C['bookranks'] = page.object_list
     C['pagination'] = page
     C['number_base'] = PREPAGE * (page.number - 1)
-    return render(request, 'book/bookrank.jade', C)
+    return render(request, 'book/bookrank.html', C)
 
 
-@cache_page(60 * 60)
+@cache_page(60 * 10)
 def booknews(request):
     """最近更新列表"""
     C = {}
@@ -290,7 +295,7 @@ def booknews(request):
         page = p.page(1)
     C['books'] = page.object_list
     C['pagination'] = page
-    return render(request, 'book/booknews.jade', C)
+    return render(request, 'book/booknews.html', C)
 
 
 def load_nall_page(request, page_id=0):
@@ -309,7 +314,7 @@ def load_nall_page(request, page_id=0):
             next_page_number = next_page.next_number
 
     data = render_to_string(
-        'book/pagecontent.jade',
+        'book/pagecontent.html',
         {
             'bookpages': bookpages,
             'book': book,

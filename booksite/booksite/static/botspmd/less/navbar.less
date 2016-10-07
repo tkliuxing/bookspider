@@ -7,9 +7,11 @@
 
     .navbar-brand {
         position: relative;
-        height: 60px;
-        line-height: 30px;
+        height: 65px;
+        line-height: 36px;
+        font-size: 26px;
         color: @navbar-brand-color;
+        text-shadow: 0 0 2px #72c3af;
         &:hover,
         &:focus {
             color: @navbar-brand-color;
@@ -25,9 +27,12 @@
 
     .navbar-nav {
         > li > a {
+            transition: all .3s ease-in-out;
             color: @navbar-link-color;
-            padding-top: 20px;
-            padding-bottom: 20px;
+            font-size: 16px;
+            line-height: 24px;
+            padding-top: 25px;
+            padding-bottom: 16px;
 
             &:hover,
             &:focus {
@@ -40,7 +45,8 @@
             &:hover,
             &:focus {
                 color: @navbar-link-active-color;
-                background-color: @navbar-link-active-bg;
+                background-color: white;//@navbar-link-active-bg;
+                text-shadow: 1px 1px 1px tint(@navbar-link-color, 50%);
             }
         }
         > .disabled > a {
@@ -148,7 +154,7 @@
     }
 
     .navbar-form {
-        margin-top: 16px;
+        margin-top: 22px;
         .form-control-wrapper .form-control, .form-control {
             border-color: @navbar-border;
             color: @navbar-border;
@@ -164,9 +170,9 @@
         :-ms-input-placeholder { color: @navbar-border; };
     }
 
-    .variations(~"", background-color, @primary);
+    .variations(~"", background-color, @navbar-default-bg);
     &-inverse {
-        background-color: @indigo;
+        background-color: @navbar-inverse-bg;
     }
     &-material-white {
         background-color: #FFF;

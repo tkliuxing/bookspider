@@ -1,0 +1,63 @@
+{% extends "background/base.html" %}
+{% load static paragraphedit %}
+{% block pagetitle %}: 数据总览{% endblock %}
+{% block content %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      书库共有
+      <span class="badge badge-info">{{book_count|numtocnnum}}</span>
+      本书籍;
+      <span class="badge badge-info">{{bookpage_count|numtocnnum}}</span>
+      个章节;
+      <span class="badge badge-info">{{bookrank_count|numtocnnum}}</span>
+      条书籍评分;
+      平均每本书有
+      <span class="badge badge-info">{{average_page_per_book|numtocnnum}}</span>个章节
+    </div>
+    <div class="panel-body">
+      <div id="maincontainer"></div>
+    </div>
+  </div>
+{% endblock %}
+{% block footerjs %}
+  <script src="//code.highcharts.com/4.0.4/highcharts.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $('#maincontainer').highcharts({
+        chart      : {
+          options3d: {
+            alpha  : 45,
+            beta   : 0,
+            enabled: true
+          },
+          type     : 'pie'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor          : 'pointer',
+            dataLabels      : {
+              enabled: true,
+              format : '{point.name}: {point.y}本'
+            },
+            depth           : 35
+          }
+        },
+        series     : [
+          {
+            type: 'pie',
+            name: 'Browser share',
+            data: {{category_data|safe}}
+          }
+        ],
+        title      : {
+          text: '书籍分类统计, 共{{book_count|floatformat}}本'
+        },
+        tooltip    : {
+          headerFormat: '<span>{point.key}: {point.y}本</span><br/>',
+          pointFormat : '{series.name}: <b>{point.percentage:.1f}%</b>'
+        }
+      });
+    });
+  </script>
+{% endblock %}
