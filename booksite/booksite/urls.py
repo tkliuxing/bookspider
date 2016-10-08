@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import django.contrib.auth.views
+from django.contrib.sitemaps import views as sitemap_views
 # from django.views.generic.base import TemplateView
 from django.conf.urls import include, url
 from django.conf import settings
@@ -8,9 +10,12 @@ from django.contrib import admin
 from booksite.usercenter.views import (
     login_view, signup, logout_view
 )
-import django.contrib.auth.views
-
+from booksite.sitemap import BookSitemaps
 admin.autodiscover()
+
+sitemaps = {
+    'books': BookSitemaps()
+}
 
 html5_urls = [
     url(r'^', include('booksite.book.mburls')),
@@ -31,6 +36,9 @@ password_reset_urls = [
 
 urlpatterns = [
     url(r'^', include('booksite.book.urls')),
+
+    url(r'^sitemap.xml$', sitemap_views.sitemap, {'sitemaps': sitemaps}),
+    url(r'^robots.txt', include('robots.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^usercenter/', include('booksite.usercenter.urls')),

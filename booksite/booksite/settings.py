@@ -27,7 +27,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
-    # 'south',
+    'robots',
     'raven.contrib.django.raven_compat',
     'django_assets',
     'captcha',
