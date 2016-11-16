@@ -98,17 +98,15 @@
 	});
 	// 判断夜间模式
 	if (DATA_DIC["invert"] && DATA_DIC["is_page"]) {
-		$('.inv').toggleClass('invert');
-		$('.navbar').toggleClass('navbar-inverse');
-		$('.btn').toggleClass('transparent_class');
-		$('.panel.panel-default .btn').removeClass('transparent_class');
+		$('.inv').addClass('invert');
+		$('.navbar').addClass('navbar-inverse');
+		$('#FIELD .text-center .btn').addClass('transparent_class');
 	}
 	// 切换夜间模式
 	$(".btn.invert").die().live('click', function() {
 		$('.inv').toggleClass('invert');
 		$('.navbar').toggleClass('navbar-inverse');
-		$('.btn').toggleClass('transparent_class');
-		$('.panel.panel-default .btn').removeClass('transparent_class');
+		$('#FIELD .text-center .btn').toggleClass('transparent_class');
 		$.get("./?invert=1", function(data) {}, 'json');
 		return false;
 	});
