@@ -126,7 +126,7 @@
 	load_zip($(".pagecontent.noload"));
 	// 加载后续章节
 	$(".readnall").die().live('click', function() {
-		var this_a = $(event.target);
+		var this_a = $(event.currentTarget);
 		var page_number = this_a.data('pn');
 		$.ajax({
 			type: 'get',
@@ -171,7 +171,7 @@
 	});
 	// 添加书签
 	$(".TBMABtn").die().live('click', function(event) {
-		var this_a = $(event.target);
+		var this_a = $(event.currentTarget);
 		var page_number = this_a.data('pn');
 		$.post(DATA_DIC["add_bookmark_url"], {
 			pageid: page_number
@@ -207,7 +207,7 @@
 	});
 	// 更新图片章节
 	$(".pagefixpic").die().live('click', function(event) {
-		var this_a = $(event.target);
+		var this_a = $(event.currentTarget);
 		$.post(this_a.data('url'), {}, function(data) {
 			if (data.success) {
 				var alert_window = this_a.parent().parent().find(".alert");
@@ -239,7 +239,7 @@
 	// 编辑段落内容
 	if ($(".modal").length) {
 		$(".pagecontent>p").die().live('click', function(event) {
-			var this_p = $(event.target);
+			var this_p = $(event.currentTarget);
 			$(".modal").modal('toggle');
 			ALLOWKEY = false;
 			$("#Lineedit").find("textarea").val(this_p.text());
