@@ -1,4 +1,4 @@
-{% extends "bookhtml5/base.html" %}
+{% extends "h5/base.html" %}
 
 {% block content %}
 <div data-role="page" id="home" data-theme="{%if invert%}b{%else%}a{%endif%}">
@@ -6,7 +6,7 @@
 	data-position="fixed">
 		<a href="javascript:;" data-role="button" data-rel="back" data-icon="carat-l">返回</a>
 		<h1>书架</h1>
-		<a href="{% url 'mb' %}" data-role="button" data-icon="home">首页</a>
+		<a href="{% url 'h5:h5' %}" data-role="button" data-icon="home">首页</a>
 	</div>
 
 	<div data-role="content">
@@ -14,7 +14,7 @@
 		<div data-role="collapsible" data-iconpos="right" data-mini="true" data-expanded-icon="arrow-d" data-collapsed-icon="arrow-d-l">
 			<h4>{{bookmark.book.title}}</h4>
 			<p>{{bookmark.page.title_html}}</p>
-			<a href="{% url 'mb_bookpage' bookmark.page.page_number %}" data-transition="slide" data-role="button">阅读</a>
+			<a href="{% url 'h5:bookpage' bookmark.page.page_number %}" data-transition="slide" data-role="button">阅读</a>
 			<a href="javascript:;" class="delbma" data-role="button" data-url="{% url 'del_bookmark' bookmark.pk %}">删除</a>
 		</div>
 	{% endfor %}

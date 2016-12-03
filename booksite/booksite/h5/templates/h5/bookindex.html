@@ -1,4 +1,4 @@
-{% extends "bookhtml5/base.html" %}
+{% extends "h5/base.html" %}
 
 {% block content %}
 <div data-role="page" id="home" data-theme="{%if invert%}b{%else%}a{%endif%}">
@@ -6,13 +6,13 @@
 	data-position="fixed">
 		<a href="javascript:;" data-role="button" data-rel="back" data-icon="carat-l">返回</a>
 		<h1>{{book.title}}</h1>
-		<a href="{% url 'mb' %}" data-role="button" data-icon="home">首页</a>
+		<a href="{% url 'h5:h5' %}" data-role="button" data-icon="home">首页</a>
 	</div>
 
 	<div data-role="content">
 		<ul data-role="listview">
 		{% for page in bookpages %}
-			<li><a href="{% url 'mb_bookpage' page.page_number %}" data-transition="slide">{{page.title_html}}</a></li>
+			<li><a href="{% url 'h5:bookpage' page.page_number %}" data-transition="slide">{{page.title_html}}</a></li>
 		{% endfor %}
 		</ul>
 	</div>
@@ -21,12 +21,12 @@
 	data-position="fixed">
 		<div data-role="navbar">
 			<ul>
-				<li><a href="{% url 'mb' %}" data-icon="home">首页</a></li>
+				<li><a href="{% url 'h5:h5' %}" data-icon="home">首页</a></li>
 				<li><a href="javascript:;" class="dnchange" data-icon="star">昼夜</a></li>
 				{% if not user.is_authenticated %}
-				<li><a href="{% url 'mb_login' %}" data-icon="info">登录</a></li>
+				<li><a href="{% url 'h5:login' %}" data-icon="info">登录</a></li>
 				{% else %}
-				<li><a href="{% url 'mb_bookmark' %}" data-transition="pop" data-icon="bars">书架</a></li>
+				<li><a href="{% url 'h5:bookmark' %}" data-transition="pop" data-icon="bars">书架</a></li>
 				{% endif %}
 			</ul>
 		</div>

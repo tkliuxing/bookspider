@@ -1,4 +1,4 @@
-{% extends "bookhtml5/base.html" %}
+{% extends "h5/base.html" %}
 
 {% block content %}
 <div data-role="page" id="login" data-theme="b">
@@ -6,11 +6,11 @@
 	data-position="fixed">
 		<a href="javascript:;" data-role="button" data-rel="back" data-icon="carat-l">返回</a>
 		<h1>看小说么?</h1>
-		<a href="{% url 'mb' %}" data-icon="htmo" data-role="button">首页</a>
+		<a href="{% url 'h5:h5' %}" data-icon="htmo" data-role="button">首页</a>
 	</div>
 
 	<div data-role="content">
-		<form id="loginform" action="{% url 'mb_login' %}" method="post">
+		<form id="loginform" action="{% url 'h5:login' %}" method="post">
 			<div data-role="fieldcontain" class="ui-field-contain ui-body ui-br">
 				<label for="username" class="ui-hidden-accessible">用户名</label>
 				<input type="text" name="username" id="username" placeholder="用户名">

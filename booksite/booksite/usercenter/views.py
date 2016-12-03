@@ -94,25 +94,25 @@ def login_view(request, html5=False):
 
 
 def mb_login(request):
-    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '')
     if not redirect_to:
         referer = request.META.get("HTTP_REFERER")
         if is_safe_url(url=referer, host=request.get_host()):
             next_path = urlparse.urlparse(referer).path
-            loging_url = reverse('mb_login')
+            loging_url = reverse('h5:login')
             if next_path.startswith(loging_url):
-                redirect_to = reverse('mb')
+                redirect_to = reverse('h5')
             else:
                 redirect_to = next_path
     if request.method == "GET":
-        return render(request, "bookhtml5/login.html", {'next': redirect_to})
+        return render(request, "h5/login.html", {'next': redirect_to})
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             auth_login(request, form.get_user())
             return redirect(redirect_to)
         else:
-            return render(request, "bookhtml5/login.html", {'next': redirect_to, 'error': True})
+            return render(request, "h5/login.html", {'next': redirect_to, 'error': True})
     return Http404
 
 
@@ -170,7 +170,7 @@ def bookmark(request):
 def mb_bookmark(request):
     C = {}
     C['bookmarks'] = BookMark.objects.filter(user=request.user)
-    return render(request, "bookhtml5/bookmark.html", C)
+    return render(request, "h5/bookmark.html", C)
 
 
 @login_required

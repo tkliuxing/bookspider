@@ -1,16 +1,16 @@
-{% extends "bookhtml5/base.html" %}
+{% extends "h5/base.html" %}
 
 {% block content %}
 <div data-role="page" data-theme="{%if invert%}b{%else%}a{%endif%}">
 	<div data-role="header">
 		<a
-		href="{% url 'mb' %}"
+		href="{% url 'h5:h5' %}"
 		class="homebtn"
 		data-role="button"
 		data-icon="home">首页</a>
 		<h1>{{book.title}}</h1>
 		<a
-		href="{% url 'mb_bookmark' %}"
+		href="{% url 'h5:bookmark' %}"
 		class="shelfbtn"
 		data-role="button"
 		data-icon="bars">书架</a>
@@ -36,21 +36,21 @@
 		<div data-role="navbar">
 			<ul>
 				<li><a
-					href="{% url 'mb_bookindex' book.pk %}"
+					href="{% url 'h5:bookindex' book.pk %}"
 					data-icon="bullets"
 					data-transition="pop">书目</a></li>
 			{% if bookpage.prev_number %}
 				<li><a
 					class="prev_a"
 					data-icon="arrow-l"
-					href="{% url 'mb_bookpage' bookpage.prev_number %}"
+					href="{% url 'h5:bookpage' bookpage.prev_number %}"
 					data-transition="slide"
 					data-direction="reverse">上一页</a></li>
 			{% else %}
 				<li><a
 					class="prev_a"
 					data-icon="arrow-l"
-					href="{% url 'mb_bookindex' book.pk %}"
+					href="{% url 'h5:bookindex' book.pk %}"
 					data-transition="slide"
 					data-direction="reverse">上一页</a></li>
 			{% endif %}
@@ -65,7 +65,7 @@
 					<a
 					class="next_a"
 					data-icon="arrow-r"
-					href="{% url 'mb_bookpage' bookpage.next_number %}"
+					href="{% url 'h5:bookpage' bookpage.next_number %}"
 					data-transition="slide">下一页</a>
 				</li>
 			{% else %}
@@ -73,14 +73,14 @@
 					<a
 					class="next_a"
 					data-icon="arrow-r"
-					href="{% url 'mb_bookindex' book.pk %}"
+					href="{% url 'h5:bookindex' book.pk %}"
 					data-transition="slide">下一页</a>
 				</li>
 			{% endif %}
 			{% if not user.is_authenticated %}
 				<li>
 					<a
-					href="{% url 'mb_login' %}"
+					href="{% url 'h5:login' %}"
 					data-icon="info">登录</a>
 				</li>
 			{% else %}

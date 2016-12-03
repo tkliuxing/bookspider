@@ -18,8 +18,8 @@ sitemaps = {
 }
 
 html5_urls = [
-    url(r'^', include('booksite.book.mburls')),
-    url(r'^account/', include('booksite.usercenter.mburls')),
+    url(r'', include('booksite.h5.urls')),
+    url(r'account/', include('booksite.usercenter.mburls')),
 ]
 
 password_reset_urls = [
@@ -50,7 +50,7 @@ urlpatterns = [
 
     url(r'^resetpassword/', include(password_reset_urls)),
 
-    url(r'^mobile/', include(html5_urls)),
+    url(r'^mobile/', include((html5_urls,'h5',), namespace=None)),
 
     url(r'^bbg/', include('booksite.background.urls', namespace='bbg', app_name='booksite.background')),
 ]

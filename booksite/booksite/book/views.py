@@ -11,7 +11,6 @@ from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django import forms
-from pyquery import PyQuery as PQ
 
 from booksite.ajax import ajax_success, ajax_error
 from booksite.background.models import FengTui, JingTui
@@ -141,7 +140,7 @@ def category(request, category):
     return render(request, 'book/index.html', C)
 
 
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def bookinfo(request, book_id=0):
     if book_id == 0:
         raise Http404

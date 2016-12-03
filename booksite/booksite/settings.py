@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'booksite.book',
     'booksite.usercenter',
     'booksite.background',
+    'booksite.h5',
 )
 
 MIDDLEWARE_CLASSES = (
