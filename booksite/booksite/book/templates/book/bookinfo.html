@@ -1,4 +1,5 @@
-{% extends "book/base.html" %}{% load static %}
+{% extends "book/base.html" %}
+{% load static comments paragraphedit %}
 {% block pagetitle %}《{{book.title}}》-{{book.author}}
   著-
   {{book.category}}
@@ -34,26 +35,19 @@
             src="{%if book.front_image%}{{book.front_image.url}}{%else%}{%static 'img/nocover.jpg'%}{%endif%}"/>
             <a href="{{book.get_index_url}}" class="btn btn-sm btn-primary">进入阅读</a>
           </div>
-          <ol style="margin: 0 0 5px 130px;" class="breadcrumb text-right">{% with book.get_bookrank as bookrank %}
-            <li>总点击:
-              {{bookrank.all_point}}</li>
-            <li>总推荐:
-              {{bookrank.all_push}}</li>
-            <li>总收藏:
-              {{bookrank.all_fav}}</li>{% endwith %}
+          <ol style="margin: 0 0 5px 130px;" class="breadcrumb text-right">
+            {% with book.get_bookrank as bookrank %}
+            <li>总点击: <span class="conter">{{bookrank.all_point}}</span></li>
+            <li>总推荐: <span class="conter">{{bookrank.all_push}}</span></li>
+            <li>总收藏: <span class="conter">{{bookrank.all_fav}}</span></li>
+            {% endwith %}
           </ol>
           <div class="caption bookinfo">{{book.info_html|linebreaks}}</div>
         </div>
         {% if user.is_superuser %}
           <div class="panel-footer admin">
-            <a
-              target="_blank"
-              href="/admin/book/book/{{book.pk}}/"
-              class="btn btn-danger btn-xs">编辑信息</a>
-            <a
-              href="javascript:;"
-              data-url="{% url 'bookfixpic' book.pk %}"
-              class="bookfixpic btn btn-danger btn-xs">更新图章</a>
+            <a target="_blank" href="/admin/book/book/{{book.pk}}/" class="btn btn-danger btn-xs">编辑信息</a>
+            <a href="javascript:;" data-url="{% url 'bookfixpic' book.pk %}" class="btn btn-danger btn-xs bookfixpic">更新图章</a>
           </div>
         {% endif %}
       </div>
@@ -64,18 +58,64 @@
         <div class="panel-body">
           <div class="title">
             <h3>
-              <a href="{{book.last_page.get_absolute_url}}" target="_blank">
-                <font style="color:red">
-                  <strong>{{book.last_page.title_html|force_escape}}</strong>
-                </font>
+              <a class="newpage" href="{{book.last_page.get_absolute_url}}" target="_blank">
+                {{book.last_page.title_html|force_escape}}
               </a>
-              <span>（更新于:
-                <span>{{book.last_update|date:"Y-m-d"}}</span>）</span>
+              <span>（更新于: {{book.last_update|date:"Y-m-d"}}）</span>
             </h3>
           </div>
-          <a href="{{book.last_page.get_absolute_url}}" style="color:#333;cursor: pointer;" class="newpage">
+          <a href="{{book.last_page.get_absolute_url}}" class="newpage">
             <div class="caption newpage">{{book.last_page.get_content|truncatechars_html:300|safe}}</div>
           </a>
+        </div>
+      </div>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">最新评论</h3>
+        </div>
+        <div class="panel-body comments">
+          <ul class="comments">
+            {% get_comment_list for book as book_comments %}
+            {% with book_comments|slice:":5" as comments %}
+            {% for c in comments %}
+              <li>
+                <div class="post">
+                  <div class="avatar"><img src="{{c.user.email|gravatar_url:30}}" alt="{{c.user_name}}"></div>
+                  <div class="comment-body">
+                    <div class="username">{{c.user_name}}</div>
+                    <p>{{c.comment}}</p>
+                    <div class="comment-actions">
+                      <span class="comment-time">{{c.submit_date|timesince}}前</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            {% empty %}
+              <li class="empty">还没有评论，沙发等你来抢</li>
+            {% endfor %}
+            {% endwith %}
+          </ul>
+          {% if user.is_authenticated %}
+            <div class="comment-form">
+              <div class="avatar">
+                <img src="{{user.email|gravatar_url:30}}" alt="{{user.user_name}}">
+              </div>
+              {% get_comment_form for book as form %}
+              <form action="{% url 'comments-post-comment' %}" method="POST" id="BookCommentForm">
+              {% csrf_token %}
+              <textarea id="id_comment" maxlength="3000" name="comment" placeholder="说点什么吧…"></textarea>
+              {{ form.honeypot }}
+              {{ form.content_type }}
+              {{ form.object_pk }}
+              {{ form.timestamp }}
+              {{ form.security_hash }}
+              <input type="hidden" name="next" value="{{book.get_absolute_url}}" />
+              <input type="submit" value="发布" id="id_submit" class="btn btn-sm btn-primary" />
+              </form>
+            </div>
+          {% else %}
+            <p class="login">请登<a href="{% url 'login' %}?next={{book.get_absolute_url}}%23BookCommentForm">录发</a>表评论。</p>
+          {% endif %}
         </div>
       </div>
     </div>

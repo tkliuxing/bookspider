@@ -1,3 +1,5 @@
+@color-main: #00b386;
+
 .center {
     text-align: center !important;
 }
@@ -23,7 +25,7 @@
         -webkit-box-shadow: 0 2px 5px rgba(0,0,0,.1);
     }
     .swiper-slide{
-        background-color: #f9f8f7;
+        background-color: #fff;
         // border-radius: 10px;
         .invert & {
             background-color: #151515;
@@ -171,9 +173,10 @@
     margin-right: 15px;
     top: 1px;
     position: relative;
+    color: @color-main;
 }
 .gx-cell {
-    border-left: 4px solid #00b386;
+    border-left: 4px solid @color-main;
     h4 {
         font-size: 14px;
         margin: 0;
@@ -184,7 +187,7 @@
         }
         &:hover {
             a {
-                color: #00b386;
+                color: @color-main;
             }
             background-color: #FFF;
         }

@@ -27,6 +27,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
+
+    'threadedcomments',
+    'django_comments',
     'robots',
     'raven.contrib.django.raven_compat',
     'django_assets',
@@ -66,6 +69,8 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 SITE_ID = 1
+
+COMMENTS_APP = 'threadedcomments'
 
 LANGUAGE_CODE = 'zh-Hans'
 

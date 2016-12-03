@@ -1,7 +1,14 @@
+@color-main: #00b386;
+
 .bookinfo {
     .list-group-item {
         padding-left: 0;
         padding-right: 0;
+    }
+    ol.breadcrumb {
+        .conter {
+            color: @color-main;
+        }
     }
     .top-list {
         .top-item {
@@ -41,5 +48,125 @@
                 margin: 5px 0;
             }
         }
+    }
+    .panel-body.comments {
+        padding: 0;
+    }
+}
+.panel-body {
+    .title {
+        h3 {
+            border-bottom: 1px dotted @color4;
+            font-size: 120%;
+            margin-top: 0px;
+        }
+    }
+    a.newpage {
+        color:#333;
+        cursor: pointer;
+        &:hover {
+            color: mix(@color-main, #777, 20%);
+        }
+    }
+}
+
+.comment-form{
+    padding-left: 50px;
+    position: relative;
+    margin-top: 30px;
+    .avatar{
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin-left: 10px;
+    }
+}
+
+#BookCommentForm {
+    #id_comment {
+        display: block;
+        float: left;
+        width: 90%;
+        height: 54px;
+        font-size: 14px;
+        line-height: 20px;
+        border: 1px solid @color-main;
+        resize: none;
+        overflow: auto;
+        padding: 10px;
+        margin: 0;
+    }
+    #id_honeypot {
+        display: none;
+    }
+    #id_submit {
+        display: block;
+        float: right;
+        height: 54px;
+        border-radius: 0;
+        width: 10%;
+    }
+}
+
+.comments {
+    ul {
+        padding: 0;
+        margin: 0 0 5px 0;
+        border-bottom: 1px dotted @color-main;
+        clear: both;
+        li {
+            list-style: none;
+            &.empty {
+                width: 100%;
+                overflow: hidden;
+                clear: both;
+                border: 0;
+                margin: 0;
+                text-align: center;
+                color: @color-main;
+                padding: 1em 0;
+            }
+            .post {
+                padding: 20px 10px;
+                .avatar {
+                    float: left;
+                }
+                .comment-body {
+                    padding-left: 40px;
+                    .username {
+                        padding-top: 1px;
+                        color: @color-main;
+                    }
+                    p {
+                        font-size: 12px;
+                        color: #666;
+                        font-size: 14px;
+                        line-height: 1.5em;
+                        margin: .5em 0;
+                        word-wrap: break-word;
+                        text-indent: 0;
+                        clear: none;
+                    }
+                    .comment-actions {
+                        line-height: 1.5em;
+                        color: #999;
+                        font-size: 12px;
+                        .comment-time {
+                            margin-right: 8px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    p.login {
+        height: 54px;
+        text-align: center;
+        line-height: 20px;
+        border: 1px solid #00b386;
+        vertical-align: middle;
+        padding: 10px;
+        margin: 0;
+        background: #fff;
     }
 }

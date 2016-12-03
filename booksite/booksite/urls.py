@@ -35,7 +35,8 @@ password_reset_urls = [
 ]
 
 urlpatterns = [
-    url(r'^', include('booksite.book.urls')),
+    url(r'', include('booksite.book.urls')),
+    url(r'^comments/', include('django_comments.urls')),
 
     url(r'^sitemap.xml$', sitemap_views.sitemap, {'sitemaps': sitemaps}),
     url(r'^robots.txt', include('robots.urls')),

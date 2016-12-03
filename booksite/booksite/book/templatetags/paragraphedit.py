@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import re
+import hashlib
+import urllib
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 from django.utils import six
@@ -120,3 +122,17 @@ def numtocn(data, cny=True):
             for decimal_char in decimal:
                 ch_str += gdict[decimal_char]
     return ch_str
+
+# return only the URL of the gravatar
+# TEMPLATE USE:  {{ email|gravatar_url:150 }}
+@register.filter
+def gravatar_url(email, size=40):
+  default = "retro"
+  return "https://cdn.v2ex.com/gravatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode({'d':default, 's':str(size)}))
+
+# return an image tag with the gravatar
+# TEMPLATE USE:  {{ email|gravatar:150 }}
+@register.filter
+def gravatar(email, size=40):
+    url = gravatar_url(email, size)
+    return mark_safe('<img src="%s" height="%d" width="%d">' % (url, size, size))
