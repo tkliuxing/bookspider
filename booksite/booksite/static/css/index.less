@@ -240,24 +240,40 @@
   content: "\e02d";
 }
 .invert {
+    // General
     h4,h3,h2,h1{
         color:#fff;
     }
+    // Index
     .gx-cell a{
         color:#fff;
     }
     .navbar.navbar-default{
         background-color: #151515;
+        .navbar-nav{
+            li.active > a{
+                background-color: #111;
+            }
+        }
+    }
+    .dropdown-inverse{
+        background-color: #111;
+    }
+    table.table{
+        background-color: #111;
     }
     .panel{
         .panel-heading{
-            background-color: #000;
+            background-color: #111;
             color: #fff;
         }
         .panel-body.bookinfo {
             background-color: #111;
             // color: #fff;
         }
+    }
+    .breadcrumb{
+        background-color: #111;
     }
     .thumbnail{
         background-color: #111;
@@ -288,5 +304,13 @@
         &:nth-child(3) .top-no{
             background: darken(@color-main, 5%);
         }
+    }
+    // Page index
+    .page-title{
+        color: #eee;
+    }
+    // Page rank
+    #NAVID .col-md-12{
+        background-color: #111;
     }
 }
