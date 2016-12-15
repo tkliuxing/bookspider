@@ -233,8 +233,60 @@
         display: block;
     }
 }
+.fui-arrow-right:before {
+  content: "\e02c";
+}
+.fui-arrow-left:before {
+  content: "\e02d";
+}
 .invert {
+    h4,h3,h2,h1{
+        color:#fff;
+    }
+    .gx-cell a{
+        color:#fff;
+    }
     .navbar.navbar-default{
         background-color: #151515;
+    }
+    .panel{
+        .panel-heading{
+            background-color: #000;
+            color: #fff;
+        }
+        .panel-body.bookinfo {
+            background-color: #111;
+            // color: #fff;
+        }
+    }
+    .thumbnail{
+        background-color: #111;
+        border-color: #222;
+        .caption{
+            color: #fff;
+        }
+    }
+    .jt .panel-body .col-md-2.col-xs-6 .thumbnail .caption .caption-info{
+        background-color: #111;
+        color: #eee;
+    }
+    .toplist .top-item{
+        .top-no {
+            color: #ddd;
+            background: darken(@color-main, 10%);
+        }
+        &:nth-child(1) {
+            .top-no {
+                background: lighten(@color-main, 5%);
+            }
+        }
+        &:nth-child(2) {
+            .top-no {
+                background: @color-main;
+            }
+        }
+        &:nth-child(3) .top-no{
+            background: darken(@color-main, 5%);
+        }
     }
 }
