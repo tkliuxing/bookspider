@@ -33,9 +33,10 @@
 
 ## 安装使用 ##
 
+1. 安装PostgreSQL(>=9.4)
 1. 安装Python 2.7
 1. 安装Pip
-1. 使用pip安装Scrapy Django
+1. 使用pip安装Scrapy(1.0.*) Django(1.9.*)
 1. clone本项目
 1. `cd booksite && python setup.py develop`
 1. 配置Django项目的 `local_settings.py` 文件,位于:`PROJECT_DIR/booksite/booksite`,配置数据库, 如:
@@ -43,7 +44,7 @@
 ```
 	DATABASES = {
 		'default': {
-			'ENGINE': 'django.db.backends.mysql',
+			'ENGINE': 'django.db.backends.postgresql',
 			'NAME': 'bookspider',
 			'USER': 'spider',
 			'PASSWORD': 'admin',
