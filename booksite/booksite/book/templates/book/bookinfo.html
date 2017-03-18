@@ -114,7 +114,7 @@
               </form>
             </div>
           {% else %}
-            <p class="login">请登<a href="{% url 'login' %}?next={{book.get_absolute_url}}%23BookCommentForm">录发</a>表评论。</p>
+            <p class="login">请<a href="{% url 'login' %}?next={{book.get_absolute_url}}%23BookCommentForm">登录</a>发表评论。</p>
           {% endif %}
         </div>
       </div>
