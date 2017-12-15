@@ -12,9 +12,9 @@ from scrapy.http import Request
 
 from bookspider.items import BookinfoItem, BookpageItem
 
-BASE_URL = "http://www.xs.la"
-BOOK_INFO_URL_RE = re.compile(r"http:\/\/www\.xs\.la\/(?P<book_id>\d+_\d+)\/$")
-BOOK_PAGE_URL_RE = re.compile(r"http:\/\/www\.xs\.la\/(?P<book_id>\d+_\d+)\/(?P<page_id>\d+)\.html")
+BASE_URL = "https://www.xs.la"
+BOOK_INFO_URL_RE = re.compile(r"https:\/\/www\.xs\.la\/(?P<book_id>\d+_\d+)\/$")
+BOOK_PAGE_URL_RE = re.compile(r"https:\/\/www\.xs\.la\/(?P<book_id>\d+_\d+)\/(?P<page_id>\d+)\.html")
 PASS_URL = ['login.php', 'bookcase.php', 'Login.php', 'index.php', 'bookcase.php']
 RC = redis.Redis()
 
@@ -28,16 +28,16 @@ class BiqugeSpider(Spider):
         super(BiqugeSpider, self).__init__(*args, **kwargs)
         self.onlybookinfo = bool(onlybookinfo)
         self.start_urls = [
-            "http://www.xs.la",
+            "https://www.xs.la",
         ]
         if starturl:
             self.start_urls = starturl.split(" ")
         if frombookid:
-            self.start_urls = ["http://www.xs.la/{0}/".format(bid) for bid in frombookid.split(" ")]
+            self.start_urls = ["https://www.xs.la/{0}/".format(bid) for bid in frombookid.split(" ")]
         if fromexistbooks:
             from bookspider.items import Book
             book_number_list = Book.objects.filter(site='xs.la').values_list('book_number', flat=True)
-            self.start_urls = ["http://www.xs.la/{0}/".format(bid) for bid in book_number_list]
+            self.start_urls = ["https://www.xs.la/{0}/".format(bid) for bid in book_number_list]
         print "-" * 20
         print "Start from:\n", '\n'.join(self.start_urls)
         print "-" * 20, "\n"
