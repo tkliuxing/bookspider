@@ -12,7 +12,6 @@ from django.http import HttpResponse
 def must_ajax(method=None):
     if method not in ['POST', 'GET', None]:
         raise TypeError("method should in 'POST','GET',None.")
-    print(method)
 
     def _must_ajax(func):
         def view(request, *args, **kwargs):

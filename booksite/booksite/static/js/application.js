@@ -124,7 +124,8 @@
 	load_zip($(".pagecontent.noload"));
 	// 加载后续章节
 	$(".readnall").die().live('click', function() {
-		var this_a = $(event.currentTarget);
+		// var this_a = $(event.currentTarget);
+		var this_a = $(this);
 		var page_number = this_a.data('pn');
 		$.ajax({
 			type: 'get',

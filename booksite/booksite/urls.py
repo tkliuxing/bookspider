@@ -6,7 +6,7 @@ from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-
+from graphene_django.views import GraphQLView
 from booksite.usercenter.views import (
     login_view, signup, logout_view
 )
@@ -36,6 +36,7 @@ password_reset_urls = [
 
 urlpatterns = [
     url(r'', include('booksite.book.urls')),
+    url(r'^graphql', GraphQLView.as_view(graphiql=True)),
     url(r'^comments/', include('django_comments.urls')),
 
     url(r'^sitemap.xml$', sitemap_views.sitemap, {'sitemaps': sitemaps}),

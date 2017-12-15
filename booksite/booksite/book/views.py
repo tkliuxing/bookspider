@@ -20,8 +20,8 @@ from .tasks import update_page, update_book_pic_page
 
 def home(request):
     C = {}
-    # books = Book.objects.filter(is_deleted=False).order_by('book_number')
-    if request.GET.get('s', ''):
+    books = Book.objects.filter(is_deleted=False).order_by('book_number')
+    if request.GET.get('s', False):
         books = books.filter(title__contains=request.GET['s'].strip())
         C['search'] = True
     elif request.GET.get('a', ''):

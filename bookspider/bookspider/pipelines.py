@@ -80,8 +80,9 @@ class BookpagePipeline(object):
                 RC.set(item['origin_url'], 'True')
                 print str(item['book_number']).ljust(10), "-" * 10,
                 print str(item['page_number']).ljust(10), "-" * 10,
-                for i in item['title'].encode("utf-8").split()[1:]:
-                    print i,
+                # for i in item['title'].encode("utf-8").split()[1:]:
+                #     print i,
+                print item['title'],
                 print ''
                 return item
             except:

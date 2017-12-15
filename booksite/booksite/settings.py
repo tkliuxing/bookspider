@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import datetime
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -28,12 +29,18 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
 
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_jwt',
+    'djoser',
+
     'threadedcomments',
     'django_comments',
     'robots',
     'raven.contrib.django.raven_compat',
     'django_assets',
     'captcha',
+    'graphene_django',
     'booksite.book',
     'booksite.usercenter',
     'booksite.background',
@@ -45,10 +52,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'booksite.usercenter.middleware.JWTAuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
 
 ROOT_URLCONF = 'booksite.urls'
@@ -64,6 +73,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+}
+
+GRAPHENE = {
+    'SCHEMA': 'booksite.schema.schema'
 }
 
 # Internationalization
@@ -113,9 +126,9 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'booksite/static'),
 )
 STATICFILES_FINDERS = (
-   "django.contrib.staticfiles.finders.FileSystemFinder",
-   "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-   "django_assets.finders.AssetsFinder"
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "django_assets.finders.AssetsFinder"
 )
 MEDIA_ROOT = os.path.join(BASE_DIR, 'bookstore')
 MEDIA_URL = '/media/'
@@ -145,6 +158,19 @@ EMAIL_SUBJECT_PREFIX = u'[kanxiaoshuo.me]'
 EMAIL_USE_TLS = True
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+DJOSER = {
+    'DOMAIN': os.environ.get('DJANGO_DJOSER_DOMAIN', 'bobdylan.local'),
+    'SITE_NAME': os.environ.get('DJANGO_DJOSER_SITE_NAME', 'my site'),
+    'PASSWORD_RESET_CONFIRM_URL': '?action=set-new-password&uid={uid}&token={token}',
+    'ACTIVATION_URL': '?action=activate&uid={uid}&token={token}',
+    'SEND_ACTIVATION_EMAIL': False,
+}
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+}
 
 try:
     from .local_settings import *
