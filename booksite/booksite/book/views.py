@@ -160,7 +160,11 @@ def bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
     book = get_object_or_404(Book, pk=book_id, is_deleted=False)
-    bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
+    bookpages = BookPage.objects.filter(
+        book_number=book.book_number
+    ).extra(
+        select={'pn': 'CAST(page_number as numeric)'}
+    ).order_by('pn')
     C = {}
     C['book'] = book
     C['bookpages'] = bookpages
@@ -171,32 +175,40 @@ def mb_bookindex(request, book_id=0):
     if book_id == 0:
         raise Http404
     book = get_object_or_404(Book, pk=book_id, is_deleted=False)
-    bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
+    bookpages = BookPage.objects.filter(
+        book_number=book.book_number
+    ).extra(
+        select={'pn': 'CAST(page_number as numeric)'}
+    ).order_by('pn')
     C = {}
     C['book'] = book
     C['bookpages'] = bookpages
     return render(request, 'bookhtml5/bookindex.html', C)
 
 
-@cache_page(60 * 60)
+# @cache_page(60 * 60)
 def bookindexajax(request, book_id=0):
     if book_id == 0:
         raise Http404
     book = get_object_or_404(Book, pk=book_id, is_deleted=False)
-    bookpages = BookPage.objects.filter(book_number=book.book_number).order_by('page_number')
+    bookpages = BookPage.objects.filter(
+        book_number=book.book_number
+    ).extra(
+        select={'pn': 'CAST(page_number as numeric)'}
+    ).order_by('pn')
     C = {'bookpages': bookpages}
     data = render_to_string('book/bookindexajax.html', C)
     return HttpResponse(data)
 
 
-def bookpage(request, page_number=0):
+def bookpage(request, book_id=0, page_number=0):
     if request.GET.get('invert', False):
         request.session['invert'] = not request.session.get('invert', False)
         return HttpResponse('')
     if page_number == 0:
         raise Http404
-    bookpage = get_object_or_404(BookPage, page_number=page_number)
-    book = get_object_or_404(Book, is_deleted=False, book_number=bookpage.book_number)
+    book = get_object_or_404(Book, is_deleted=False, id=book_id)
+    bookpage = get_object_or_404(BookPage, page_number=page_number, book_number=book.book_number)
     # 注册用户的点击数据统计
     if request.user.is_authenticated():
         skey = 'time-book-%d' % book.pk

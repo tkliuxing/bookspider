@@ -321,7 +321,7 @@ class BookPage(models.Model):
             pass
 
     def get_absolute_url(self):
-        return reverse('bookpage', args=[str(self.page_number)])
+        return reverse('bookpage', kwargs={'book_id': self.book.id, 'page_number': self.page_number})
 
     def save(self, *args, **kwargs):
         try:

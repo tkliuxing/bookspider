@@ -94,7 +94,7 @@
       <div class="btn-group">
         {% if bookpage.prev_number %}
           <a
-            href="{% url 'bookpage' bookpage.prev_number %}"
+            href="{% url 'bookpage' book.pk bookpage.prev_number %}"
             class="btn btn-success prev_page_a">
             <span class="fui-arrow-left"></span>
             <span>上一页</span>
@@ -108,7 +108,7 @@
         <a href="{% url 'bookindex' book.pk %}" style="line-height: 22px;" class="btn btn-primary">回目录</a>
         {% if bookpage.next_number %}
           <a
-            href="{% url 'bookpage' bookpage.next_number %}"
+            href="{% url 'bookpage' book.pk bookpage.next_number %}"
             class="btn btn-success next_page_a">
             <span>下一页</span>
             <span class="fui-arrow-right"></span>

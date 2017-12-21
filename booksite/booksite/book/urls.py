@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^book/(?P<book_id>\d+)/$', bookindex, name='bookindex'),
     url(r'^bookinfo/(?P<book_id>\d+)/$', bookinfo, name='bookinfo'),
     url(r'^bookindex/(?P<book_id>\d+)/$', bookindexajax, name='bookindexajax'),
-    url(r'^page/(?P<page_number>\d+)/$', bookpage, name='bookpage'),
+    url(r'^book/(?P<book_id>\d+)/(?P<page_number>\d+)/$', bookpage, name='bookpage'),
 
     url(r'^nallpage/(?P<page_id>\d+)/$', load_nall_page, name='nallpage'),
     url(r'^fixpic/page/(?P<page_id>\d+)/$', page_fix_pic, name='pagefixpic'),

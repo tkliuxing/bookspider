@@ -1,5 +1,4 @@
-amqp==1.4.9
-celery==3.1.13
+celery==4.1.0
 Django==1.9.8
 django-assets==0.12
 django-pgjson==0.3.0
