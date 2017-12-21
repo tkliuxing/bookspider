@@ -105,7 +105,7 @@
             <span>上一页</span>
           </a>
         {% endif %}
-        <a href="{% url 'bookindex' book.pk %}" style="line-height: 22px;" class="btn btn-primary">回目录</a>
+        <a href="{% url 'bookindex' book.pk %}" style="line-height: 20px;" class="btn btn-primary">回目录</a>
         {% if bookpage.next_number %}
           <a
             href="{% url 'bookpage' book.pk bookpage.next_number %}"
