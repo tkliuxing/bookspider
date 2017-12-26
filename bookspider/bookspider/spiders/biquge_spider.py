@@ -47,10 +47,14 @@ class BiqugeSpider(Spider):
             if i in url:
                 return True
         return False
+    
+    def get_no_query_url(self, url):
+        url_p = urlparse.urlparse(url)
+        return urlparse.urljoin(url_p.geturl(), url_p.path)
 
     def parse_book_info(self, response):
         """获取书籍信息"""
-        url = response.url
+        url = self.get_no_query_url(response.url)
         sel = Selector(response)
         jQ = PQ(response.body_as_unicode())
         book = BookinfoItem()
@@ -66,7 +70,7 @@ class BiqugeSpider(Spider):
     
     def parse_page(self, response):
         """获取章节信息"""
-        url = response.url
+        url = self.get_no_query_url(response.url)
         sel = Selector(response)
         jQ = PQ(response.body_as_unicode())
         page = BookpageItem()
@@ -97,7 +101,7 @@ class BiqugeSpider(Spider):
             return page
 
     def parse(self, response):
-        url = response.url
+        url = self.get_no_query_url(response.url)
         sel = Selector(response)
         jQ = PQ(response.body_as_unicode())
         # 跳过cdn未命中
