@@ -70,9 +70,9 @@ class BookpagePipeline(object):
             try:
                 item.save()
             except:
-                import traceback
-                traceback.print_exc()
-                # RC.set(item['origin_url'], 'True')
+                # import traceback
+                # traceback.print_exc()
+                RC.set(item['origin_url'], 'True')
                 raise DropItem("Item save error: %s" % item['page_number'])
             try:
                 item.instance.save_content_zip_file(item['content'])
@@ -87,9 +87,9 @@ class BookpagePipeline(object):
                 return item
             except:
                 item.instance.delete()
-                import traceback
-                traceback.print_exc()
-                # RC.set(item['origin_url'], 'True')
+                # import traceback
+                # traceback.print_exc()
+                RC.set(item['origin_url'], 'True')
                 raise DropItem("Item save error: %s" % item['page_number'])
 
 
