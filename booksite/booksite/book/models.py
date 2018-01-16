@@ -205,19 +205,15 @@ def book_create(sender, instance, created, *args, **kwargs):
         Book.objects.filter(pk=b.pk).update(site_book=sb)
 
 
-def bookpage_path(instance, filename):
+def bookpage_path_zip(instance, filename):
     import os
     import uuid
     file_name = uuid.uuid4().hex
     if instance.site == '86696':
-        return os.path.join('book/%s/' % instance.book_number, file_name + '.html')
+        fn = os.path.join('book/%s/' % instance.book_number, file_name + '.html')
     else:
-        return os.path.join('book/{0}/{1}/'.format(instance.site, instance.book_number), file_name + '.html')
-
-
-def bookpage_path_zip(instance, filename):
-    filename = bookpage_path(instance, filename)
-    return filename + '.gz'
+        fn = os.path.join('book/{0}/{1}/'.format(instance.site, instance.book_number), file_name + '.html')
+    return fn + '.gz'
 
 
 class BookPage(models.Model):
@@ -282,6 +278,10 @@ class BookPage(models.Model):
         content_gzip.close()
         self.content_file.file.seek(0)
         return content.decode('utf-8')
+
+    def delete(self):
+        self.content_file.delete()
+        return super(BookPage, self).delete()
 
     def set_content(self, content):
         """更新（删除并新建）章节压缩文件内html"""
